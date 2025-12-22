@@ -6,7 +6,7 @@ export const DEFAULTS = {
     themeTone: 'light',
     themePalette: 'gray-medium',
     fontSize: 32,
-    font: "'Rubik', 'Segoe UI', Arial, sans-serif",
+    font: "'EB Garamond', 'Times New Roman', serif",
     align: 'left',
     padding: 120,
     brightness: 100,

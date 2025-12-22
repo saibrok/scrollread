@@ -49,6 +49,11 @@ function onInput(event) {
     background: transparent;
 }
 
+.sr-range:disabled {
+    cursor: default;
+    opacity: 0.5;
+}
+
 .sr-range::-webkit-slider-runnable-track {
     height: 6px;
     background: var(--ui-track, var(--border));

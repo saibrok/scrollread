@@ -44,7 +44,7 @@ const readerStyle = computed(() => {
         '--read-paragraph-gap': `${settings.paragraphGap}em`,
         '--read-padding': `${settings.padding}px`,
         '--reader-align': settings.align,
-        '--reader-indent': `${settings.indent}em`,
+        '--reader-indent': settings.align === 'center' ? '0em' : `${settings.indent}em`,
     };
 });
 

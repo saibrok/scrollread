@@ -16,13 +16,28 @@ const emit = defineEmits(['update', 'toggle']);
 const isOpen = ref(true);
 
 const fontOptions = [
-    { value: "'Rubik', 'Segoe UI', Arial, sans-serif", text: 'Rubik' },
-    { value: "'PT Sans', 'Segoe UI', Arial, sans-serif", text: 'PT Sans' },
-    { value: "'PT Serif', 'Times New Roman', serif", text: 'PT Serif' },
-    { value: "'Noto Sans', 'Segoe UI', Arial, sans-serif", text: 'Noto Sans' },
-    { value: "'Noto Serif', 'Times New Roman', serif", text: 'Noto Serif' },
+    { value: "'EB Garamond', 'Times New Roman', serif", text: 'EB Garamond' },
+    { value: "'Fira Sans', 'Segoe UI', Arial, sans-serif", text: 'Fira Sans' },
+    { value: "'IBM Plex Sans', 'Segoe UI', Arial, sans-serif", text: 'IBM Plex Sans' },
+    { value: "'IBM Plex Serif', 'Times New Roman', serif", text: 'IBM Plex Serif' },
+    { value: "'Inter', 'Segoe UI', Arial, sans-serif", text: 'Inter' },
+    { value: "'Lora', 'Times New Roman', serif", text: 'Lora' },
     { value: "'Merriweather', 'Times New Roman', serif", text: 'Merriweather' },
     { value: "'Montserrat', 'Segoe UI', Arial, sans-serif", text: 'Montserrat' },
+    { value: "'Noto Sans', 'Segoe UI', Arial, sans-serif", text: 'Noto Sans' },
+    { value: "'Noto Serif', 'Times New Roman', serif", text: 'Noto Serif' },
+    { value: "'Open Sans', 'Segoe UI', Arial, sans-serif", text: 'Open Sans' },
+    { value: "'Oswald', 'Segoe UI', Arial, sans-serif", text: 'Oswald' },
+    { value: "'Playfair Display', 'Times New Roman', serif", text: 'Playfair Display' },
+    { value: "'PT Sans Narrow', 'PT Sans', 'Segoe UI', Arial, sans-serif", text: 'PT Sans Narrow' },
+    { value: "'PT Sans', 'Segoe UI', Arial, sans-serif", text: 'PT Sans' },
+    { value: "'PT Serif', 'Times New Roman', serif", text: 'PT Serif' },
+    { value: "'Roboto Condensed', 'Arial Narrow', 'Segoe UI', Arial, sans-serif", text: 'Roboto Condensed' },
+    { value: "'Roboto Mono', 'Courier New', monospace", text: 'Roboto Mono' },
+    { value: "'Roboto Slab', 'Times New Roman', serif", text: 'Roboto Slab' },
+    { value: "'Roboto', 'Segoe UI', Arial, sans-serif", text: 'Roboto' },
+    { value: "'Rubik', 'Segoe UI', Arial, sans-serif", text: 'Rubik' },
+    { value: "'Vollkorn', 'Times New Roman', serif", text: 'Vollkorn' },
 ];
 
 const alignOptions = [
@@ -76,7 +91,7 @@ function togglePanel() {
                             :model-value="props.settings.speed"
                             min="100"
                             max="2000"
-                            step="100"
+                            step="50"
                             @update:model-value="emitUpdate('speed', $event)"
                         />
                     </div>
@@ -101,7 +116,7 @@ function togglePanel() {
                             :model-value="props.settings.fontSize"
                             min="10"
                             max="100"
-                            step="2"
+                            step="1"
                             @update:model-value="emitUpdate('fontSize', $event)"
                         />
                     </div>
@@ -162,6 +177,7 @@ function togglePanel() {
                             min="0"
                             max="4"
                             step="0.1"
+                            :disabled="props.settings.align === 'center'"
                             @update:model-value="emitUpdate('indent', $event)"
                         />
                     </div>
@@ -208,7 +224,8 @@ function togglePanel() {
                                 >Яркость</label
                             >
                             <div class="reader-value">
-                                <span>{{ props.settings.brightness }}</span>%
+                                <span>{{ props.settings.brightness }}</span
+                                >%
                             </div>
                         </div>
                         <SrRange
@@ -228,7 +245,8 @@ function togglePanel() {
                                 >Контраст</label
                             >
                             <div class="reader-value">
-                                <span>{{ props.settings.contrast }}</span>%
+                                <span>{{ props.settings.contrast }}</span
+                                >%
                             </div>
                         </div>
                         <SrRange
@@ -248,7 +266,8 @@ function togglePanel() {
                                 >Сепия</label
                             >
                             <div class="reader-value">
-                                <span>{{ props.settings.sepia }}</span>%
+                                <span>{{ props.settings.sepia }}</span
+                                >%
                             </div>
                         </div>
                         <SrRange
@@ -313,7 +332,8 @@ function togglePanel() {
                                 >Прозрачность</label
                             >
                             <div class="reader-value">
-                                <span>{{ props.settings.overlayOpacity }}</span>%
+                                <span>{{ props.settings.overlayOpacity }}</span
+                                >%
                             </div>
                         </div>
                         <SrRange

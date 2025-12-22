@@ -181,13 +181,13 @@ function onTextInput(event) {
 
                 <div class="control">
                     <div class="label">Скорость</div>
-                    <SrRange
-                        :model-value="props.speed"
-                        min="100"
-                        max="2000"
-                        step="100"
-                        @update:model-value="emit('update:speed', $event)"
-                    />
+                <SrRange
+                    :model-value="props.speed"
+                    min="100"
+                    max="2000"
+                    step="50"
+                    @update:model-value="emit('update:speed', $event)"
+                />
                     <div class="range-row">
                         <strong>{{ props.speed }}</strong>
                         знаков/мин

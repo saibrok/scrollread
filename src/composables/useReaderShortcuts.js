@@ -17,7 +17,7 @@
  */
 export function useReaderShortcuts(options) {
     const clampSpeed = (value) => {
-        const normalized = Math.round(Number(value) / 100) * 100;
+        const normalized = Math.round(Number(value) / 50) * 50;
 
         return Math.min(2000, Math.max(100, normalized));
     };
@@ -81,26 +81,26 @@ export function useReaderShortcuts(options) {
         }
         if (event.code === 'ArrowUp') {
             event.preventDefault();
-            adjustSpeed(100);
+            adjustSpeed(50);
 
             return;
         }
         if (event.code === 'ArrowDown') {
             event.preventDefault();
-            adjustSpeed(-100);
+            adjustSpeed(-50);
 
             return;
         }
         if (event.code === 'ArrowRight') {
             event.preventDefault();
-            options.settings.fontSize = Math.min(100, Number(options.settings.fontSize) + 2);
+            options.settings.fontSize = Math.min(100, Number(options.settings.fontSize) + 1);
             options.recalcMetrics();
 
             return;
         }
         if (event.code === 'ArrowLeft') {
             event.preventDefault();
-            options.settings.fontSize = Math.max(10, Number(options.settings.fontSize) - 2);
+            options.settings.fontSize = Math.max(10, Number(options.settings.fontSize) - 1);
             options.recalcMetrics();
 
             return;
