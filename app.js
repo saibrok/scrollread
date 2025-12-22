@@ -10,6 +10,8 @@ const DEFAULTS = {
   readerBrightness: 100,
   readerContrast: 100,
   readerSepia: 0,
+  readerOverlaySize: 3.2,
+  readerOverlayOpacity: 75,
 };
 const state = { ...DEFAULTS };
 
@@ -49,6 +51,10 @@ const readerContrast = document.getElementById("readerContrast");
 const readerContrastValue = document.getElementById("readerContrastValue");
 const readerSepia = document.getElementById("readerSepia");
 const readerSepiaValue = document.getElementById("readerSepiaValue");
+const readerOverlaySize = document.getElementById("readerOverlaySize");
+const readerOverlaySizeValue = document.getElementById("readerOverlaySizeValue");
+const readerOverlayOpacity = document.getElementById("readerOverlayOpacity");
+const readerOverlayOpacityValue = document.getElementById("readerOverlayOpacityValue");
 const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
 let isPlaying = true;
 let animationId = null;
@@ -118,6 +124,8 @@ function saveSettings() {
     readerBrightness: Number(readerBrightness.value),
     readerContrast: Number(readerContrast.value),
     readerSepia: Number(readerSepia.value),
+    readerOverlaySize: Number(readerOverlaySize.value),
+    readerOverlayOpacity: Number(readerOverlayOpacity.value),
   };
   localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
 }
@@ -161,6 +169,12 @@ function loadSettings() {
     }
     if (typeof parsed.readerSepia === "number") {
       state.readerSepia = parsed.readerSepia;
+    }
+    if (typeof parsed.readerOverlaySize === "number") {
+      state.readerOverlaySize = parsed.readerOverlaySize;
+    }
+    if (typeof parsed.readerOverlayOpacity === "number") {
+      state.readerOverlayOpacity = parsed.readerOverlayOpacity;
     }
   } catch (error) {
     console.warn("Settings parse error", error);
@@ -208,6 +222,11 @@ function applyReaderSettings() {
   reader.style.setProperty("--reader-brightness", `${readerBrightness.value}%`);
   reader.style.setProperty("--reader-contrast", `${readerContrast.value}%`);
   reader.style.setProperty("--reader-sepia", `${readerSepia.value}%`);
+  reader.style.setProperty("--read-band", `${readerOverlaySize.value}em`);
+  reader.style.setProperty(
+    "--reader-overlay-opacity",
+    `${Number(readerOverlayOpacity.value) / 100}`
+  );
   applyReaderTheme();
 }
 
@@ -401,6 +420,10 @@ function resetSettings() {
   readerContrastValue.textContent = state.readerContrast;
   readerSepia.value = state.readerSepia;
   readerSepiaValue.textContent = state.readerSepia;
+  readerOverlaySize.value = state.readerOverlaySize;
+  readerOverlaySizeValue.textContent = state.readerOverlaySize;
+  readerOverlayOpacity.value = state.readerOverlayOpacity;
+  readerOverlayOpacityValue.textContent = state.readerOverlayOpacity;
   applyTheme();
   applyReaderSettings();
   updateCounts();
@@ -426,6 +449,10 @@ readerContrast.value = state.readerContrast;
 readerContrastValue.textContent = state.readerContrast;
 readerSepia.value = state.readerSepia;
 readerSepiaValue.textContent = state.readerSepia;
+readerOverlaySize.value = state.readerOverlaySize;
+readerOverlaySizeValue.textContent = state.readerOverlaySize;
+readerOverlayOpacity.value = state.readerOverlayOpacity;
+readerOverlayOpacityValue.textContent = state.readerOverlayOpacity;
 
 updateCounts();
 applyTheme();
@@ -532,6 +559,18 @@ readerContrast.addEventListener("input", () => {
 
 readerSepia.addEventListener("input", () => {
   readerSepiaValue.textContent = readerSepia.value;
+  applyReaderSettings();
+  saveSettings();
+});
+
+readerOverlaySize.addEventListener("input", () => {
+  readerOverlaySizeValue.textContent = readerOverlaySize.value;
+  applyReaderSettings();
+  saveSettings();
+});
+
+readerOverlayOpacity.addEventListener("input", () => {
+  readerOverlayOpacityValue.textContent = readerOverlayOpacity.value;
   applyReaderSettings();
   saveSettings();
 });

@@ -194,7 +194,7 @@ input[type='range'] {
 .reader {
   position: fixed;
   inset: 0;
-  background: var(--reader-bg);
+  background: transparent;
   color: var(--reader-text);
   display: none;
   flex-direction: column;
@@ -206,6 +206,8 @@ input[type='range'] {
   --reader-brightness: 100%;
   --reader-contrast: 100%;
   --reader-sepia: 0%;
+  --reader-overlay-opacity: 0.75;
+  --read-band: 3.2em;
 }
 
 .reader.active {
@@ -250,7 +252,7 @@ input[type='range'] {
   gap: 14px;
   padding: 16px 24px 18px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(12, 16, 24, 0.85);
+  background: rgb(12, 16, 24);
 }
 
 .reader-control {
@@ -285,9 +287,9 @@ input[type='range'] {
   font-size: var(--reader-font-size);
   min-height: 0;
   overflow: hidden;
+  background: var(--reader-bg);
   filter: brightness(var(--reader-brightness)) contrast(var(--reader-contrast)) sepia(var(--reader-sepia));
 
-  --read-band: 3.2em;
   --read-line-height: 1.6;
 }
 
@@ -308,14 +310,14 @@ input[type='range'] {
   word-break: break-word;
   transform: translateY(0);
   will-change: transform;
-  padding: 2em 0 0;
+  padding-top: calc(var(--read-band) * var(--read-line-height) / 2 - 1em * var(--read-line-height) + 1em);
   font-family: var(--reader-font);
   width: 100%;
 }
 
 .reader-overlay {
   pointer-events: none;
-  background: rgba(6, 9, 13, 0.75);
+  background: rgba(6, 9, 13, var(--reader-overlay-opacity));
   z-index: 10;
 }
 
