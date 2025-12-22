@@ -1,12 +1,12 @@
 ﻿<script setup>
 import { computed } from 'vue';
 
+import { getPaletteOptions, THEME_TONE_OPTIONS } from '../utils/themes';
+
 import SrButton from '../ui/SrButton.vue';
+import SrModal from '../ui/SrModal.vue';
 import SrRange from '../ui/SrRange.vue';
 import SrSelect from '../ui/SrSelect.vue';
-import SrModal from '../ui/SrModal.vue';
-
-import { THEME_TONE_OPTIONS, getPaletteOptions } from '../utils/themes';
 
 const props = defineProps({
     text: {
@@ -91,6 +91,10 @@ const paletteOptions = computed(() => getPaletteOptions(props.themeTone));
 function onTextInput(event) {
     emit('update:text', event.target.value);
 }
+
+function openSupport() {
+    window.open('https://dalink.to/saibrok', '_blank', 'noopener,noreferrer');
+}
 </script>
 
 <template>
@@ -98,8 +102,6 @@ function onTextInput(event) {
         <header class="page-header">
             <div>
                 <div class="title">ScrollRead</div>
-                <div class="subtitle">Телесуфлёр с контролем темпа чтения</div>
-                <div class="subtitle">Читайте без спешки, сбивок и потери строки</div>
             </div>
             <div class="header-theme">
                 <div class="header-theme__control">
@@ -181,13 +183,13 @@ function onTextInput(event) {
 
                 <div class="control">
                     <div class="label">Скорость</div>
-                <SrRange
-                    :model-value="props.speed"
-                    min="100"
-                    max="2000"
-                    step="50"
-                    @update:model-value="emit('update:speed', $event)"
-                />
+                    <SrRange
+                        :model-value="props.speed"
+                        min="100"
+                        max="2000"
+                        step="50"
+                        @update:model-value="emit('update:speed', $event)"
+                    />
                     <div class="range-row">
                         <strong>{{ props.speed }}</strong>
                         знаков/мин
@@ -216,9 +218,7 @@ function onTextInput(event) {
             <div class="sr-modal-header">
                 <div>Сохранение текста</div>
             </div>
-            <div class="sr-modal-text">
-                Выберите действие для выбранного сохранения.
-            </div>
+            <div class="sr-modal-text">Выберите действие для выбранного сохранения.</div>
             <div class="sr-modal-actions">
                 <SrButton
                     variant="default"
@@ -249,9 +249,7 @@ function onTextInput(event) {
             <div class="sr-modal-header">
                 <div>Загрузка текста</div>
             </div>
-            <div class="sr-modal-text">
-                В тексте есть данные. Заменить содержимое?
-            </div>
+            <div class="sr-modal-text">В тексте есть данные. Заменить содержимое?</div>
             <div class="sr-modal-actions">
                 <SrButton
                     variant="default"
@@ -276,9 +274,7 @@ function onTextInput(event) {
             <div class="sr-modal-header">
                 <div>Удаление сохранения</div>
             </div>
-            <div class="sr-modal-text">
-                Удалить выбранное сохранение без возможности восстановления?
-            </div>
+            <div class="sr-modal-text">Удалить выбранное сохранение без возможности восстановления?</div>
             <div class="sr-modal-actions">
                 <SrButton
                     variant="default"
@@ -294,5 +290,37 @@ function onTextInput(event) {
                 </SrButton>
             </div>
         </SrModal>
+        <footer class="page-footer">
+            <div class="subtitle">ScrollRead создаётся как рабочий инструмент — без рекламы и подписок.</div>
+            <div class="subtitle">Он бесплатный и остаётся таким благодаря вашей поддержке.</div>
+            <div class="subtitle">
+                Если ScrollRead помогает вам в работе, донат — лучший способ сказать
+                <a
+                    href="https://dalink.to/saibrok"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    «спасибо»
+                </a>
+                и ускорить развитие проекта.
+            </div>
+            <div class="subtitle">
+                Идеи, запросы на функции и обратную связь можно писать в
+                <a
+                    href="https://t.me/saibrok"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    Telegram
+                </a>
+                .
+            </div>
+        </footer>
+        <SrButton
+            class="support-button"
+            @click="openSupport"
+        >
+            Поддержать проект
+        </SrButton>
     </div>
 </template>

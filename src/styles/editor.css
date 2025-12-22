@@ -15,12 +15,13 @@
 }
 
 .header-theme {
-    display: grid;
+    display: flex;
     gap: 12px;
     min-width: 220px;
 }
 
 .header-theme__control {
+    width: 150px;
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -119,6 +120,21 @@ input[type='range'] {
     margin-top: auto;
 }
 
+.support-button {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: 30;
+}
+
+.page-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-top: 6px;
+    margin-top: auto;
+}
+
 @media (max-width: 900px) {
     .page-header {
         flex-direction: column;
@@ -137,4 +153,3 @@ input[type='range'] {
         justify-content: flex-start;
     }
 }
-

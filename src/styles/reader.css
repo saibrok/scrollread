@@ -333,3 +333,27 @@
     justify-content: flex-end;
     gap: 10px;
 }
+
+@media (max-width: 900px) {
+    .reader-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .reader-controls {
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+
+    .reader-timers {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        text-align: left;
+    }
+
+    .reader-theme {
+        grid-template-columns: 1fr;
+    }
+}

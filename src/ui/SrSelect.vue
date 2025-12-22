@@ -137,7 +137,6 @@ onBeforeUnmount(() => {
     background: var(--ui-surface, var(--surface));
     border: 1px solid var(--ui-border, var(--border));
     border-radius: 12px;
-    box-shadow: var(--ui-shadow, 0 10px 20px rgb(15 23 42 / 8%));
 
     transition:
         transform 0.15s ease,

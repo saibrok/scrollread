@@ -1,5 +1,5 @@
 ﻿<script setup>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 import SrRange from '../ui/SrRange.vue';
 import SrSelect from '../ui/SrSelect.vue';
@@ -19,6 +19,7 @@ const props = defineProps({
 const emit = defineEmits(['update', 'toggle']);
 
 const isOpen = ref(true);
+const STORAGE_KEY = 'scrollread_reader_panel_open';
 
 const fontOptions = [
     { value: "'EB Garamond', 'Times New Roman', serif", text: 'EB Garamond' },
@@ -58,7 +59,16 @@ function emitUpdate(key, value) {
 function togglePanel() {
     isOpen.value = !isOpen.value;
     emit('toggle', isOpen.value);
+    localStorage.setItem(STORAGE_KEY, String(isOpen.value));
 }
+
+onMounted(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+
+    if (saved === 'true' || saved === 'false') {
+        isOpen.value = saved === 'true';
+    }
+});
 </script>
 
 <template>

@@ -2,8 +2,8 @@
 import { computed, onMounted, provide, reactive, ref, watch } from 'vue';
 
 import { DEFAULTS, loadSettings, loadTextSaves, saveSettings, saveTextSaves } from './utils/storage';
-import { THEME_CLASS_NAMES, normalizePalette, resolveThemeName } from './utils/themes';
 import { countChars, countWords, formatTime } from './utils/text';
+import { normalizePalette, resolveThemeName, THEME_CLASS_NAMES } from './utils/themes';
 
 import EditorView from './components/EditorView.vue';
 import ReaderView from './components/ReaderView.vue';
@@ -27,12 +27,11 @@ const stats = computed(() => {
 
 const timeRange = computed(() => {
     const speed = settings.speed;
-    const withoutSpaces = countChars(text.value, false);
     const withSpaces = countChars(text.value, true);
-    const minSeconds = Math.ceil((withoutSpaces / speed) * 60);
-    const maxSeconds = Math.ceil((withSpaces / speed) * 60);
 
-    return `${formatTime(minSeconds)}-${formatTime(maxSeconds)}`;
+    const totalSeconds = Math.ceil((withSpaces / speed) * 60);
+
+    return formatTime(totalSeconds);
 });
 
 const canStart = computed(() => text.value.trim().length > 0);
@@ -89,7 +88,6 @@ onMounted(() => {
 
     applyTheme(settings.themeTone, settings.themePalette);
 });
-
 
 watch(
     () => [settings.themeTone, settings.themePalette],
@@ -158,6 +156,7 @@ function overwriteSave(id, textValue) {
 
     if (index === -1) {
         createSave(textValue);
+
         return;
     }
 
@@ -168,6 +167,7 @@ function overwriteSave(id, textValue) {
     };
 
     const next = [...textSaves.value];
+
     next.splice(index, 1);
     textSaves.value = [entry, ...next];
     selectedSaveId.value = entry.id;
@@ -180,6 +180,7 @@ function handleSaveRequest() {
 
     if (selectedSaveId.value) {
         saveConfirmOpen.value = true;
+
         return;
     }
 
@@ -189,6 +190,7 @@ function handleSaveRequest() {
 function handleSaveOverwrite() {
     if (!selectedSaveId.value) {
         saveConfirmOpen.value = false;
+
         return;
     }
 
@@ -208,6 +210,7 @@ function handleLoadRequest() {
 
     if (text.value.trim().length) {
         loadConfirmOpen.value = true;
+
         return;
     }
 
@@ -238,6 +241,7 @@ function handleDeleteSave() {
 function handleDeleteConfirm() {
     if (!selectedSaveId.value) {
         deleteConfirmOpen.value = false;
+
         return;
     }
 
@@ -302,4 +306,3 @@ watch(
         @close="closeReader"
     />
 </template>
-

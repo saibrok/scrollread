@@ -6,7 +6,7 @@
 const PALETTES = [
     { value: 'gray-hard', text: 'Графит' },
     { value: 'gray-medium', text: 'Серый' },
-    { value: 'gray-light', text: 'Белый' },
+    { value: 'gray-light', text: 'Туман' },
     { value: 'sage', text: 'Шалфей' },
     { value: 'sand', text: 'Песок' },
     { value: 'sky', text: 'Небо' },
@@ -64,6 +64,7 @@ export function getPaletteOptions() {
 
 export function normalizePalette(tone, palette) {
     const available = getPaletteOptions().map((item) => item.value);
+
     if (available.includes(palette)) {
         return palette;
     }
@@ -73,6 +74,7 @@ export function normalizePalette(tone, palette) {
 
 export function resolveThemeName(tone, palette) {
     const toneMap = THEME_NAME_MAP[tone];
+
     if (!toneMap) {
         return THEME_NAME_MAP.light['gray-medium'];
     }

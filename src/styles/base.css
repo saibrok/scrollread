@@ -42,10 +42,11 @@ body {
 
 .page {
     width: min(1100px, 92vw);
-    margin: 48px auto 72px;
+    margin: 48px auto 24px;
     display: flex;
     flex-direction: column;
     gap: 24px;
+    min-height: calc(100vh - 72px);
 }
 
 header {
