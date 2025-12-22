@@ -232,6 +232,9 @@ input[type="range"] {
   font-size: 32px;
   min-height: 0;
   overflow: hidden;
+  position: relative;
+  --read-band: 3.2em;
+  --read-padding: 40vh;
 }
 
 .reader-stage {
@@ -240,6 +243,9 @@ input[type="range"] {
   height: 100%;
   overflow: hidden;
   min-height: 0;
+  padding-top: var(--read-padding);
+  padding-bottom: var(--read-padding);
+  box-sizing: border-box;
 }
 
 .reader-text {
@@ -247,6 +253,22 @@ input[type="range"] {
   line-height: 1.6;
   transform: translateY(0);
   will-change: transform;
+}
+
+.reader-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(6, 9, 13, 0.78) 0%,
+      rgba(6, 9, 13, 0.6) calc(50% - var(--read-band)),
+      rgba(6, 9, 13, 0) calc(50% - var(--read-band) + 1px),
+      rgba(6, 9, 13, 0) calc(50% + var(--read-band) - 1px),
+      rgba(6, 9, 13, 0.6) calc(50% + var(--read-band)),
+      rgba(6, 9, 13, 0.85) 100%
+    );
 }
 
 @media (max-width: 900px) {
