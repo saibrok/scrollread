@@ -2,6 +2,7 @@
 import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 
 import { formatTime, toParagraphs } from '../utils/text';
+import { getPaletteOptions, THEME_TONE_OPTIONS } from '../utils/themes';
 import { useReaderPlayer } from '../composables/useReaderPlayer';
 import { useReaderShortcuts } from '../composables/useReaderShortcuts';
 
@@ -9,6 +10,9 @@ import ReaderHeader from './ReaderHeader.vue';
 import ReaderHelp from './ReaderHelp.vue';
 import ReaderPanel from './ReaderPanel.vue';
 import ReaderResetConfirm from './ReaderResetConfirm.vue';
+import SrButton from '../ui/SrButton.vue';
+import SrModal from '../ui/SrModal.vue';
+import SrSelect from '../ui/SrSelect.vue';
 
 const props = defineProps({
     open: {
@@ -31,6 +35,9 @@ const readerText = ref(null);
 const helpOpen = ref(false);
 const resetOpen = ref(false);
 const isFullscreen = ref(false);
+const isCompact = ref(false);
+const settingsOpen = ref(false);
+const settingsPeeking = ref(false);
 const sessionSeconds = ref(0);
 let sessionStart = 0;
 let sessionAccumulated = 0;
@@ -54,6 +61,7 @@ const readerStyle = computed(() => {
 });
 
 const readerHtml = computed(() => toParagraphs(props.text));
+const paletteOptions = computed(() => getPaletteOptions(settings.themeTone));
 
 const speedMultiplier = ref(1);
 
@@ -120,10 +128,30 @@ function confirmReset() {
     resetOpen.value = false;
 }
 
+function openSettings() {
+    if (!isCompact.value) {
+        return;
+    }
+    settingsOpen.value = true;
+}
+
+function closeSettings() {
+    settingsOpen.value = false;
+}
+
+function startSettingsPeek() {
+    settingsPeeking.value = true;
+}
+
+function stopSettingsPeek() {
+    settingsPeeking.value = false;
+}
+
 function handleClose() {
     pauseScroll();
     helpOpen.value = false;
     resetOpen.value = false;
+    settingsOpen.value = false;
     speedMultiplier.value = 1;
     resetSessionTimer();
     emit('close');
@@ -139,6 +167,13 @@ function handleFullscreen() {
 
 function syncFullscreen() {
     isFullscreen.value = Boolean(document.fullscreenElement);
+}
+
+function syncCompact(value) {
+    isCompact.value = value;
+    if (!value) {
+        settingsOpen.value = false;
+    }
 }
 
 watch(
@@ -196,13 +231,24 @@ useReaderShortcuts({
     recalcMetrics: recalcMetricsPreservePosition,
 });
 
+let compactQuery = null;
+let onCompactChange = null;
+
 onMounted(() => {
     syncFullscreen();
     document.addEventListener('fullscreenchange', syncFullscreen);
+
+    compactQuery = window.matchMedia('(max-width: 1480px)');
+    syncCompact(compactQuery.matches);
+    onCompactChange = (event) => syncCompact(event.matches);
+    compactQuery.addEventListener('change', onCompactChange);
 });
 
 onBeforeUnmount(() => {
     document.removeEventListener('fullscreenchange', syncFullscreen);
+    if (compactQuery && onCompactChange) {
+        compactQuery.removeEventListener('change', onCompactChange);
+    }
 });
 
 function startSessionTimer() {
@@ -258,6 +304,7 @@ watch(
     >
         <ReaderHeader
             :is-playing="isPlaying"
+            :is-compact="isCompact"
             :timer-text="timerText"
             :session-timer-text="sessionTimerText"
             :is-fullscreen="isFullscreen"
@@ -269,9 +316,11 @@ watch(
             @update:theme-palette="(value) => updateSetting({ key: 'themePalette', value })"
             @reset="handleReset"
             @help="openHelp"
+            @open-settings="openSettings"
             @close="handleClose"
         />
         <ReaderPanel
+            v-if="!isCompact"
             :settings="settings"
             :speed-multiplier-label="speedMultiplierLabel"
             @update="updateSetting"
@@ -307,6 +356,81 @@ watch(
             @close="closeReset"
             @confirm="confirmReset"
         />
+        <SrModal
+            :open="settingsOpen"
+            :modal-class="settingsPeeking ? 'sr-modal--settings sr-modal--peek' : 'sr-modal--settings'"
+            card-class="sr-modal-card--wide"
+            @close="closeSettings"
+        >
+            <div class="sr-modal-header">
+                <div>Настройки</div>
+                <SrButton
+                    class="reader-btn"
+                    @mousedown="startSettingsPeek"
+                    @mouseup="stopSettingsPeek"
+                    @mouseleave="stopSettingsPeek"
+                    @touchstart.prevent="startSettingsPeek"
+                    @touchend="stopSettingsPeek"
+                    @touchcancel="stopSettingsPeek"
+                >
+                    <span
+                        class="material-icons"
+                        aria-hidden="true"
+                    >
+                        visibility
+                    </span>
+                </SrButton>
+                <SrButton
+                    class="reader-btn"
+                    @click="closeSettings"
+                >
+                    <span
+                        class="material-icons"
+                        aria-hidden="true"
+                    >
+                        close
+                    </span>
+                </SrButton>
+            </div>
+            <div class="reader-settings">
+                <div class="reader-settings__group">
+                    <div class="reader-settings__label">Тон</div>
+                    <SrSelect
+                        :model-value="settings.themeTone"
+                        :items="THEME_TONE_OPTIONS"
+                        @update:model-value="(value) => updateSetting({ key: 'themeTone', value })"
+                    />
+                </div>
+                <div class="reader-settings__group">
+                    <div class="reader-settings__label">Цветовая схема</div>
+                    <SrSelect
+                        :model-value="settings.themePalette"
+                        :items="paletteOptions"
+                        @update:model-value="(value) => updateSetting({ key: 'themePalette', value })"
+                    />
+                </div>
+            </div>
+            <ReaderPanel
+                :settings="settings"
+                :speed-multiplier-label="speedMultiplierLabel"
+                @update="updateSetting"
+                @toggle="handlePanelToggle"
+            />
+            <div class="reader-settings__actions">
+                <SrButton
+                    class="reader-btn"
+                    @click="handleReset"
+                >
+                    Сброс настроек
+                </SrButton>
+                <SrButton
+                    class="reader-btn"
+                    @click="openHelp"
+                >
+                    Горячие клавиши
+                </SrButton>
+            </div>
+        </SrModal>
     </div>
 </template>
 

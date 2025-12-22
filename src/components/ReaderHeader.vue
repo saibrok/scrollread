@@ -11,6 +11,10 @@ const props = defineProps({
         type: Boolean,
         required: true,
     },
+    isCompact: {
+        type: Boolean,
+        required: true,
+    },
     timerText: {
         type: String,
         required: true,
@@ -33,7 +37,7 @@ const props = defineProps({
     },
 });
 
-const emit = defineEmits(['toggle-play', 'fullscreen', 'reset', 'help', 'close', 'update:theme-tone', 'update:theme-palette']);
+const emit = defineEmits(['toggle-play', 'fullscreen', 'reset', 'help', 'close', 'open-settings', 'update:theme-tone', 'update:theme-palette']);
 
 const paletteOptions = computed(() => getPaletteOptions(props.themeTone));
 </script>
@@ -44,11 +48,20 @@ const paletteOptions = computed(() => getPaletteOptions(props.themeTone));
             <SrButton
                 class="reader-btn"
                 :variant="props.isPlaying ? 'accent' : 'default'"
+                :aria-label="props.isPlaying ? 'Пауза' : 'Начать'"
                 @click="emit('toggle-play')"
             >
-                {{ props.isPlaying ? 'Пауза' : 'Начать' }}
+                <span
+                    v-if="props.isCompact"
+                    class="material-icons"
+                    aria-hidden="true"
+                >
+                    {{ props.isPlaying ? 'pause' : 'play_arrow' }}
+                </span>
+                <span v-else>{{ props.isPlaying ? 'Пауза' : 'Начать' }}</span>
             </SrButton>
             <SrButton
+                v-if="!props.isCompact"
                 class="reader-btn"
                 :variant="props.isFullscreen ? 'accent' : 'default'"
                 @click="emit('fullscreen')"
@@ -61,12 +74,15 @@ const paletteOptions = computed(() => getPaletteOptions(props.themeTone));
                 <div class="reader-timer__value">{{ props.sessionTimerText }}</div>
             </div>
             <div class="reader-timer">
-                <div class="reader-timer__label">Предполагаемое время чтения</div>
+                <div class="reader-timer__label">Оценка времени</div>
                 <div class="reader-timer__value">{{ props.timerText }}</div>
             </div>
         </div>
         <div class="reader-controls">
-            <div class="reader-theme">
+            <div
+                v-if="!props.isCompact"
+                class="reader-theme"
+            >
                 <label class="reader-theme__control">
                     <SrSelect
                         :model-value="props.themeTone"
@@ -83,20 +99,44 @@ const paletteOptions = computed(() => getPaletteOptions(props.themeTone));
                 </label>
             </div>
             <SrButton
+                v-if="!props.isCompact"
                 class="reader-btn"
                 @click="emit('reset')"
                 >Сброс настроек</SrButton
             >
             <SrButton
+                v-if="!props.isCompact"
                 class="reader-btn"
                 @click="emit('help')"
                 >Горячие клавиши</SrButton
             >
             <SrButton
+                v-if="props.isCompact"
                 class="reader-btn"
-                @click="emit('close')"
-                >Закрыть</SrButton
+                aria-label="Настройки"
+                @click="emit('open-settings')"
             >
+                <span
+                    class="material-icons"
+                    aria-hidden="true"
+                >
+                    tune
+                </span>
+            </SrButton>
+            <SrButton
+                class="reader-btn"
+                :aria-label="props.isCompact ? 'Закрыть' : null"
+                @click="emit('close')"
+            >
+                <span
+                    v-if="props.isCompact"
+                    class="material-icons"
+                    aria-hidden="true"
+                >
+                    close
+                </span>
+                <span v-else>Закрыть</span>
+            </SrButton>
         </div>
     </div>
 </template>

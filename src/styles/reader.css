@@ -40,6 +40,11 @@
     gap: 12px;
 }
 
+.reader-btn .material-icons {
+    font-size: 20px;
+    line-height: 1;
+}
+
 .reader-theme {
     display: grid;
     grid-template-columns: repeat(2, minmax(140px, 1fr));
@@ -81,6 +86,10 @@
     display: flex;
     gap: 36px;
     text-align: center;
+
+    @media (max-width: 900px) {
+        gap: 12px;
+    }
 }
 
 .reader-timer {
@@ -286,6 +295,20 @@
     z-index: 60;
 }
 
+.sr-modal--settings {
+    z-index: 55;
+}
+
+.sr-modal--peek {
+    background: transparent;
+    backdrop-filter: none;
+}
+
+.sr-modal--peek .sr-modal-card {
+    opacity: 0;
+    box-shadow: none;
+}
+
 .sr-modal.active {
     display: flex;
 }
@@ -298,10 +321,16 @@
     padding: 18px 20px 16px;
     color: var(--reader-text);
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    max-height: calc(100vh - 32px);
+    overflow: auto;
 }
 
 .sr-modal-card--compact {
     width: min(420px, 90vw);
+}
+
+.sr-modal-card--wide {
+    width: min(900px, 94vw);
 }
 
 .sr-modal-header {
@@ -334,26 +363,49 @@
     gap: 10px;
 }
 
+.reader-settings {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(180px, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.reader-settings__group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.reader-settings__label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--reader-text-muted);
+}
+
+.reader-settings__actions {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 16px;
+}
+
 @media (max-width: 900px) {
-    .reader-header {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 12px;
+    .sr-modal {
+        align-items: center;
+        padding: 16px 12px;
     }
 
-    .reader-controls {
-        flex-wrap: wrap;
-        justify-content: space-between;
+    .sr-modal-card,
+    .sr-modal-card--compact,
+    .sr-modal-card--wide {
+        width: 100%;
+        max-height: calc(100vh - 32px);
     }
 
-    .reader-timers {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-        text-align: left;
-    }
-
-    .reader-theme {
+    .reader-settings {
         grid-template-columns: 1fr;
     }
 }

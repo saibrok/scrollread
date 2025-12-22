@@ -95,6 +95,7 @@ function onTextInput(event) {
 function openSupport() {
     window.open('https://dalink.to/saibrok', '_blank', 'noopener,noreferrer');
 }
+
 </script>
 
 <template>

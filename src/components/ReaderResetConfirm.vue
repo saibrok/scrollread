@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 import SrButton from '../ui/SrButton.vue';
 import SrModal from '../ui/SrModal.vue';
 
@@ -24,15 +24,17 @@ const emit = defineEmits(['close', 'confirm']);
         <div class="sr-modal-text">Сбросить настройки форматирования к значениям по умолчанию?</div>
         <div class="sr-modal-actions">
             <SrButton
-                class="reader-btn"
+                variant="default"
                 @click="emit('close')"
-                >Отмена</SrButton
             >
+                Отмена
+            </SrButton>
             <SrButton
-                class="reader-btn"
+                variant="accent"
                 @click="emit('confirm')"
-                >Сбросить</SrButton
             >
+                Сбросить
+            </SrButton>
         </div>
     </SrModal>
 </template>
