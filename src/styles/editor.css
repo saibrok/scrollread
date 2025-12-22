@@ -84,17 +84,6 @@ input[type='range'] {
 
 .start {
     margin-top: auto;
-    --ui-surface: var(--accent);
-    --ui-surface-hover: #3a68ff;
-    --ui-border: transparent;
-    --ui-border-hover: transparent;
-    --ui-text: #fff;
-    --ui-shadow: 0 12px 24px rgba(47, 94, 245, 0.3);
-}
-
-.start:disabled {
-    opacity: 0.5;
-    --ui-shadow: none;
 }
 
 @media (max-width: 900px) {

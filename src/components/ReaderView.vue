@@ -29,19 +29,10 @@ const readerStage = ref(null);
 const readerText = ref(null);
 const helpOpen = ref(false);
 
-const themeMap = {
-    'dark-gray': { bg: '#0d1016', text: '#e7ebf3' },
-    'light-gray': { bg: '#f0f1f5', text: '#1a1f2b' },
-    sepia: { bg: '#f2e6d0', text: '#3b2f25' },
-    paper: { bg: '#fbf8f0', text: '#2d2a26' },
-};
+const readerThemeClass = computed(() => `reader--theme-${settings.theme || 'system'}`);
 
 const readerStyle = computed(() => {
-    const theme = themeMap[settings.readerTheme] || themeMap['dark-gray'];
-
     return {
-        '--reader-bg': theme.bg,
-        '--reader-text': theme.text,
         '--reader-font-size': `${settings.readerFontSize}px`,
         '--reader-font': settings.readerFont,
         '--reader-brightness': `${settings.readerBrightness}%`,
@@ -156,7 +147,7 @@ useReaderShortcuts({
 <template>
     <div
         class="reader"
-        :class="{ active: props.open }"
+        :class="[{ active: props.open }, readerThemeClass]"
         :style="readerStyle"
     >
         <ReaderHeader

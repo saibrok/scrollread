@@ -1,17 +1,28 @@
-﻿:root {
+:root {
   color-scheme: light dark;
+  --accent: #2f5ef5;
+  --accent-weak: #e7eeff;
+}
+
+body {
   --bg: #f6f7fb;
   --bg-accent: #e8ebf6;
   --surface: #ffffff;
   --text: #1f2633;
   --muted: #606778;
   --border: #d9deea;
-  --accent: #2f5ef5;
-  --accent-weak: #e7eeff;
   --shadow: 0 10px 30px rgba(21, 30, 50, 0.12);
+  --ui-surface: var(--surface);
+  --ui-surface-hover: var(--bg-accent);
+  --ui-border: var(--border);
+  --ui-border-hover: var(--accent);
+  --ui-text: var(--text);
+  --ui-icon: var(--muted);
+  --ui-track: var(--border);
+  --ui-shadow: var(--shadow);
 }
 
-body.theme-dark {
+body.theme-dark-gray {
   --bg: #0e1117;
   --bg-accent: #161c28;
   --surface: #141a24;
@@ -21,6 +32,65 @@ body.theme-dark {
   --accent: #6ea3ff;
   --accent-weak: #1a2640;
   --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --ui-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+}
+
+body.theme-light-gray {
+  --bg: #f6f7fb;
+  --bg-accent: #e8ebf6;
+  --surface: #ffffff;
+  --text: #1f2633;
+  --muted: #606778;
+  --border: #d9deea;
+}
+
+body.theme-sepia {
+  --bg: #f2e6d0;
+  --bg-accent: #e8dbc2;
+  --surface: #fdf6e7;
+  --text: #3b2f25;
+  --muted: #7b6a57;
+  --border: #dccdb4;
+  --accent: #c06b2e;
+  --accent-weak: #e9e1d3;
+  --shadow: 0 12px 28px rgba(82, 65, 40, 0.15);
+}
+
+body.theme-paper {
+  --bg: #fbf8f0;
+  --bg-accent: #f1eadd;
+  --surface: #fffdf8;
+  --text: #2d2a26;
+  --muted: #6b6258;
+  --border: #e4dacc;
+  --accent: #b17b42;
+  --accent-weak: #e9e2d6;
+  --shadow: 0 12px 28px rgba(70, 60, 50, 0.12);
+}
+
+body.theme-system {
+  --bg: #f6f7fb;
+  --bg-accent: #e8ebf6;
+  --surface: #ffffff;
+  --text: #1f2633;
+  --muted: #606778;
+  --border: #d9deea;
+  --shadow: 0 10px 30px rgba(21, 30, 50, 0.12);
+}
+
+@media (prefers-color-scheme: dark) {
+  body.theme-system {
+    --bg: #0e1117;
+    --bg-accent: #161c28;
+    --surface: #141a24;
+    --text: #e8edf7;
+    --muted: #9aa6bc;
+    --border: #283047;
+    --accent: #6ea3ff;
+    --accent-weak: #1a2640;
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    --ui-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+  }
 }
 
 * {

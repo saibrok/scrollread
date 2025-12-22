@@ -7,7 +7,6 @@ export const DEFAULTS = {
     readerFont: "'Rubik', 'Segoe UI', Arial, sans-serif",
     readerAlign: 'left',
     readerPadding: 120,
-    readerTheme: 'dark-gray',
     readerBrightness: 100,
     readerContrast: 100,
     readerSepia: 0,
@@ -15,6 +14,11 @@ export const DEFAULTS = {
     readerOverlayOpacity: 75,
     readerLineHeight: 1.6,
     readerParagraphGap: 0.6,
+};
+
+const THEME_MAP = {
+    dark: 'dark-gray',
+    light: 'light-gray',
 };
 
 /**
@@ -29,8 +33,10 @@ export function loadSettings() {
     }
     try {
         const parsed = JSON.parse(saved);
+        const themeValue = parsed.theme ?? parsed.readerTheme;
+        const normalizedTheme = THEME_MAP[themeValue] || themeValue || DEFAULTS.theme;
 
-        return { ...DEFAULTS, ...parsed };
+        return { ...DEFAULTS, ...parsed, theme: normalizedTheme };
     } catch (error) {
         console.warn('Settings parse error', error);
 

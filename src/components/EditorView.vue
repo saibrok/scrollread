@@ -33,9 +33,11 @@ const props = defineProps({
 const emit = defineEmits(['update:text', 'update:speed', 'update:theme', 'start']);
 
 const themeOptions = [
-    { value: 'system', text: 'Системная' },
-    { value: 'light', text: 'Светлая' },
-    { value: 'dark', text: 'Темная' },
+    { value: 'system', text: 'Как в системе' },
+    { value: 'dark-gray', text: 'Dark Gray' },
+    { value: 'light-gray', text: 'Light Gray' },
+    { value: 'sepia', text: 'Sepia' },
+    { value: 'paper', text: 'Paper' },
 ];
 
 function onTextInput(event) {
@@ -47,10 +49,10 @@ function onTextInput(event) {
     <div class="page">
         <header>
             <div>
-                <div class="title">scrollread</div>
-                <div class="subtitle">Черновик настроек и текста</div>
+                <div class="title">ScrollRead</div>
+                <div class="subtitle">Телесуфлёр с контролем темпа чтения</div>
+                <div class="subtitle">Читайте без спешки, сбивок и потери строки</div>
             </div>
-            <div class="footer-note">Сохраняются только настройки</div>
         </header>
 
         <section class="card">

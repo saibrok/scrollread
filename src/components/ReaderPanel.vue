@@ -28,6 +28,7 @@ const alignOptions = [
 ];
 
 const themeOptions = [
+    { value: 'system', text: 'Как в системе' },
     { value: 'dark-gray', text: 'Dark Gray' },
     { value: 'light-gray', text: 'Light Gray' },
     { value: 'sepia', text: 'Sepia' },
@@ -165,9 +166,9 @@ function emitUpdate(key, value) {
             >
             <SrSelect
                 id="readerTheme"
-                :model-value="props.settings.readerTheme"
+                :model-value="props.settings.theme"
                 :items="themeOptions"
-                @update:model-value="emitUpdate('readerTheme', $event)"
+                @update:model-value="emitUpdate('theme', $event)"
             />
         </div>
         <div class="reader-control">

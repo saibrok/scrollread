@@ -46,8 +46,13 @@ function resetSettings() {
     Object.assign(settings, DEFAULTS);
 }
 
-function applyTheme(theme, prefersDark) {
-    document.body.classList.toggle('theme-dark', theme === 'dark' || (theme === 'system' && prefersDark));
+const themeClasses = ['theme-system', 'theme-dark-gray', 'theme-light-gray', 'theme-sepia', 'theme-paper'];
+
+function applyTheme(theme) {
+    const nextTheme = theme || 'system';
+
+    document.body.classList.remove(...themeClasses);
+    document.body.classList.add(`theme-${nextTheme}`);
 }
 
 provide('settings', settings);
@@ -58,9 +63,11 @@ let handleMediaChange = null;
 
 onMounted(() => {
     mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    applyTheme(settings.theme, mediaQuery.matches);
-    handleMediaChange = (event) => {
-        applyTheme(settings.theme, event.matches);
+    applyTheme(settings.theme);
+    handleMediaChange = () => {
+        if (settings.theme === 'system') {
+            applyTheme(settings.theme);
+        }
     };
     mediaQuery.addEventListener('change', handleMediaChange);
 });
@@ -74,9 +81,7 @@ onBeforeUnmount(() => {
 watch(
     () => settings.theme,
     (theme) => {
-        const prefersDark = mediaQuery ? mediaQuery.matches : false;
-
-        applyTheme(theme, prefersDark);
+        applyTheme(theme);
     },
 );
 
