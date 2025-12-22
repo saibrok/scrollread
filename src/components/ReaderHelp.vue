@@ -27,7 +27,6 @@ const emit = defineEmits(['close']);
         </div>
         <div class="sr-modal-grid">
             <div><strong>Space</strong> - плей/пауза</div>
-            <div><strong>Esc</strong> - закрыть окно горячих клавиш</div>
             <div><strong>F</strong> - полный экран</div>
             <div><strong>Up/Down</strong> - скорость +100</div>
             <div><strong>Left/Right</strong> - размер шрифта +2</div>

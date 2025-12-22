@@ -1,4 +1,4 @@
-﻿<script setup>
+<script setup>
 import { computed, onMounted, provide, reactive, ref, watch } from 'vue';
 
 import { DEFAULTS, loadSettings, loadTextSaves, saveSettings, saveTextSaves } from './utils/storage';
@@ -64,7 +64,9 @@ function closeReader() {
 }
 
 function resetSettings() {
-    Object.assign(settings, DEFAULTS);
+    const { themeTone, themePalette } = settings;
+
+    Object.assign(settings, DEFAULTS, { themeTone, themePalette });
 }
 
 function applyTheme(tone, palette) {
@@ -300,3 +302,4 @@ watch(
         @close="closeReader"
     />
 </template>
+

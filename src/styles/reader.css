@@ -1,4 +1,4 @@
-﻿.reader {
+.reader {
   position: fixed;
   inset: 0;
   background: transparent;
@@ -23,6 +23,8 @@
 }
 
 .reader-header {
+  position: relative;
+  z-index: 30;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -38,12 +40,33 @@
   gap: 12px;
 }
 
+.reader-theme {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(140px, 1fr));
+  gap: 10px;
+  align-items: end;
+}
+
+.reader-theme__control {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--reader-text-muted);
+}
+
+.reader-theme select {
+  width: 100%;
+}
+
 .reader-timer {
   font-size: 14px;
   color: var(--reader-text-muted);
 }
 
 .reader-panel {
+  position: relative;
+  z-index: 10;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 14px;
@@ -182,3 +205,4 @@
   justify-content: flex-end;
   gap: 10px;
 }
+

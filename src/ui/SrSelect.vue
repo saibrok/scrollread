@@ -180,7 +180,7 @@ onBeforeUnmount(() => {
 
 .sr-select__menu {
     position: absolute;
-    z-index: 20;
+    z-index: 200;
     top: calc(100% + 6px);
     right: 0;
     left: 0;

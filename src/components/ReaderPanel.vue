@@ -1,10 +1,6 @@
 ﻿<script setup>
-import { computed } from 'vue';
-
 import SrRange from '../ui/SrRange.vue';
 import SrSelect from '../ui/SrSelect.vue';
-
-import { THEME_TONE_OPTIONS, getPaletteOptions } from '../utils/themes';
 
 const props = defineProps({
     settings: {
@@ -30,8 +26,6 @@ const alignOptions = [
     { value: 'center', text: 'По центру' },
     { value: 'justify', text: 'На всю ширину' },
 ];
-
-const paletteOptions = computed(() => getPaletteOptions(props.settings.themeTone));
 
 function emitUpdate(key, value) {
     emit('update', { key, value });
@@ -173,32 +167,6 @@ function emitUpdate(key, value) {
             <div class="reader-value">
                 <span>{{ props.settings.padding }}</span> px
             </div>
-        </div>
-        <div class="reader-control">
-            <label
-                class="reader-label"
-                for="themeTone"
-                >Тон</label
-            >
-            <SrSelect
-                id="themeTone"
-                :model-value="props.settings.themeTone"
-                :items="THEME_TONE_OPTIONS"
-                @update:model-value="emitUpdate('themeTone', $event)"
-            />
-        </div>
-        <div class="reader-control">
-            <label
-                class="reader-label"
-                for="themePalette"
-                >Цветовая схема</label
-            >
-            <SrSelect
-                id="themePalette"
-                :model-value="props.settings.themePalette"
-                :items="paletteOptions"
-                @update:model-value="emitUpdate('themePalette', $event)"
-            />
         </div>
         <div class="reader-control">
             <label

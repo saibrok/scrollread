@@ -95,11 +95,29 @@ function onTextInput(event) {
 
 <template>
     <div class="page">
-        <header>
+        <header class="page-header">
             <div>
                 <div class="title">ScrollRead</div>
                 <div class="subtitle">Телесуфлёр с контролем темпа чтения</div>
                 <div class="subtitle">Читайте без спешки, сбивок и потери строки</div>
+            </div>
+            <div class="header-theme">
+                <div class="header-theme__control">
+                    <div class="label">Тон</div>
+                    <SrSelect
+                        :model-value="props.themeTone"
+                        :items="THEME_TONE_OPTIONS"
+                        @update:model-value="emit('update:theme-tone', $event)"
+                    />
+                </div>
+                <div class="header-theme__control">
+                    <div class="label">Цветовая схема</div>
+                    <SrSelect
+                        :model-value="props.themePalette"
+                        :items="paletteOptions"
+                        @update:model-value="emit('update:theme-palette', $event)"
+                    />
+                </div>
             </div>
         </header>
 
@@ -177,24 +195,6 @@ function onTextInput(event) {
                     <div class="meta">
                         Оценка времени: <span>{{ props.timeRange }}</span>
                     </div>
-                </div>
-
-                <div class="control">
-                    <div class="label">Тон</div>
-                    <SrSelect
-                        :model-value="props.themeTone"
-                        :items="THEME_TONE_OPTIONS"
-                        @update:model-value="emit('update:theme-tone', $event)"
-                    />
-                </div>
-
-                <div class="control">
-                    <div class="label">Цветовая схема</div>
-                    <SrSelect
-                        :model-value="props.themePalette"
-                        :items="paletteOptions"
-                        @update:model-value="emit('update:theme-palette', $event)"
-                    />
                 </div>
 
                 <SrButton

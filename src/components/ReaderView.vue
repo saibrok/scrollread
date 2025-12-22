@@ -1,4 +1,4 @@
-﻿<script setup>
+<script setup>
 import { computed, inject, ref, watch } from 'vue';
 
 import { formatTime, toParagraphs } from '../utils/text';
@@ -167,9 +167,12 @@ useReaderShortcuts({
         <ReaderHeader
             :is-playing="isPlaying"
             :timer-text="timerText"
+            :theme-tone="settings.themeTone"
+            :theme-palette="settings.themePalette"
             @toggle-play="togglePlay"
             @fullscreen="handleFullscreen"
-            @jump-end="() => jumpToEdge(true)"
+            @update:theme-tone="(value) => updateSetting({ key: 'themeTone', value })"
+            @update:theme-palette="(value) => updateSetting({ key: 'themePalette', value })"
             @reset="handleReset"
             @help="openHelp"
             @close="handleClose"
@@ -210,3 +213,4 @@ useReaderShortcuts({
         />
     </div>
 </template>
+
