@@ -1,4 +1,4 @@
-﻿export const STORAGE_KEY = 'teleprompter_settings_v1';
+export const STORAGE_KEY = 'scrollread_settings_v1';
 
 export const DEFAULTS = {
     speed: 800,
@@ -45,3 +45,4 @@ export function loadSettings() {
 export function saveSettings(settings) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
 }
+

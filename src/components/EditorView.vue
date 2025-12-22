@@ -1,7 +1,7 @@
 ﻿<script setup>
-import UiButton from '../ui/UiButton.vue';
-import UiRange from '../ui/UiRange.vue';
-import UiSelect from '../ui/UiSelect.vue';
+import SrButton from '../ui/SrButton.vue';
+import SrRange from '../ui/SrRange.vue';
+import SrSelect from '../ui/SrSelect.vue';
 
 const props = defineProps({
     text: {
@@ -32,6 +32,12 @@ const props = defineProps({
 
 const emit = defineEmits(['update:text', 'update:speed', 'update:theme', 'start']);
 
+const themeOptions = [
+    { value: 'system', text: 'Системная' },
+    { value: 'light', text: 'Светлая' },
+    { value: 'dark', text: 'Темная' },
+];
+
 function onTextInput(event) {
     emit('update:text', event.target.value);
 }
@@ -41,7 +47,7 @@ function onTextInput(event) {
     <div class="page">
         <header>
             <div>
-                <div class="title">Teleprompter</div>
+                <div class="title">scrollread</div>
                 <div class="subtitle">Черновик настроек и текста</div>
             </div>
             <div class="footer-note">Сохраняются только настройки</div>
@@ -73,7 +79,7 @@ function onTextInput(event) {
 
                 <div class="control">
                     <div class="label">Скорость</div>
-                    <UiRange
+                    <SrRange
                         :model-value="props.speed"
                         min="100"
                         max="2000"
@@ -91,23 +97,20 @@ function onTextInput(event) {
 
                 <div class="control">
                     <div class="label">Тема интерфейса</div>
-                    <UiSelect
+                    <SrSelect
                         :model-value="props.theme"
+                        :items="themeOptions"
                         @update:model-value="emit('update:theme', $event)"
-                    >
-                        <option value="system">Системная</option>
-                        <option value="light">Светлая</option>
-                        <option value="dark">Темная</option>
-                    </UiSelect>
+                    />
                 </div>
 
-                <UiButton
+                <SrButton
                     class="start"
                     :disabled="!props.canStart"
                     @click="emit('start')"
                 >
                     НАЧАТЬ
-                </UiButton>
+                </SrButton>
             </div>
         </section>
     </div>

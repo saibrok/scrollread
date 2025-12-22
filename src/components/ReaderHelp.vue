@@ -1,5 +1,5 @@
 ﻿<script setup>
-import UiButton from '../ui/UiButton.vue';
+import SrButton from '../ui/SrButton.vue';
 
 const props = defineProps({
     open: {
@@ -20,10 +20,10 @@ const emit = defineEmits(['close']);
         <div class="reader-help-card">
             <div class="reader-help-header">
                 <div>Горячие клавиши</div>
-                <UiButton
+                <SrButton
                     class="reader-btn"
                     @click="emit('close')"
-                    >Закрыть</UiButton
+                    >Закрыть</SrButton
                 >
             </div>
             <div class="reader-help-grid">

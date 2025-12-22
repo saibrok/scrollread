@@ -1,6 +1,6 @@
 ﻿<script setup>
-import UiRange from '../ui/UiRange.vue';
-import UiSelect from '../ui/UiSelect.vue';
+import SrRange from '../ui/SrRange.vue';
+import SrSelect from '../ui/SrSelect.vue';
 
 const props = defineProps({
     settings: {
@@ -10,6 +10,29 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['update']);
+
+const fontOptions = [
+    { value: "'Rubik', 'Segoe UI', Arial, sans-serif", text: 'Rubik' },
+    { value: "'PT Sans', 'Segoe UI', Arial, sans-serif", text: 'PT Sans' },
+    { value: "'PT Serif', 'Times New Roman', serif", text: 'PT Serif' },
+    { value: "'Noto Sans', 'Segoe UI', Arial, sans-serif", text: 'Noto Sans' },
+    { value: "'Noto Serif', 'Times New Roman', serif", text: 'Noto Serif' },
+    { value: "'Merriweather', 'Times New Roman', serif", text: 'Merriweather' },
+    { value: "'Montserrat', 'Segoe UI', Arial, sans-serif", text: 'Montserrat' },
+];
+
+const alignOptions = [
+    { value: 'left', text: 'Слева' },
+    { value: 'center', text: 'По центру' },
+    { value: 'justify', text: 'На всю ширину' },
+];
+
+const themeOptions = [
+    { value: 'dark-gray', text: 'Dark Gray' },
+    { value: 'light-gray', text: 'Light Gray' },
+    { value: 'sepia', text: 'Sepia' },
+    { value: 'paper', text: 'Paper' },
+];
 
 function emitUpdate(key, value) {
     emit('update', { key, value });
@@ -24,7 +47,7 @@ function emitUpdate(key, value) {
                 for="readerSpeed"
                 >Скорость</label
             >
-            <UiRange
+            <SrRange
                 id="readerSpeed"
                 :model-value="props.settings.speed"
                 min="100"
@@ -42,7 +65,7 @@ function emitUpdate(key, value) {
                 for="readerFontSize"
                 >Размер</label
             >
-            <UiRange
+            <SrRange
                 id="readerFontSize"
                 :model-value="props.settings.readerFontSize"
                 min="10"
@@ -60,7 +83,7 @@ function emitUpdate(key, value) {
                 for="readerLineHeight"
                 >Интерлиньяж</label
             >
-            <UiRange
+            <SrRange
                 id="readerLineHeight"
                 :model-value="props.settings.readerLineHeight"
                 min="1"
@@ -78,7 +101,7 @@ function emitUpdate(key, value) {
                 for="readerParagraphGap"
                 >Отступ абзаца</label
             >
-            <UiRange
+            <SrRange
                 id="readerParagraphGap"
                 :model-value="props.settings.readerParagraphGap"
                 min="0"
@@ -96,19 +119,12 @@ function emitUpdate(key, value) {
                 for="readerFont"
                 >Шрифт</label
             >
-            <UiSelect
+            <SrSelect
                 id="readerFont"
                 :model-value="props.settings.readerFont"
+                :items="fontOptions"
                 @update:model-value="emitUpdate('readerFont', $event)"
-            >
-                <option value="'Rubik', 'Segoe UI', Arial, sans-serif">Rubik</option>
-                <option value="'PT Sans', 'Segoe UI', Arial, sans-serif">PT Sans</option>
-                <option value="'PT Serif', 'Times New Roman', serif">PT Serif</option>
-                <option value="'Noto Sans', 'Segoe UI', Arial, sans-serif">Noto Sans</option>
-                <option value="'Noto Serif', 'Times New Roman', serif">Noto Serif</option>
-                <option value="'Merriweather', 'Times New Roman', serif">Merriweather</option>
-                <option value="'Montserrat', 'Segoe UI', Arial, sans-serif">Montserrat</option>
-            </UiSelect>
+            />
         </div>
         <div class="reader-control">
             <label
@@ -116,15 +132,12 @@ function emitUpdate(key, value) {
                 for="readerAlign"
                 >Положение</label
             >
-            <UiSelect
+            <SrSelect
                 id="readerAlign"
                 :model-value="props.settings.readerAlign"
+                :items="alignOptions"
                 @update:model-value="emitUpdate('readerAlign', $event)"
-            >
-                <option value="left">Слева</option>
-                <option value="center">По центру</option>
-                <option value="justify">На всю ширину</option>
-            </UiSelect>
+            />
         </div>
         <div class="reader-control">
             <label
@@ -132,7 +145,7 @@ function emitUpdate(key, value) {
                 for="readerPadding"
                 >Отступы</label
             >
-            <UiRange
+            <SrRange
                 id="readerPadding"
                 :model-value="props.settings.readerPadding"
                 min="0"
@@ -150,16 +163,12 @@ function emitUpdate(key, value) {
                 for="readerTheme"
                 >Тема</label
             >
-            <UiSelect
+            <SrSelect
                 id="readerTheme"
                 :model-value="props.settings.readerTheme"
+                :items="themeOptions"
                 @update:model-value="emitUpdate('readerTheme', $event)"
-            >
-                <option value="dark-gray">Dark Gray</option>
-                <option value="light-gray">Light Gray</option>
-                <option value="sepia">Sepia</option>
-                <option value="paper">Paper</option>
-            </UiSelect>
+            />
         </div>
         <div class="reader-control">
             <label
@@ -167,7 +176,7 @@ function emitUpdate(key, value) {
                 for="readerBrightness"
                 >Яркость</label
             >
-            <UiRange
+            <SrRange
                 id="readerBrightness"
                 :model-value="props.settings.readerBrightness"
                 min="50"
@@ -186,7 +195,7 @@ function emitUpdate(key, value) {
                 for="readerContrast"
                 >Контраст</label
             >
-            <UiRange
+            <SrRange
                 id="readerContrast"
                 :model-value="props.settings.readerContrast"
                 min="50"
@@ -205,7 +214,7 @@ function emitUpdate(key, value) {
                 for="readerSepia"
                 >Сепия</label
             >
-            <UiRange
+            <SrRange
                 id="readerSepia"
                 :model-value="props.settings.readerSepia"
                 min="0"
@@ -224,7 +233,7 @@ function emitUpdate(key, value) {
                 for="readerOverlaySize"
                 >Размер окна</label
             >
-            <UiRange
+            <SrRange
                 id="readerOverlaySize"
                 :model-value="props.settings.readerOverlaySize"
                 min="1"
@@ -242,7 +251,7 @@ function emitUpdate(key, value) {
                 for="readerOverlayOpacity"
                 >Прозрачность</label
             >
-            <UiRange
+            <SrRange
                 id="readerOverlayOpacity"
                 :model-value="props.settings.readerOverlayOpacity"
                 min="0"

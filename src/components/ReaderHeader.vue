@@ -1,5 +1,5 @@
 ﻿<script setup>
-import UiButton from '../ui/UiButton.vue';
+import SrButton from '../ui/SrButton.vue';
 
 const props = defineProps({
     isPlaying: {
@@ -18,39 +18,39 @@ const emit = defineEmits(['toggle-play', 'fullscreen', 'jump-end', 'reset', 'hel
 <template>
     <div class="reader-header">
         <div class="reader-controls">
-            <UiButton
+            <SrButton
                 class="reader-btn"
                 @click="emit('toggle-play')"
             >
                 {{ props.isPlaying ? 'Пауза' : 'Плей' }}
-            </UiButton>
-            <UiButton
+            </SrButton>
+            <SrButton
                 class="reader-btn"
                 @click="emit('fullscreen')"
-                >Полный экран</UiButton
+                >Полный экран</SrButton
             >
-            <UiButton
+            <SrButton
                 class="reader-btn"
                 @click="emit('jump-end')"
-                >В конец</UiButton
+                >В конец</SrButton
             >
         </div>
         <div class="reader-timer">{{ props.timerText }}</div>
         <div class="reader-controls">
-            <UiButton
+            <SrButton
                 class="reader-btn"
                 @click="emit('reset')"
-                >Сброс</UiButton
+                >Сброс</SrButton
             >
-            <UiButton
+            <SrButton
                 class="reader-btn"
                 @click="emit('help')"
-                >?</UiButton
+                >?</SrButton
             >
-            <UiButton
+            <SrButton
                 class="reader-btn"
                 @click="emit('close')"
-                >Закрыть</UiButton
+                >Закрыть</SrButton
             >
         </div>
     </div>
