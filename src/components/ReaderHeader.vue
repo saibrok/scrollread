@@ -43,6 +43,13 @@ const paletteOptions = computed(() => getPaletteOptions(props.themeTone));
             >
                 {{ props.isPlaying ? 'Пауза' : 'Начать' }}
             </SrButton>
+            <div
+                v-if="props.speedMultiplierLabel"
+                class="reader-multiplier"
+                aria-hidden="true"
+            >
+                {{ props.speedMultiplierLabel }}
+            </div>
             <SrButton
                 class="reader-btn"
                 @click="emit('fullscreen')"
@@ -66,13 +73,6 @@ const paletteOptions = computed(() => getPaletteOptions(props.themeTone));
                         @update:model-value="emit('update:theme-palette', $event)"
                     />
                 </label>
-            </div>
-            <div
-                v-if="props.speedMultiplierLabel"
-                class="reader-multiplier"
-                aria-hidden="true"
-            >
-                {{ props.speedMultiplierLabel }}
             </div>
             <SrButton
                 class="reader-btn"

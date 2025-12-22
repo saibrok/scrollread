@@ -68,6 +68,11 @@ function updateSetting({ key, value }) {
     settings[key] = value;
 }
 
+function handlePanelToggle() {
+    if (props.open) {
+        recalcMetricsPreservePosition();
+    }
+}
 function setSpeedMultiplier(multiplier) {
     speedMultiplier.value = multiplier || 1;
     recalcMetricsPreservePosition();
@@ -202,6 +207,7 @@ useReaderShortcuts({
         <ReaderPanel
             :settings="settings"
             @update="updateSetting"
+            @toggle="handlePanelToggle"
         />
         <div class="reader-body">
             <div
