@@ -203,6 +203,8 @@ input[type='range'] {
   --reader-text: #e7ebf3;
   --reader-font-size: 32px;
   --reader-font: 'Rubik', 'Segoe UI', Arial, sans-serif;
+  --read-line-height: 1.6;
+  --read-paragraph-gap: 0.6em;
   --reader-brightness: 100%;
   --reader-contrast: 100%;
   --reader-sepia: 0%;
@@ -289,8 +291,6 @@ input[type='range'] {
   overflow: hidden;
   background: var(--reader-bg);
   filter: brightness(var(--reader-brightness)) contrast(var(--reader-contrast)) sepia(var(--reader-sepia));
-
-  --read-line-height: 1.6;
 }
 
 .reader-stage {
@@ -306,13 +306,20 @@ input[type='range'] {
 
 .reader-text {
   line-height: var(--read-line-height);
-  white-space: pre-wrap;
   word-break: break-word;
   transform: translateY(0);
   will-change: transform;
   padding-top: calc(var(--read-band) * var(--read-line-height) / 2 - 1em * var(--read-line-height) + 1em);
   font-family: var(--reader-font);
   width: 100%;
+}
+
+.reader-text p {
+  margin: 0 0 var(--read-paragraph-gap);
+}
+
+.reader-text p:last-child {
+  margin-bottom: 0;
 }
 
 .reader-overlay {

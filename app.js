@@ -10,8 +10,10 @@ const DEFAULTS = {
   readerBrightness: 100,
   readerContrast: 100,
   readerSepia: 0,
-  readerOverlaySize: 3.2,
+  readerOverlaySize: 3,
   readerOverlayOpacity: 75,
+  readerLineHeight: 1.6,
+  readerParagraphGap: 0.6,
 };
 const state = { ...DEFAULTS };
 
@@ -45,6 +47,10 @@ const readerAlign = document.getElementById("readerAlign");
 const readerPadding = document.getElementById("readerPadding");
 const readerPaddingValue = document.getElementById("readerPaddingValue");
 const readerTheme = document.getElementById("readerTheme");
+const readerLineHeight = document.getElementById("readerLineHeight");
+const readerLineHeightValue = document.getElementById("readerLineHeightValue");
+const readerParagraphGap = document.getElementById("readerParagraphGap");
+const readerParagraphGapValue = document.getElementById("readerParagraphGapValue");
 const readerBrightness = document.getElementById("readerBrightness");
 const readerBrightnessValue = document.getElementById("readerBrightnessValue");
 const readerContrast = document.getElementById("readerContrast");
@@ -121,6 +127,8 @@ function saveSettings() {
     readerAlign: readerAlign.value,
     readerPadding: Number(readerPadding.value),
     readerTheme: readerTheme.value,
+    readerLineHeight: Number(readerLineHeight.value),
+    readerParagraphGap: Number(readerParagraphGap.value),
     readerBrightness: Number(readerBrightness.value),
     readerContrast: Number(readerContrast.value),
     readerSepia: Number(readerSepia.value),
@@ -160,6 +168,12 @@ function loadSettings() {
     }
     if (typeof parsed.readerTheme === "string") {
       state.readerTheme = parsed.readerTheme;
+    }
+    if (typeof parsed.readerLineHeight === "number") {
+      state.readerLineHeight = parsed.readerLineHeight;
+    }
+    if (typeof parsed.readerParagraphGap === "number") {
+      state.readerParagraphGap = parsed.readerParagraphGap;
     }
     if (typeof parsed.readerBrightness === "number") {
       state.readerBrightness = parsed.readerBrightness;
@@ -219,6 +233,8 @@ function applyReaderSettings() {
   reader.style.setProperty("--reader-font", readerFont.value);
   readerStage.style.setProperty("--read-padding", `${readerPadding.value}px`);
   readerText.style.textAlign = readerAlign.value;
+  reader.style.setProperty("--read-line-height", readerLineHeight.value);
+  reader.style.setProperty("--read-paragraph-gap", `${readerParagraphGap.value}em`);
   reader.style.setProperty("--reader-brightness", `${readerBrightness.value}%`);
   reader.style.setProperty("--reader-contrast", `${readerContrast.value}%`);
   reader.style.setProperty("--reader-sepia", `${readerSepia.value}%`);
@@ -286,11 +302,61 @@ function renderScroll(elapsedSeconds) {
 }
 
 /**
+ * Escape text for safe HTML output.
+ * @param {string} value
+ * @returns {string}
+ */
+function escapeHtml(value) {
+  const map = {
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    "\"": "&quot;",
+    "'": "&#39;",
+  };
+  return value.replace(/[&<>"']/g, (char) => map[char]);
+}
+
+/**
+ * Render input text as paragraphs (line-based).
+ */
+function setReaderTextFromInput() {
+  const lines = inputText.value.split(/\r?\n/);
+  const html = lines
+    .map((line) => {
+      const safe = escapeHtml(line);
+      return `<p>${safe || "&nbsp;"}</p>`;
+    })
+    .join("");
+  readerText.innerHTML = html;
+}
+
+/**
+ * Recalculate metrics while preserving current scroll position.
+ */
+function recalcMetricsPreservePosition() {
+  const wasPlaying = isPlaying;
+  if (wasPlaying) {
+    pauseScroll();
+  }
+  const progress = totalDuration > 0 ? accumulatedElapsed / totalDuration : 0;
+  const metrics = getReaderMetrics();
+  totalDistance = metrics.distance;
+  totalDuration = metrics.duration;
+  accumulatedElapsed = progress * totalDuration;
+  renderScroll(accumulatedElapsed);
+  if (wasPlaying) {
+    isPlaying = true;
+    startScroll();
+  }
+}
+
+/**
  * Start or resume the scrolling animation.
  */
 function startScroll() {
   if (!readerText.textContent) {
-    readerText.textContent = inputText.value;
+    setReaderTextFromInput();
   }
   if (!totalDuration) {
     const metrics = getReaderMetrics();
@@ -346,7 +412,7 @@ function openReader() {
   reader.classList.add("active");
   isPlaying = false;
   playPauseBtn.textContent = "Плей";
-  readerText.textContent = inputText.value;
+  setReaderTextFromInput();
   applyReaderSettings();
   requestAnimationFrame(() => {
     const metrics = getReaderMetrics();
@@ -420,6 +486,10 @@ function resetSettings() {
   readerContrastValue.textContent = state.readerContrast;
   readerSepia.value = state.readerSepia;
   readerSepiaValue.textContent = state.readerSepia;
+  readerLineHeight.value = state.readerLineHeight;
+  readerLineHeightValue.textContent = state.readerLineHeight;
+  readerParagraphGap.value = state.readerParagraphGap;
+  readerParagraphGapValue.textContent = state.readerParagraphGap;
   readerOverlaySize.value = state.readerOverlaySize;
   readerOverlaySizeValue.textContent = state.readerOverlaySize;
   readerOverlayOpacity.value = state.readerOverlayOpacity;
@@ -443,6 +513,10 @@ readerAlign.value = state.readerAlign;
 readerPadding.value = state.readerPadding;
 readerPaddingValue.textContent = state.readerPadding;
 readerTheme.value = state.readerTheme;
+readerLineHeight.value = state.readerLineHeight;
+readerLineHeightValue.textContent = state.readerLineHeight;
+readerParagraphGap.value = state.readerParagraphGap;
+readerParagraphGapValue.textContent = state.readerParagraphGap;
 readerBrightness.value = state.readerBrightness;
 readerBrightnessValue.textContent = state.readerBrightness;
 readerContrast.value = state.readerContrast;
@@ -504,26 +578,20 @@ readerSpeed.addEventListener("input", () => {
   updateCounts();
   syncSpeedControls(readerSpeed.value);
   saveSettings();
-  const metrics = getReaderMetrics();
-  totalDistance = metrics.distance;
-  totalDuration = metrics.duration;
+  recalcMetricsPreservePosition();
 });
 
 readerFontSize.addEventListener("input", () => {
   readerFontSizeValue.textContent = readerFontSize.value;
   applyReaderSettings();
   saveSettings();
-  const metrics = getReaderMetrics();
-  totalDistance = metrics.distance;
-  totalDuration = metrics.duration;
+  recalcMetricsPreservePosition();
 });
 
 readerFont.addEventListener("change", () => {
   applyReaderSettings();
   saveSettings();
-  const metrics = getReaderMetrics();
-  totalDistance = metrics.distance;
-  totalDuration = metrics.duration;
+  recalcMetricsPreservePosition();
 });
 
 readerAlign.addEventListener("change", () => {
@@ -535,14 +603,26 @@ readerPadding.addEventListener("input", () => {
   readerPaddingValue.textContent = readerPadding.value;
   applyReaderSettings();
   saveSettings();
-  const metrics = getReaderMetrics();
-  totalDistance = metrics.distance;
-  totalDuration = metrics.duration;
+  recalcMetricsPreservePosition();
 });
 
 readerTheme.addEventListener("change", () => {
   applyReaderSettings();
   saveSettings();
+});
+
+readerLineHeight.addEventListener("input", () => {
+  readerLineHeightValue.textContent = readerLineHeight.value;
+  applyReaderSettings();
+  saveSettings();
+  recalcMetricsPreservePosition();
+});
+
+readerParagraphGap.addEventListener("input", () => {
+  readerParagraphGapValue.textContent = readerParagraphGap.value;
+  applyReaderSettings();
+  saveSettings();
+  recalcMetricsPreservePosition();
 });
 
 readerBrightness.addEventListener("input", () => {
@@ -609,9 +689,7 @@ document.addEventListener("keydown", (event) => {
     syncSpeedControls(next);
     updateCounts();
     saveSettings();
-    const metrics = getReaderMetrics();
-    totalDistance = metrics.distance;
-    totalDuration = metrics.duration;
+    recalcMetricsPreservePosition();
     return;
   }
   if (event.key === "ArrowDown") {
@@ -620,9 +698,7 @@ document.addEventListener("keydown", (event) => {
     syncSpeedControls(next);
     updateCounts();
     saveSettings();
-    const metrics = getReaderMetrics();
-    totalDistance = metrics.distance;
-    totalDuration = metrics.duration;
+    recalcMetricsPreservePosition();
     return;
   }
   if (event.key === "ArrowRight") {
@@ -632,9 +708,7 @@ document.addEventListener("keydown", (event) => {
     readerFontSizeValue.textContent = next;
     applyReaderSettings();
     saveSettings();
-    const metrics = getReaderMetrics();
-    totalDistance = metrics.distance;
-    totalDuration = metrics.duration;
+    recalcMetricsPreservePosition();
     return;
   }
   if (event.key === "ArrowLeft") {
@@ -644,9 +718,7 @@ document.addEventListener("keydown", (event) => {
     readerFontSizeValue.textContent = next;
     applyReaderSettings();
     saveSettings();
-    const metrics = getReaderMetrics();
-    totalDistance = metrics.distance;
-    totalDuration = metrics.duration;
+    recalcMetricsPreservePosition();
     return;
   }
   if (event.key === "Home") {

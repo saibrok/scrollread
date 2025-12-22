@@ -171,6 +171,38 @@
         <div class="reader-control">
           <label
             class="reader-label"
+            for="readerLineHeight"
+            >Интерлиньяж</label
+          >
+          <input
+            type="range"
+            id="readerLineHeight"
+            min="1"
+            max="2"
+            step="0.1"
+            value="1.2"
+          />
+          <div class="reader-value"><span id="readerLineHeightValue">1.6</span></div>
+        </div>
+        <div class="reader-control">
+          <label
+            class="reader-label"
+            for="readerParagraphGap"
+            >Отступ абзаца</label
+          >
+          <input
+            type="range"
+            id="readerParagraphGap"
+            min="0"
+            max="2"
+            step="0.1"
+            value="0.5"
+          />
+          <div class="reader-value"><span id="readerParagraphGapValue">0.6</span> em</div>
+        </div>
+        <div class="reader-control">
+          <label
+            class="reader-label"
             for="readerFont"
             >Шрифт</label
           >
@@ -206,7 +238,7 @@
             type="range"
             id="readerPadding"
             min="0"
-            max="260"
+            max="1500"
             step="10"
             value="120"
           />
