@@ -1,0 +1,72 @@
+﻿:root {
+  color-scheme: light dark;
+  --bg: #f6f7fb;
+  --bg-accent: #e8ebf6;
+  --surface: #ffffff;
+  --text: #1f2633;
+  --muted: #606778;
+  --border: #d9deea;
+  --accent: #2f5ef5;
+  --accent-weak: #e7eeff;
+  --shadow: 0 10px 30px rgba(21, 30, 50, 0.12);
+}
+
+body.theme-dark {
+  --bg: #0e1117;
+  --bg-accent: #161c28;
+  --surface: #141a24;
+  --text: #e8edf7;
+  --muted: #9aa6bc;
+  --border: #283047;
+  --accent: #6ea3ff;
+  --accent-weak: #1a2640;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Rubik', 'Segoe UI', Arial, sans-serif;
+  background: radial-gradient(circle at top left, var(--bg-accent), var(--bg));
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  align-items: stretch;
+}
+
+#app {
+  width: 100%;
+}
+
+.page {
+  width: min(1100px, 92vw);
+  margin: 48px auto 72px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+.subtitle {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.footer-note {
+  font-size: 13px;
+  color: var(--muted);
+}

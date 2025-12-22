@@ -1,30 +1,114 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
+﻿<script setup>
+import { computed, onBeforeUnmount, onMounted, provide, reactive, ref, watch } from 'vue'
+import EditorView from './components/EditorView.vue'
+import ReaderView from './components/ReaderView.vue'
+import { DEFAULTS, loadSettings, saveSettings } from './utils/storage'
+import { countChars, countWords, formatTime } from './utils/text'
+
+const text = ref('')
+const settings = reactive(loadSettings())
+const readerOpen = ref(false)
+
+const stats = computed(() => {
+  return {
+    words: countWords(text.value),
+    chars: countChars(text.value, true),
+    charsNoSpaces: countChars(text.value, false),
+  }
+})
+
+const timeRange = computed(() => {
+  const speed = settings.speed
+  const withoutSpaces = countChars(text.value, false)
+  const withSpaces = countChars(text.value, true)
+  const minSeconds = Math.ceil((withoutSpaces / speed) * 60)
+  const maxSeconds = Math.ceil((withSpaces / speed) * 60)
+  return `${formatTime(minSeconds)}-${formatTime(maxSeconds)}`
+})
+
+const canStart = computed(() => text.value.trim().length > 0)
+
+function openReader() {
+  if (!canStart.value) {
+    return
+  }
+  readerOpen.value = true
+}
+
+function closeReader() {
+  readerOpen.value = false
+}
+
+function resetSettings() {
+  Object.assign(settings, DEFAULTS)
+}
+
+function applyTheme(theme, prefersDark) {
+  document.body.classList.toggle('theme-dark', theme === 'dark' || (theme === 'system' && prefersDark))
+}
+
+provide('settings', settings)
+provide('resetSettings', resetSettings)
+
+let mediaQuery = null
+let handleMediaChange = null
+
+onMounted(() => {
+  mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+  applyTheme(settings.theme, mediaQuery.matches)
+  handleMediaChange = (event) => {
+    applyTheme(settings.theme, event.matches)
+  }
+  mediaQuery.addEventListener('change', handleMediaChange)
+})
+
+onBeforeUnmount(() => {
+  if (mediaQuery && handleMediaChange) {
+    mediaQuery.removeEventListener('change', handleMediaChange)
+  }
+})
+
+watch(
+  () => settings.theme,
+  (theme) => {
+    const prefersDark = mediaQuery ? mediaQuery.matches : false
+    applyTheme(theme, prefersDark)
+  }
+)
+
+function updateText(value) {
+  text.value = value
+}
+
+function updateSpeed(value) {
+  settings.speed = value
+}
+
+function updateTheme(value) {
+  settings.theme = value
+}
+
+watch(
+  settings,
+  () => {
+    saveSettings({ ...settings })
+  },
+  { deep: true }
+)
 </script>
 
 <template>
-  <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
-  </div>
-  <HelloWorld msg="Vite + Vue" />
+  <EditorView
+    :text="text"
+    :stats="stats"
+    :speed="settings.speed"
+    :time-range="timeRange"
+    :theme="settings.theme"
+    :can-start="canStart"
+    @update:text="updateText"
+    @update:speed="updateSpeed"
+    @update:theme="updateTheme"
+    @start="openReader"
+  />
+  <ReaderView :open="readerOpen" :text="text" @close="closeReader" />
 </template>
-
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
-</style>
