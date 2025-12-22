@@ -53,8 +53,6 @@ export function useReaderShortcuts(options) {
     };
 
     const onKeydown = (event) => {
-        console.log('LOG ::: useReaderShortcuts.js : event:', event);
-
         if (!options.isOpen()) {
             return;
         }

@@ -7,6 +7,7 @@ import SrButton from '../ui/SrButton.vue';
 import SrModal from '../ui/SrModal.vue';
 import SrRange from '../ui/SrRange.vue';
 import SrSelect from '../ui/SrSelect.vue';
+import SrTextarea from '../ui/SrTextarea.vue';
 
 const props = defineProps({
     text: {
@@ -88,10 +89,6 @@ const emit = defineEmits([
 
 const paletteOptions = computed(() => getPaletteOptions(props.themeTone));
 
-function onTextInput(event) {
-    emit('update:text', event.target.value);
-}
-
 function openSupport() {
     window.open('https://dalink.to/saibrok', '_blank', 'noopener,noreferrer');
 }
@@ -125,16 +122,16 @@ function openSupport() {
         </header>
 
         <section class="card">
-            <div class="editor">
+            <div class="text-panel">
                 <div class="label">Текст</div>
-                <textarea
-                    :value="props.text"
+                <SrTextarea
+                    :model-value="props.text"
                     placeholder="Вставьте текст, который будете читать"
-                    @input="onTextInput"
-                ></textarea>
-                <div class="editor-saves">
+                    @update:model-value="emit('update:text', $event)"
+                />
+                <div class="text-panel-saves">
                     <div class="label">Сохранения</div>
-                    <div class="editor-saves__select">
+                    <div class="text-panel-saves__select">
                         <SrSelect
                             :model-value="props.selectedSaveId"
                             :items="props.saveItems"
@@ -142,7 +139,7 @@ function openSupport() {
                             @update:model-value="emit('select-save', $event)"
                         />
                     </div>
-                    <div class="editor-saves__actions">
+                    <div class="text-panel-saves__actions">
                         <SrButton
                             variant="accent"
                             :disabled="!props.canSave"
