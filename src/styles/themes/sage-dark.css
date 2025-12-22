@@ -1,12 +1,12 @@
 body.theme-sage-dark {
-  --bg: #121714;
-  --bg-accent: #1a231e;
-  --surface: #1a231e;
+  --bg: #181d19;
+  --bg-accent: #222c26;
+  --surface: #222c26;
   --text: #e2ede6;
   --muted: #9fb0a4;
-  --border: #2e3b35;
+  --border: #394640;
   --accent: #73b08a;
-  --accent-weak: #1b2a23;
+  --accent-weak: #24352c;
   --shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
   --ui-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
   --reader-text-rgb: 226 237 230;
@@ -14,11 +14,11 @@ body.theme-sage-dark {
   --reader-text-muted: rgb(var(--reader-text-rgb) / 0.7);
   --reader-border: rgb(var(--reader-text-rgb) / 0.08);
   --reader-help-border: rgb(var(--reader-text-rgb) / 0.12);
-  --reader-bg: #121713;
-  --reader-surface: rgba(18, 23, 19, 0.95);
-  --reader-surface-strong: rgb(20, 26, 21);
-  --reader-help-bg: rgba(20, 26, 22, 0.95);
-  --reader-overlay-base: 6 12 9;
+  --reader-bg: #171b18;
+  --reader-surface: rgba(22, 28, 23, 0.95);
+  --reader-surface-strong: rgb(24, 31, 25);
+  --reader-help-bg: rgba(24, 31, 26, 0.95);
+  --reader-overlay-base: 10 16 12;
 }
 
 

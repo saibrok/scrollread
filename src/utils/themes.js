@@ -1,16 +1,17 @@
-export const THEME_TONE_OPTIONS = [
+﻿export const THEME_TONE_OPTIONS = [
     { value: 'dark', text: 'Темная' },
     { value: 'light', text: 'Светлая' },
 ];
 
 const PALETTES = [
     { value: 'gray-hard', text: 'Графит' },
-    { value: 'gray-medium', text: 'Сталь' },
-    { value: 'gray-light', text: 'Туман' },
+    { value: 'gray-medium', text: 'Серый' },
+    { value: 'gray-light', text: 'Белый' },
     { value: 'sage', text: 'Шалфей' },
     { value: 'sand', text: 'Песок' },
     { value: 'sky', text: 'Небо' },
     { value: 'blush', text: 'Румянец' },
+    { value: 'violet', text: 'Фиолет' },
 ];
 
 export const THEME_PALETTE_OPTIONS = PALETTES;
@@ -24,6 +25,7 @@ const THEME_NAME_MAP = {
         sand: 'sand-dark',
         sky: 'sky-dark',
         blush: 'blush-dark',
+        violet: 'violet-dark',
     },
     light: {
         'gray-hard': 'gray-hard-light',
@@ -33,6 +35,7 @@ const THEME_NAME_MAP = {
         sand: 'sand',
         sky: 'sky',
         blush: 'blush',
+        violet: 'violet',
     },
 };
 
@@ -47,10 +50,12 @@ export const THEME_CLASS_NAMES = [
     'theme-sand',
     'theme-sky',
     'theme-blush',
+    'theme-violet',
     'theme-sage-dark',
     'theme-sand-dark',
     'theme-sky-dark',
     'theme-blush-dark',
+    'theme-violet-dark',
 ];
 
 export function getPaletteOptions() {

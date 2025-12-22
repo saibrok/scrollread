@@ -1,0 +1,21 @@
+body.theme-violet {
+  --bg: #f1eef8;
+  --bg-accent: #e3def2;
+  --surface: #faf8fd;
+  --text: #2b2336;
+  --muted: #6b5f7a;
+  --border: #d5cee6;
+  --accent: #7c5ed6;
+  --accent-weak: #e7e1f4;
+  --shadow: 0 12px 28px rgba(66, 52, 94, 0.12);
+  --reader-text-rgb: 43 35 54;
+  --reader-text: rgb(var(--reader-text-rgb));
+  --reader-text-muted: rgb(var(--reader-text-rgb) / 0.65);
+  --reader-border: rgb(var(--reader-text-rgb) / 0.12);
+  --reader-help-border: rgb(var(--reader-text-rgb) / 0.12);
+  --reader-bg: #ece7f5;
+  --reader-surface: rgba(250, 248, 253, 0.96);
+  --reader-surface-strong: rgb(238, 233, 247);
+  --reader-help-bg: rgba(252, 251, 254, 0.97);
+  --reader-overlay-base: 215 208 230;
+}

@@ -1,12 +1,12 @@
 body.theme-blush-dark {
-  --bg: #1a1014;
-  --bg-accent: #23151b;
-  --surface: #20161b;
+  --bg: #201419;
+  --bg-accent: #2a1a21;
+  --surface: #271b22;
   --text: #f3e1e7;
   --muted: #b7a0a8;
-  --border: #3b2931;
+  --border: #47343d;
   --accent: #d8849b;
-  --accent-weak: #2c1a21;
+  --accent-weak: #332028;
   --shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
   --ui-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
   --reader-text-rgb: 243 225 231;
@@ -14,11 +14,11 @@ body.theme-blush-dark {
   --reader-text-muted: rgb(var(--reader-text-rgb) / 0.7);
   --reader-border: rgb(var(--reader-text-rgb) / 0.08);
   --reader-help-border: rgb(var(--reader-text-rgb) / 0.12);
-  --reader-bg: #181014;
-  --reader-surface: rgba(24, 16, 20, 0.95);
-  --reader-surface-strong: rgb(22, 15, 18);
-  --reader-help-bg: rgba(26, 17, 22, 0.95);
-  --reader-overlay-base: 10 6 8;
+  --reader-bg: #1d1318;
+  --reader-surface: rgba(29, 20, 24, 0.95);
+  --reader-surface-strong: rgb(26, 18, 22);
+  --reader-help-bg: rgba(30, 21, 26, 0.95);
+  --reader-overlay-base: 14 9 12;
 }
 
 

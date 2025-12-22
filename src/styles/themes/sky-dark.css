@@ -1,12 +1,12 @@
 body.theme-sky-dark {
-  --bg: #101624;
-  --bg-accent: #182036;
-  --surface: #151d2d;
+  --bg: #151c2b;
+  --bg-accent: #1e2840;
+  --surface: #1b2435;
   --text: #e4ecfb;
   --muted: #9fb0c9;
-  --border: #2a3550;
+  --border: #344160;
   --accent: #7aa2ff;
-  --accent-weak: #1d2742;
+  --accent-weak: #233050;
   --shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
   --ui-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
   --reader-text-rgb: 228 236 251;
@@ -14,11 +14,11 @@ body.theme-sky-dark {
   --reader-text-muted: rgb(var(--reader-text-rgb) / 0.7);
   --reader-border: rgb(var(--reader-text-rgb) / 0.08);
   --reader-help-border: rgb(var(--reader-text-rgb) / 0.12);
-  --reader-bg: #0f1420;
-  --reader-surface: rgba(16, 22, 36, 0.95);
-  --reader-surface-strong: rgb(14, 20, 32);
-  --reader-help-bg: rgba(18, 24, 40, 0.95);
-  --reader-overlay-base: 7 10 16;
+  --reader-bg: #141a27;
+  --reader-surface: rgba(20, 27, 41, 0.95);
+  --reader-surface-strong: rgb(18, 24, 38);
+  --reader-help-bg: rgba(22, 29, 45, 0.95);
+  --reader-overlay-base: 10 14 22;
 }
 
 
