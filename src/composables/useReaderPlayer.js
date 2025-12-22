@@ -1,5 +1,6 @@
-﻿import { nextTick, ref } from 'vue'
-import { countChars } from '../utils/text'
+﻿import { nextTick, ref } from 'vue';
+
+import { countChars } from '../utils/text';
 
 /**
  * Create reader scroll player.
@@ -11,183 +12,199 @@ import { countChars } from '../utils/text'
  * }} options
  */
 export function useReaderPlayer({ getText, getSpeed, stageRef, textRef }) {
-  const isPlaying = ref(false)
-  const animationId = ref(null)
-  const startTimestamp = ref(0)
-  const accumulatedElapsed = ref(0)
-  const totalDuration = ref(0)
-  const totalDistance = ref(0)
-  const currentSeconds = ref(0)
+    const isPlaying = ref(false);
+    const animationId = ref(null);
+    const startTimestamp = ref(0);
+    const accumulatedElapsed = ref(0);
+    const totalDuration = ref(0);
+    const totalDistance = ref(0);
+    const currentSeconds = ref(0);
 
-  /**
-   * Measure scroll distance and duration.
-   * @returns {{ distance: number, duration: number }}
-   */
-  function getReaderMetrics() {
-    const totalChars = countChars(getText(), true)
-    const speed = getSpeed()
-    const duration = totalChars > 0 ? Math.ceil((totalChars / speed) * 60) : 0
-    const stageHeight = stageRef.value?.clientHeight || 0
-    const textHeight = textRef.value?.scrollHeight || 0
-    const baseDistance = Math.max(0, textHeight - stageHeight)
-    const distance = Math.max(baseDistance, stageHeight)
-    return { distance, duration }
-  }
+    /**
+     * Measure scroll distance and duration.
+     * @returns {{ distance: number, duration: number }}
+     */
+    function getReaderMetrics() {
+        const totalChars = countChars(getText(), true);
+        const speed = getSpeed();
+        const duration = totalChars > 0 ? Math.ceil((totalChars / speed) * 60) : 0;
+        const stageHeight = stageRef.value?.clientHeight || 0;
+        const textHeight = textRef.value?.scrollHeight || 0;
+        const baseDistance = Math.max(0, textHeight - stageHeight);
+        const distance = Math.max(baseDistance, stageHeight);
 
-  /**
-   * Render scroll position for elapsed time.
-   * @param {number} elapsedSeconds
-   */
-  function renderScroll(elapsedSeconds) {
-    const duration = totalDuration.value
-    const distance = totalDistance.value
-    if (duration === 0 || !textRef.value) {
-      currentSeconds.value = 0
-      return
+        return { distance, duration };
     }
-    const clamped = Math.min(Math.max(elapsedSeconds, 0), duration)
-    const progress = duration > 0 ? clamped / duration : 0
-    const offset = -distance * progress
-    textRef.value.style.transform = `translateY(${offset}px)`
-    currentSeconds.value = Math.floor(clamped)
-  }
 
-  /**
-   * Reset scroll to start.
-   */
-  function resetReaderScroll() {
-    accumulatedElapsed.value = 0
-    startTimestamp.value = 0
-    renderScroll(0)
-  }
+    /**
+     * Render scroll position for elapsed time.
+     * @param {number} elapsedSeconds
+     */
+    function renderScroll(elapsedSeconds) {
+        const duration = totalDuration.value;
+        const distance = totalDistance.value;
 
-  /**
-   * Start scrolling.
-   */
-  function startScroll() {
-    if (totalDuration.value === 0) {
-      renderScroll(0)
-      return
-    }
-    if (!startTimestamp.value) {
-      startTimestamp.value = performance.now()
-    }
-    const tick = (timestamp) => {
-      if (!isPlaying.value) {
-        return
-      }
-      const elapsed = accumulatedElapsed.value + (timestamp - startTimestamp.value) / 1000
-      renderScroll(elapsed)
-      if (elapsed < totalDuration.value) {
-        animationId.value = requestAnimationFrame(tick)
-      } else {
-        isPlaying.value = false
-        startTimestamp.value = 0
-        animationId.value = null
-      }
-    }
-    animationId.value = requestAnimationFrame(tick)
-  }
+        if (duration === 0 || !textRef.value) {
+            currentSeconds.value = 0;
 
-  /**
-   * Pause scrolling.
-   */
-  function pauseScroll() {
-    if (!animationId.value) {
-      return
-    }
-    cancelAnimationFrame(animationId.value)
-    animationId.value = null
-    if (startTimestamp.value) {
-      accumulatedElapsed.value += (performance.now() - startTimestamp.value) / 1000
-      accumulatedElapsed.value = Math.min(accumulatedElapsed.value, totalDuration.value)
-      startTimestamp.value = 0
-    }
-  }
+            return;
+        }
+        const clamped = Math.min(Math.max(elapsedSeconds, 0), duration);
+        const progress = duration > 0 ? clamped / duration : 0;
+        const offset = -distance * progress;
 
-  /**
-   * Toggle play state.
-   */
-  function togglePlay() {
-    isPlaying.value = !isPlaying.value
-    if (isPlaying.value) {
-      startScroll()
-    } else {
-      pauseScroll()
+        textRef.value.style.transform = `translateY(${offset}px)`;
+        currentSeconds.value = Math.floor(clamped);
     }
-  }
 
-  /**
-   * Jump to start or end.
-   * @param {boolean} toEnd
-   */
-  function jumpToEdge(toEnd) {
-    pauseScroll()
-    accumulatedElapsed.value = toEnd ? totalDuration.value : 0
-    startTimestamp.value = 0
-    renderScroll(accumulatedElapsed.value)
-  }
-
-  /**
-   * Recalculate metrics while preserving position.
-   */
-  async function recalcMetricsPreservePosition() {
-    const wasPlaying = isPlaying.value
-    if (wasPlaying) {
-      pauseScroll()
+    /**
+     * Reset scroll to start.
+     */
+    function resetReaderScroll() {
+        accumulatedElapsed.value = 0;
+        startTimestamp.value = 0;
+        renderScroll(0);
     }
-    const progress = totalDuration.value > 0 ? accumulatedElapsed.value / totalDuration.value : 0
-    await nextTick()
-    const metrics = getReaderMetrics()
-    totalDistance.value = metrics.distance
-    totalDuration.value = metrics.duration
-    accumulatedElapsed.value = progress * totalDuration.value
-    renderScroll(accumulatedElapsed.value)
-    if (wasPlaying) {
-      isPlaying.value = true
-      startScroll()
+
+    /**
+     * Start scrolling.
+     */
+    function startScroll() {
+        if (totalDuration.value === 0) {
+            renderScroll(0);
+
+            return;
+        }
+        if (!startTimestamp.value) {
+            startTimestamp.value = performance.now();
+        }
+        const tick = (timestamp) => {
+            if (!isPlaying.value) {
+                return;
+            }
+            const elapsed = accumulatedElapsed.value + (timestamp - startTimestamp.value) / 1000;
+
+            renderScroll(elapsed);
+
+            if (elapsed < totalDuration.value) {
+                animationId.value = requestAnimationFrame(tick);
+            } else {
+                isPlaying.value = false;
+                startTimestamp.value = 0;
+                animationId.value = null;
+            }
+        };
+
+        animationId.value = requestAnimationFrame(tick);
     }
-  }
 
-  /**
-   * Initialize metrics on open.
-   */
-  async function initReader() {
-    await nextTick()
-    const metrics = getReaderMetrics()
-    totalDistance.value = metrics.distance
-    totalDuration.value = metrics.duration
-    resetReaderScroll()
-  }
+    /**
+     * Pause scrolling.
+     */
+    function pauseScroll() {
+        if (!animationId.value) {
+            return;
+        }
+        cancelAnimationFrame(animationId.value);
+        animationId.value = null;
 
-  /**
-   * Handle manual scroll.
-   * @param {WheelEvent} event
-   */
-  function handleWheel(event) {
-    if (isPlaying.value || totalDuration.value === 0 || totalDistance.value === 0) {
-      return
+        if (startTimestamp.value) {
+            accumulatedElapsed.value += (performance.now() - startTimestamp.value) / 1000;
+            accumulatedElapsed.value = Math.min(accumulatedElapsed.value, totalDuration.value);
+            startTimestamp.value = 0;
+        }
     }
-    event.preventDefault()
-    const delta = event.deltaY / totalDistance.value
-    accumulatedElapsed.value = Math.min(
-      totalDuration.value,
-      Math.max(0, accumulatedElapsed.value + delta * totalDuration.value)
-    )
-    renderScroll(accumulatedElapsed.value)
-  }
 
-  return {
-    isPlaying,
-    currentSeconds,
-    totalDuration,
-    totalDistance,
-    togglePlay,
-    pauseScroll,
-    jumpToEdge,
-    recalcMetricsPreservePosition,
-    initReader,
-    resetReaderScroll,
-    handleWheel,
-  }
+    /**
+     * Toggle play state.
+     */
+    function togglePlay() {
+        isPlaying.value = !isPlaying.value;
+
+        if (isPlaying.value) {
+            startScroll();
+        } else {
+            pauseScroll();
+        }
+    }
+
+    /**
+     * Jump to start or end.
+     * @param {boolean} toEnd
+     */
+    function jumpToEdge(toEnd) {
+        pauseScroll();
+        accumulatedElapsed.value = toEnd ? totalDuration.value : 0;
+        startTimestamp.value = 0;
+        renderScroll(accumulatedElapsed.value);
+    }
+
+    /**
+     * Recalculate metrics while preserving position.
+     */
+    async function recalcMetricsPreservePosition() {
+        const wasPlaying = isPlaying.value;
+
+        if (wasPlaying) {
+            pauseScroll();
+        }
+        const progress = totalDuration.value > 0 ? accumulatedElapsed.value / totalDuration.value : 0;
+
+        await nextTick();
+
+        const metrics = getReaderMetrics();
+
+        totalDistance.value = metrics.distance;
+        totalDuration.value = metrics.duration;
+        accumulatedElapsed.value = progress * totalDuration.value;
+        renderScroll(accumulatedElapsed.value);
+
+        if (wasPlaying) {
+            isPlaying.value = true;
+            startScroll();
+        }
+    }
+
+    /**
+     * Initialize metrics on open.
+     */
+    async function initReader() {
+        await nextTick();
+
+        const metrics = getReaderMetrics();
+
+        totalDistance.value = metrics.distance;
+        totalDuration.value = metrics.duration;
+        resetReaderScroll();
+    }
+
+    /**
+     * Handle manual scroll.
+     * @param {WheelEvent} event
+     */
+    function handleWheel(event) {
+        if (isPlaying.value || totalDuration.value === 0 || totalDistance.value === 0) {
+            return;
+        }
+        event.preventDefault();
+
+        const delta = event.deltaY / totalDistance.value;
+
+        accumulatedElapsed.value = Math.min(totalDuration.value, Math.max(0, accumulatedElapsed.value + delta * totalDuration.value));
+        renderScroll(accumulatedElapsed.value);
+    }
+
+    return {
+        isPlaying,
+        currentSeconds,
+        totalDuration,
+        totalDistance,
+        togglePlay,
+        pauseScroll,
+        jumpToEdge,
+        recalcMetricsPreservePosition,
+        initReader,
+        resetReaderScroll,
+        handleWheel,
+    };
 }
