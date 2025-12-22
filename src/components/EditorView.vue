@@ -102,7 +102,7 @@ function openSupport() {
     <div class="page">
         <header class="page-header">
             <div>
-                <div class="title">ScrollRead</div>
+                <h1 class="title">ScrollRead</h1>
             </div>
             <div class="header-theme">
                 <div class="header-theme__control">
@@ -325,3 +325,4 @@ function openSupport() {
         </SrButton>
     </div>
 </template>
+
