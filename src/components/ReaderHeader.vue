@@ -15,6 +15,10 @@ const props = defineProps({
         type: String,
         required: true,
     },
+    sessionTimerText: {
+        type: String,
+        required: true,
+    },
     themeTone: {
         type: String,
         required: true,
@@ -23,9 +27,9 @@ const props = defineProps({
         type: String,
         required: true,
     },
-    speedMultiplierLabel: {
-        type: String,
-        default: '',
+    isFullscreen: {
+        type: Boolean,
+        required: true,
     },
 });
 
@@ -39,24 +43,28 @@ const paletteOptions = computed(() => getPaletteOptions(props.themeTone));
         <div class="reader-controls">
             <SrButton
                 class="reader-btn"
+                :variant="props.isPlaying ? 'accent' : 'default'"
                 @click="emit('toggle-play')"
             >
                 {{ props.isPlaying ? 'Пауза' : 'Начать' }}
             </SrButton>
-            <div
-                v-if="props.speedMultiplierLabel"
-                class="reader-multiplier"
-                aria-hidden="true"
-            >
-                {{ props.speedMultiplierLabel }}
-            </div>
             <SrButton
                 class="reader-btn"
+                :variant="props.isFullscreen ? 'accent' : 'default'"
                 @click="emit('fullscreen')"
                 >Полный экран</SrButton
             >
         </div>
-        <div class="reader-timer">{{ props.timerText }}</div>
+        <div class="reader-timers">
+            <div class="reader-timer">
+                <div class="reader-timer__label">Время сессии</div>
+                <div class="reader-timer__value">{{ props.sessionTimerText }}</div>
+            </div>
+            <div class="reader-timer">
+                <div class="reader-timer__label">Предполагаемое время чтения</div>
+                <div class="reader-timer__value">{{ props.timerText }}</div>
+            </div>
+        </div>
         <div class="reader-controls">
             <div class="reader-theme">
                 <label class="reader-theme__control">

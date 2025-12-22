@@ -3,11 +3,16 @@ import { ref } from 'vue';
 
 import SrRange from '../ui/SrRange.vue';
 import SrSelect from '../ui/SrSelect.vue';
+import SrButton from '../ui/SrButton.vue';
 
 const props = defineProps({
     settings: {
         type: Object,
         required: true,
+    },
+    speedMultiplierLabel: {
+        type: String,
+        default: '',
     },
 });
 
@@ -60,13 +65,41 @@ function togglePanel() {
     <div class="reader-panel">
         <div class="reader-panel__bar">
             <div class="reader-panel__title">Настройки текста</div>
-            <button
+
+            <div
+                v-if="!isOpen"
+                class="reader-panel__speed"
+            >
+                <label class="reader-panel__speed-label">Скорость</label>
+                <SrRange
+                    :model-value="props.settings.speed"
+                    min="100"
+                    max="2000"
+                    step="50"
+                    @update:model-value="emitUpdate('speed', $event)"
+                />
+                <div class="reader-panel__speed-value">{{ props.settings.speed }}</div>
+            </div>
+
+            <SrButton
+                v-if="props.speedMultiplierLabel"
+                class="reader-panel__multiplier"
                 type="button"
+                aria-hidden="true"
+                @click.prevent
+            >
+                {{ props.speedMultiplierLabel }}
+            </SrButton>
+
+            <div class="separator"></div>
+
+            <SrButton
                 class="reader-panel__toggle"
+                type="button"
                 @click="togglePanel"
             >
                 {{ isOpen ? 'Свернуть' : 'Развернуть' }}
-            </button>
+            </SrButton>
         </div>
         <div
             v-show="isOpen"

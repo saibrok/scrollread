@@ -79,26 +79,38 @@ export function useReaderShortcuts(options) {
 
             return;
         }
-        if (event.code === 'ArrowUp') {
+        if (event.code === 'ArrowRight') {
             event.preventDefault();
             adjustSpeed(50);
 
             return;
         }
-        if (event.code === 'ArrowDown') {
+        if (event.code === 'ArrowLeft') {
             event.preventDefault();
             adjustSpeed(-50);
 
             return;
         }
-        if (event.code === 'ArrowRight') {
+        if (event.code === 'KeyD') {
+            event.preventDefault();
+            adjustSpeed(50);
+
+            return;
+        }
+        if (event.code === 'KeyA') {
+            event.preventDefault();
+            adjustSpeed(-50);
+
+            return;
+        }
+        if (event.code === 'ArrowUp') {
             event.preventDefault();
             options.settings.fontSize = Math.min(100, Number(options.settings.fontSize) + 1);
             options.recalcMetrics();
 
             return;
         }
-        if (event.code === 'ArrowLeft') {
+        if (event.code === 'ArrowDown') {
             event.preventDefault();
             options.settings.fontSize = Math.max(10, Number(options.settings.fontSize) - 1);
             options.recalcMetrics();

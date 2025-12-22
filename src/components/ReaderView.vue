@@ -1,5 +1,5 @@
 <script setup>
-import { computed, inject, ref, watch } from 'vue';
+import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 
 import { formatTime, toParagraphs } from '../utils/text';
 import { useReaderPlayer } from '../composables/useReaderPlayer';
@@ -30,6 +30,11 @@ const readerStage = ref(null);
 const readerText = ref(null);
 const helpOpen = ref(false);
 const resetOpen = ref(false);
+const isFullscreen = ref(false);
+const sessionSeconds = ref(0);
+let sessionStart = 0;
+let sessionAccumulated = 0;
+let sessionTimerId = null;
 
 const readerStyle = computed(() => {
     return {
@@ -63,6 +68,8 @@ const { isPlaying, currentSeconds, totalDuration, togglePlay, pauseScroll, jumpT
 const timerText = computed(() => {
     return `${formatTime(currentSeconds.value)} / ${formatTime(totalDuration.value)}`;
 });
+
+const sessionTimerText = computed(() => formatTime(sessionSeconds.value));
 
 function updateSetting({ key, value }) {
     settings[key] = value;
@@ -118,6 +125,7 @@ function handleClose() {
     helpOpen.value = false;
     resetOpen.value = false;
     speedMultiplier.value = 1;
+    resetSessionTimer();
     emit('close');
 }
 
@@ -129,6 +137,10 @@ function handleFullscreen() {
     }
 }
 
+function syncFullscreen() {
+    isFullscreen.value = Boolean(document.fullscreenElement);
+}
+
 watch(
     () => props.open,
     (value) => {
@@ -137,6 +149,7 @@ watch(
             helpOpen.value = false;
             resetOpen.value = false;
             speedMultiplier.value = 1;
+            resetSessionTimer();
             initReader();
         } else {
             pauseScroll();
@@ -182,6 +195,59 @@ useReaderShortcuts({
     closeHelp,
     recalcMetrics: recalcMetricsPreservePosition,
 });
+
+onMounted(() => {
+    syncFullscreen();
+    document.addEventListener('fullscreenchange', syncFullscreen);
+});
+
+onBeforeUnmount(() => {
+    document.removeEventListener('fullscreenchange', syncFullscreen);
+});
+
+function startSessionTimer() {
+    if (sessionTimerId) {
+        return;
+    }
+    sessionStart = performance.now();
+    sessionTimerId = window.setInterval(() => {
+        const elapsed = (performance.now() - sessionStart) / 1000;
+        sessionSeconds.value = Math.floor(sessionAccumulated + elapsed);
+    }, 250);
+}
+
+function stopSessionTimer() {
+    if (!sessionTimerId) {
+        return;
+    }
+    sessionAccumulated += (performance.now() - sessionStart) / 1000;
+    sessionSeconds.value = Math.floor(sessionAccumulated);
+    sessionStart = 0;
+    clearInterval(sessionTimerId);
+    sessionTimerId = null;
+}
+
+function resetSessionTimer() {
+    if (sessionTimerId) {
+        clearInterval(sessionTimerId);
+    }
+    sessionTimerId = null;
+    sessionStart = 0;
+    sessionAccumulated = 0;
+    sessionSeconds.value = 0;
+}
+
+watch(
+    isPlaying,
+    (value) => {
+        if (value) {
+            startSessionTimer();
+        } else {
+            stopSessionTimer();
+        }
+    },
+    { immediate: false },
+);
 </script>
 
 <template>
@@ -193,9 +259,10 @@ useReaderShortcuts({
         <ReaderHeader
             :is-playing="isPlaying"
             :timer-text="timerText"
+            :session-timer-text="sessionTimerText"
+            :is-fullscreen="isFullscreen"
             :theme-tone="settings.themeTone"
             :theme-palette="settings.themePalette"
-            :speed-multiplier-label="speedMultiplierLabel"
             @toggle-play="togglePlay"
             @fullscreen="handleFullscreen"
             @update:theme-tone="(value) => updateSetting({ key: 'themeTone', value })"
@@ -206,6 +273,7 @@ useReaderShortcuts({
         />
         <ReaderPanel
             :settings="settings"
+            :speed-multiplier-label="speedMultiplierLabel"
             @update="updateSetting"
             @toggle="handlePanelToggle"
         />

@@ -1,71 +1,75 @@
 :root {
-  color-scheme: light dark;
-  --accent: #2f5ef5;
-  --accent-weak: #e7eeff;
+    color-scheme: light dark;
+    --accent: #2f5ef5;
+    --accent-weak: #e7eeff;
 }
 
 body {
-  --bg: #f6f7fb;
-  --bg-accent: #e8ebf6;
-  --surface: #ffffff;
-  --text: #1f2633;
-  --muted: #606778;
-  --border: #d9deea;
-  --shadow: 0 10px 30px rgba(21, 30, 50, 0.12);
-  --ui-surface: var(--surface);
-  --ui-surface-hover: var(--bg-accent);
-  --ui-border: var(--border);
-  --ui-border-hover: var(--accent);
-  --ui-text: var(--text);
-  --ui-icon: var(--muted);
-  --ui-track: var(--border);
-  --ui-shadow: var(--shadow);
+    --bg: #f6f7fb;
+    --bg-accent: #e8ebf6;
+    --surface: #ffffff;
+    --text: #1f2633;
+    --muted: #606778;
+    --border: #d9deea;
+    --shadow: 0 10px 30px rgba(21, 30, 50, 0.12);
+    --ui-surface: var(--surface);
+    --ui-surface-hover: var(--bg-accent);
+    --ui-border: var(--border);
+    --ui-border-hover: var(--accent);
+    --ui-text: var(--text);
+    --ui-icon: var(--muted);
+    --ui-track: var(--border);
+    --ui-shadow: var(--shadow);
 }
 
 * {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 body {
-  margin: 0;
-  font-family: 'Rubik', 'Segoe UI', Arial, sans-serif;
-  background: radial-gradient(circle at top left, var(--bg-accent), var(--bg));
-  color: var(--text);
-  min-height: 100vh;
-  display: flex;
-  align-items: stretch;
+    margin: 0;
+    font-family: 'Rubik', 'Segoe UI', Arial, sans-serif;
+    background: radial-gradient(circle at top left, var(--bg-accent), var(--bg));
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: stretch;
 }
 
 #app {
-  width: 100%;
+    width: 100%;
 }
 
 .page {
-  width: min(1100px, 92vw);
-  margin: 48px auto 72px;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+    width: min(1100px, 92vw);
+    margin: 48px auto 72px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
 }
 
 header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .title {
-  font-size: 30px;
-  font-weight: 600;
-  letter-spacing: 0.2px;
+    font-size: 30px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
 }
 
 .subtitle {
-  color: var(--muted);
-  font-size: 14px;
+    color: var(--muted);
+    font-size: 14px;
 }
 
 .footer-note {
-  font-size: 13px;
-  color: var(--muted);
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.separator {
+    flex: 1;
 }
