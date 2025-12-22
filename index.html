@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Teleprompter</title>
-  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;600&family=PT+Sans:wght@400;700&family=PT+Serif:wght@400;700&family=Montserrat:wght@400;600&family=Merriweather:wght@400;700&family=Noto+Sans:wght@400;600&family=Noto+Serif:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -66,6 +66,67 @@
       <div class="reader-timer" id="readerTimer">0:00 / 0:00</div>
       <div class="reader-controls">
         <button class="reader-btn" id="closeReaderBtn">Закрыть</button>
+      </div>
+    </div>
+    <div class="reader-panel" id="readerPanel">
+      <div class="reader-control">
+        <label class="reader-label" for="readerSpeed">Скорость</label>
+        <input type="range" id="readerSpeed" min="100" max="2000" step="100" value="800">
+        <div class="reader-value"><span id="readerSpeedValue">800</span> знаков/мин</div>
+      </div>
+      <div class="reader-control">
+        <label class="reader-label" for="readerFontSize">Размер</label>
+        <input type="range" id="readerFontSize" min="10" max="100" step="2" value="32">
+        <div class="reader-value"><span id="readerFontSizeValue">32</span> px</div>
+      </div>
+      <div class="reader-control">
+        <label class="reader-label" for="readerFont">Шрифт</label>
+        <select id="readerFont">
+          <option value="'Rubik', 'Segoe UI', Arial, sans-serif">Rubik</option>
+          <option value="'PT Sans', 'Segoe UI', Arial, sans-serif">PT Sans</option>
+          <option value="'PT Serif', 'Times New Roman', serif">PT Serif</option>
+          <option value="'Noto Sans', 'Segoe UI', Arial, sans-serif">Noto Sans</option>
+          <option value="'Noto Serif', 'Times New Roman', serif">Noto Serif</option>
+          <option value="'Merriweather', 'Times New Roman', serif">Merriweather</option>
+          <option value="'Montserrat', 'Segoe UI', Arial, sans-serif">Montserrat</option>
+        </select>
+      </div>
+      <div class="reader-control">
+        <label class="reader-label" for="readerAlign">Положение</label>
+        <select id="readerAlign">
+          <option value="left">Слева</option>
+          <option value="center">По центру</option>
+          <option value="justify">На всю ширину</option>
+        </select>
+      </div>
+      <div class="reader-control">
+        <label class="reader-label" for="readerPadding">Отступы</label>
+        <input type="range" id="readerPadding" min="0" max="260" step="10" value="120">
+        <div class="reader-value"><span id="readerPaddingValue">120</span> px</div>
+      </div>
+      <div class="reader-control">
+        <label class="reader-label" for="readerTheme">Тема</label>
+        <select id="readerTheme">
+          <option value="dark-gray">Dark Gray</option>
+          <option value="light-gray">Light Gray</option>
+          <option value="sepia">Sepia</option>
+          <option value="paper">Paper</option>
+        </select>
+      </div>
+      <div class="reader-control">
+        <label class="reader-label" for="readerBrightness">Яркость</label>
+        <input type="range" id="readerBrightness" min="50" max="150" step="5" value="100">
+        <div class="reader-value"><span id="readerBrightnessValue">100</span>%</div>
+      </div>
+      <div class="reader-control">
+        <label class="reader-label" for="readerContrast">Контраст</label>
+        <input type="range" id="readerContrast" min="50" max="150" step="5" value="100">
+        <div class="reader-value"><span id="readerContrastValue">100</span>%</div>
+      </div>
+      <div class="reader-control">
+        <label class="reader-label" for="readerSepia">Сепия</label>
+        <input type="range" id="readerSepia" min="0" max="100" step="5" value="0">
+        <div class="reader-value"><span id="readerSepiaValue">0</span>%</div>
       </div>
     </div>
     <div class="reader-body">

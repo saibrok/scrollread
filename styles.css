@@ -180,11 +180,18 @@ input[type='range'] {
 .reader {
   position: fixed;
   inset: 0;
-  background: #0d1016;
-  color: #e7ebf3;
+  background: var(--reader-bg);
+  color: var(--reader-text);
   display: none;
   flex-direction: column;
   z-index: 50;
+  --reader-bg: #0d1016;
+  --reader-text: #e7ebf3;
+  --reader-font-size: 32px;
+  --reader-font: 'Rubik', 'Segoe UI', Arial, sans-serif;
+  --reader-brightness: 100%;
+  --reader-contrast: 100%;
+  --reader-sepia: 0%;
 }
 
 .reader.active {
@@ -223,15 +230,48 @@ input[type='range'] {
   color: rgba(231, 235, 243, 0.8);
 }
 
+.reader-panel {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+  padding: 16px 24px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(12, 16, 24, 0.85);
+}
+
+.reader-control {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 12px;
+  color: rgba(231, 235, 243, 0.7);
+}
+
+.reader-label {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.reader-control input[type='range'],
+.reader-control select {
+  width: 100%;
+}
+
+.reader-value {
+  font-size: 13px;
+  color: rgba(231, 235, 243, 0.9);
+}
+
 .reader-body {
   flex: 1;
   display: grid;
   grid-template-rows: 1fr calc(var(--read-band) * var(--read-line-height)) 1fr;
   align-items: stretch;
   justify-content: stretch;
-  font-size: 32px;
+  font-size: var(--reader-font-size);
   min-height: 0;
   overflow: hidden;
+  filter: brightness(var(--reader-brightness)) contrast(var(--reader-contrast)) sepia(var(--reader-sepia));
 
   --read-band: 3.2em;
   --read-line-height: 1.6;
@@ -253,6 +293,9 @@ input[type='range'] {
   white-space: pre-wrap;
   transform: translateY(0);
   will-change: transform;
+  padding: 2em 0 0;
+  font-family: var(--reader-font);
+  width: 100%;
 }
 
 .reader-overlay {

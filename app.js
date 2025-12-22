@@ -3,6 +3,14 @@ const state = {
   includeSpaces: true,
   speed: 800,
   theme: "system",
+  readerFontSize: 32,
+  readerFont: "'Rubik', 'Segoe UI', Arial, sans-serif",
+  readerAlign: "left",
+  readerPadding: 120,
+  readerTheme: "dark-gray",
+  readerBrightness: 100,
+  readerContrast: 100,
+  readerSepia: 0,
 };
 
 const inputText = document.getElementById("inputText");
@@ -20,6 +28,21 @@ const fullscreenBtn = document.getElementById("fullscreenBtn");
 const readerTimer = document.getElementById("readerTimer");
 const readerStage = document.getElementById("readerStage");
 const readerText = document.getElementById("readerText");
+const readerSpeed = document.getElementById("readerSpeed");
+const readerSpeedValue = document.getElementById("readerSpeedValue");
+const readerFontSize = document.getElementById("readerFontSize");
+const readerFontSizeValue = document.getElementById("readerFontSizeValue");
+const readerFont = document.getElementById("readerFont");
+const readerAlign = document.getElementById("readerAlign");
+const readerPadding = document.getElementById("readerPadding");
+const readerPaddingValue = document.getElementById("readerPaddingValue");
+const readerTheme = document.getElementById("readerTheme");
+const readerBrightness = document.getElementById("readerBrightness");
+const readerBrightnessValue = document.getElementById("readerBrightnessValue");
+const readerContrast = document.getElementById("readerContrast");
+const readerContrastValue = document.getElementById("readerContrastValue");
+const readerSepia = document.getElementById("readerSepia");
+const readerSepiaValue = document.getElementById("readerSepiaValue");
 const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
 let isPlaying = true;
 let animationId = null;
@@ -64,7 +87,7 @@ function updateCounts() {
   const speed = Number(speedInput.value);
   const minSeconds = Math.ceil((withoutSpaces / speed) * 60);
   const maxSeconds = Math.ceil((withSpaces / speed) * 60);
-  timeRange.textContent = `${formatTime(minSeconds)}–${formatTime(maxSeconds)}`;
+  timeRange.textContent = `${formatTime(minSeconds)}-${formatTime(maxSeconds)}`;
   speedValue.textContent = speed;
 }
 
@@ -76,6 +99,14 @@ function saveSettings() {
     includeSpaces: includeSpaces.checked,
     speed: Number(speedInput.value),
     theme: themeSelect.value,
+    readerFontSize: Number(readerFontSize.value),
+    readerFont: readerFont.value,
+    readerAlign: readerAlign.value,
+    readerPadding: Number(readerPadding.value),
+    readerTheme: readerTheme.value,
+    readerBrightness: Number(readerBrightness.value),
+    readerContrast: Number(readerContrast.value),
+    readerSepia: Number(readerSepia.value),
   };
   localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
 }
@@ -99,6 +130,30 @@ function loadSettings() {
     if (typeof parsed.theme === "string") {
       state.theme = parsed.theme;
     }
+    if (typeof parsed.readerFontSize === "number") {
+      state.readerFontSize = parsed.readerFontSize;
+    }
+    if (typeof parsed.readerFont === "string") {
+      state.readerFont = parsed.readerFont;
+    }
+    if (typeof parsed.readerAlign === "string") {
+      state.readerAlign = parsed.readerAlign;
+    }
+    if (typeof parsed.readerPadding === "number") {
+      state.readerPadding = parsed.readerPadding;
+    }
+    if (typeof parsed.readerTheme === "string") {
+      state.readerTheme = parsed.readerTheme;
+    }
+    if (typeof parsed.readerBrightness === "number") {
+      state.readerBrightness = parsed.readerBrightness;
+    }
+    if (typeof parsed.readerContrast === "number") {
+      state.readerContrast = parsed.readerContrast;
+    }
+    if (typeof parsed.readerSepia === "number") {
+      state.readerSepia = parsed.readerSepia;
+    }
   } catch (error) {
     console.warn("Settings parse error", error);
   }
@@ -117,6 +172,45 @@ function applyTheme() {
       document.body.classList.add("theme-dark");
     }
   }
+}
+
+/**
+ * Apply reader theme variables.
+ */
+function applyReaderTheme() {
+  const themes = {
+    "dark-gray": { bg: "#0d1016", text: "#e7ebf3" },
+    "light-gray": { bg: "#f0f1f5", text: "#1a1f2b" },
+    sepia: { bg: "#f2e6d0", text: "#3b2f25" },
+    paper: { bg: "#fbf8f0", text: "#2d2a26" },
+  };
+  const theme = themes[readerTheme.value] || themes["dark-gray"];
+  reader.style.setProperty("--reader-bg", theme.bg);
+  reader.style.setProperty("--reader-text", theme.text);
+}
+
+/**
+ * Apply reader settings to CSS variables.
+ */
+function applyReaderSettings() {
+  reader.style.setProperty("--reader-font-size", `${readerFontSize.value}px`);
+  reader.style.setProperty("--reader-font", readerFont.value);
+  readerStage.style.setProperty("--read-padding", `${readerPadding.value}px`);
+  readerText.style.textAlign = readerAlign.value;
+  reader.style.setProperty("--reader-brightness", `${readerBrightness.value}%`);
+  reader.style.setProperty("--reader-contrast", `${readerContrast.value}%`);
+  reader.style.setProperty("--reader-sepia", `${readerSepia.value}%`);
+  applyReaderTheme();
+}
+
+/**
+ * Sync speed controls between editor and reader.
+ */
+function syncSpeedControls(value) {
+  speedInput.value = value;
+  speedValue.textContent = value;
+  readerSpeed.value = value;
+  readerSpeedValue.textContent = value;
 }
 
 /**
@@ -212,6 +306,7 @@ function openReader() {
   isPlaying = false;
   playPauseBtn.textContent = "Плей";
   readerText.textContent = inputText.value;
+  applyReaderSettings();
   requestAnimationFrame(() => {
     const metrics = getReaderMetrics();
     totalDistance = metrics.distance;
@@ -249,9 +344,25 @@ loadSettings();
 includeSpaces.checked = state.includeSpaces;
 speedInput.value = state.speed;
 themeSelect.value = state.theme;
+readerSpeed.value = state.speed;
+readerSpeedValue.textContent = state.speed;
+readerFontSize.value = state.readerFontSize;
+readerFontSizeValue.textContent = state.readerFontSize;
+readerFont.value = state.readerFont;
+readerAlign.value = state.readerAlign;
+readerPadding.value = state.readerPadding;
+readerPaddingValue.textContent = state.readerPadding;
+readerTheme.value = state.readerTheme;
+readerBrightness.value = state.readerBrightness;
+readerBrightnessValue.textContent = state.readerBrightness;
+readerContrast.value = state.readerContrast;
+readerContrastValue.textContent = state.readerContrast;
+readerSepia.value = state.readerSepia;
+readerSepiaValue.textContent = state.readerSepia;
 
 updateCounts();
 applyTheme();
+applyReaderSettings();
 
 inputText.addEventListener("input", updateCounts);
 includeSpaces.addEventListener("change", () => {
@@ -260,6 +371,7 @@ includeSpaces.addEventListener("change", () => {
 });
 speedInput.addEventListener("input", () => {
   updateCounts();
+  syncSpeedControls(speedInput.value);
   saveSettings();
 });
 themeSelect.addEventListener("change", () => {
@@ -282,6 +394,69 @@ fullscreenBtn.addEventListener("click", () => {
   } else {
     document.exitFullscreen();
   }
+});
+
+readerSpeed.addEventListener("input", () => {
+  updateCounts();
+  syncSpeedControls(readerSpeed.value);
+  saveSettings();
+  const metrics = getReaderMetrics();
+  totalDistance = metrics.distance;
+  totalDuration = metrics.duration;
+});
+
+readerFontSize.addEventListener("input", () => {
+  readerFontSizeValue.textContent = readerFontSize.value;
+  applyReaderSettings();
+  saveSettings();
+  const metrics = getReaderMetrics();
+  totalDistance = metrics.distance;
+  totalDuration = metrics.duration;
+});
+
+readerFont.addEventListener("change", () => {
+  applyReaderSettings();
+  saveSettings();
+  const metrics = getReaderMetrics();
+  totalDistance = metrics.distance;
+  totalDuration = metrics.duration;
+});
+
+readerAlign.addEventListener("change", () => {
+  applyReaderSettings();
+  saveSettings();
+});
+
+readerPadding.addEventListener("input", () => {
+  readerPaddingValue.textContent = readerPadding.value;
+  applyReaderSettings();
+  saveSettings();
+  const metrics = getReaderMetrics();
+  totalDistance = metrics.distance;
+  totalDuration = metrics.duration;
+});
+
+readerTheme.addEventListener("change", () => {
+  applyReaderSettings();
+  saveSettings();
+});
+
+readerBrightness.addEventListener("input", () => {
+  readerBrightnessValue.textContent = readerBrightness.value;
+  applyReaderSettings();
+  saveSettings();
+});
+
+readerContrast.addEventListener("input", () => {
+  readerContrastValue.textContent = readerContrast.value;
+  applyReaderSettings();
+  saveSettings();
+});
+
+readerSepia.addEventListener("input", () => {
+  readerSepiaValue.textContent = readerSepia.value;
+  applyReaderSettings();
+  saveSettings();
 });
 
 document.addEventListener("keydown", (event) => {
