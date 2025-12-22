@@ -12,6 +12,14 @@ body {
     --muted: #606778;
     --border: #d9deea;
     --shadow: 0 10px 30px rgba(21, 30, 50, 0.12);
+    --reader-text: var(--text);
+    --reader-text-muted: var(--muted);
+    --reader-border: var(--border);
+    --reader-help-border: var(--border);
+    --reader-bg: var(--bg);
+    --reader-surface: var(--surface);
+    --reader-surface-strong: var(--bg-accent);
+    --reader-help-bg: var(--surface);
     --ui-surface: var(--surface);
     --ui-surface-hover: var(--bg-accent);
     --ui-border: var(--border);

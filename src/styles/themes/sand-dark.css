@@ -9,16 +9,6 @@ body.theme-sand-dark {
   --accent-weak: #33281e;
   --shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
   --ui-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
-  --reader-text-rgb: 240 230 216;
-  --reader-text: rgb(var(--reader-text-rgb));
-  --reader-text-muted: rgb(var(--reader-text-rgb) / 0.7);
-  --reader-border: rgb(var(--reader-text-rgb) / 0.08);
-  --reader-help-border: rgb(var(--reader-text-rgb) / 0.12);
-  --reader-bg: #1a1511;
-  --reader-surface: rgba(27, 22, 17, 0.95);
-  --reader-surface-strong: rgb(30, 24, 19);
-  --reader-help-bg: rgba(31, 25, 19, 0.95);
-  --reader-overlay-base: 14 11 8;
 }
 
 

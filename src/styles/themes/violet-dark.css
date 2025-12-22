@@ -9,14 +9,4 @@ body.theme-violet-dark {
   --accent-weak: #251f34;
   --shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
   --ui-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
-  --reader-text-rgb: 239 233 251;
-  --reader-text: rgb(var(--reader-text-rgb));
-  --reader-text-muted: rgb(var(--reader-text-rgb) / 0.7);
-  --reader-border: rgb(var(--reader-text-rgb) / 0.08);
-  --reader-help-border: rgb(var(--reader-text-rgb) / 0.12);
-  --reader-bg: #14101c;
-  --reader-surface: rgba(20, 16, 28, 0.95);
-  --reader-surface-strong: rgb(22, 18, 30);
-  --reader-help-bg: rgba(24, 19, 32, 0.95);
-  --reader-overlay-base: 12 10 18;
 }

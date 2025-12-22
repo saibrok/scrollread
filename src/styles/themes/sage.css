@@ -8,16 +8,6 @@ body.theme-sage {
   --accent: #6aa57b;
   --accent-weak: #dfeee4;
   --shadow: 0 12px 28px rgba(53, 70, 57, 0.12);
-  --reader-text-rgb: 43 51 45;
-  --reader-text: rgb(var(--reader-text-rgb));
-  --reader-text-muted: rgb(var(--reader-text-rgb) / 0.65);
-  --reader-border: rgb(var(--reader-text-rgb) / 0.12);
-  --reader-help-border: rgb(var(--reader-text-rgb) / 0.12);
-  --reader-bg: #e8eee7;
-  --reader-surface: rgba(245, 248, 244, 0.96);
-  --reader-surface-strong: rgb(236, 242, 236);
-  --reader-help-bg: rgba(251, 252, 250, 0.97);
-  --reader-overlay-base: 212 221 212;
 }
 
 

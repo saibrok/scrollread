@@ -9,16 +9,6 @@ body.theme-blush-dark {
   --accent-weak: #332028;
   --shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
   --ui-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
-  --reader-text-rgb: 243 225 231;
-  --reader-text: rgb(var(--reader-text-rgb));
-  --reader-text-muted: rgb(var(--reader-text-rgb) / 0.7);
-  --reader-border: rgb(var(--reader-text-rgb) / 0.08);
-  --reader-help-border: rgb(var(--reader-text-rgb) / 0.12);
-  --reader-bg: #1d1318;
-  --reader-surface: rgba(29, 20, 24, 0.95);
-  --reader-surface-strong: rgb(26, 18, 22);
-  --reader-help-bg: rgba(30, 21, 26, 0.95);
-  --reader-overlay-base: 14 9 12;
 }
 
 
