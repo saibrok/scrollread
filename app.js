@@ -136,7 +136,9 @@ function getReaderMetrics() {
   const totalChars = countChars(inputText.value, includeSpaces.checked);
   const speed = Number(speedInput.value);
   const duration = totalChars > 0 ? Math.ceil((totalChars / speed) * 60) : 0;
-  const distance = Math.max(0, readerText.scrollHeight - readerStage.clientHeight);
+  const stageHeight = readerStage.clientHeight;
+  const baseDistance = Math.max(0, readerText.scrollHeight - stageHeight);
+  const distance = Math.max(baseDistance, stageHeight);
   return { distance, duration };
 }
 

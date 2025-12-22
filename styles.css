@@ -29,7 +29,7 @@ body.theme-dark {
 
 body {
   margin: 0;
-  font-family: "Rubik", "Segoe UI", Arial, sans-serif;
+  font-family: 'Rubik', 'Segoe UI', Arial, sans-serif;
   background: radial-gradient(circle at top left, var(--bg-accent), var(--bg));
   color: var(--text);
   min-height: 100vh;
@@ -101,7 +101,7 @@ textarea {
 
 textarea:focus,
 select:focus,
-input[type="range"]:focus {
+input[type='range']:focus {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
@@ -149,7 +149,7 @@ input[type="range"]:focus {
 }
 
 select,
-input[type="range"] {
+input[type='range'] {
   width: 100%;
 }
 
@@ -225,50 +225,40 @@ input[type="range"] {
 
 .reader-body {
   flex: 1;
-  display: flex;
+  display: grid;
+  grid-template-rows: 1fr calc(var(--read-band) * var(--read-line-height)) 1fr;
   align-items: stretch;
   justify-content: stretch;
-  padding: 32px 80px;
   font-size: 32px;
   min-height: 0;
   overflow: hidden;
-  position: relative;
+
   --read-band: 3.2em;
-  --read-padding: 40vh;
+  --read-line-height: 1.6;
 }
 
 .reader-stage {
   position: relative;
   width: 100%;
   height: 100%;
-  overflow: hidden;
   min-height: 0;
-  padding-top: var(--read-padding);
-  padding-bottom: var(--read-padding);
-  box-sizing: border-box;
+  display: flex;
+  align-items: start;
+  padding-inline: var(--read-padding);
+  --read-padding: 120px;
 }
 
 .reader-text {
+  line-height: var(--read-line-height);
   white-space: pre-wrap;
-  line-height: 1.6;
   transform: translateY(0);
   will-change: transform;
 }
 
 .reader-overlay {
-  position: absolute;
-  inset: 0;
   pointer-events: none;
-  background:
-    linear-gradient(
-      to bottom,
-      rgba(6, 9, 13, 0.78) 0%,
-      rgba(6, 9, 13, 0.6) calc(50% - var(--read-band)),
-      rgba(6, 9, 13, 0) calc(50% - var(--read-band) + 1px),
-      rgba(6, 9, 13, 0) calc(50% + var(--read-band) - 1px),
-      rgba(6, 9, 13, 0.6) calc(50% + var(--read-band)),
-      rgba(6, 9, 13, 0.85) 100%
-    );
+  background: rgba(6, 9, 13, 0.75);
+  z-index: 10;
 }
 
 @media (max-width: 900px) {
