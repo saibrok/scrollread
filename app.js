@@ -18,8 +18,15 @@ const closeReaderBtn = document.getElementById("closeReaderBtn");
 const playPauseBtn = document.getElementById("playPauseBtn");
 const fullscreenBtn = document.getElementById("fullscreenBtn");
 const readerTimer = document.getElementById("readerTimer");
+const readerStage = document.getElementById("readerStage");
+const readerText = document.getElementById("readerText");
 const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
 let isPlaying = true;
+let animationId = null;
+let startTimestamp = 0;
+let accumulatedElapsed = 0;
+let totalDuration = 0;
+let totalDistance = 0;
 
 /**
  * Count characters in a string.
@@ -114,10 +121,85 @@ function applyTheme() {
 
 /**
  * Update reader timer display.
+ * @param {number} currentSeconds
  * @param {number} totalSeconds
  */
-function updateReaderTimer(totalSeconds) {
-  readerTimer.textContent = `0:00 / ${formatTime(totalSeconds)}`;
+function updateReaderTimer(currentSeconds, totalSeconds) {
+  readerTimer.textContent = `${formatTime(currentSeconds)} / ${formatTime(totalSeconds)}`;
+}
+
+/**
+ * Measure scroll distance and duration for reader mode.
+ * @returns {{distance: number, duration: number}}
+ */
+function getReaderMetrics() {
+  const totalChars = countChars(inputText.value, includeSpaces.checked);
+  const speed = Number(speedInput.value);
+  const duration = totalChars > 0 ? Math.ceil((totalChars / speed) * 60) : 0;
+  const distance = Math.max(0, readerText.scrollHeight - readerStage.clientHeight);
+  return { distance, duration };
+}
+
+/**
+ * Reset reader scroll to start.
+ */
+function resetReaderScroll() {
+  readerText.style.transform = "translateY(0)";
+  startTimestamp = 0;
+  accumulatedElapsed = 0;
+  updateReaderTimer(0, totalDuration);
+}
+
+/**
+ * Start or resume the scrolling animation.
+ */
+function startScroll() {
+  if (!readerText.textContent) {
+    readerText.textContent = inputText.value;
+  }
+  if (!totalDuration) {
+    const metrics = getReaderMetrics();
+    totalDistance = metrics.distance;
+    totalDuration = metrics.duration;
+  }
+  if (totalDuration === 0) {
+    updateReaderTimer(0, totalDuration);
+    return;
+  }
+  if (!startTimestamp) {
+    startTimestamp = performance.now();
+  }
+  const tick = (timestamp) => {
+    if (!isPlaying) {
+      return;
+    }
+    const elapsed = accumulatedElapsed + (timestamp - startTimestamp) / 1000;
+    const clamped = Math.min(elapsed, totalDuration);
+    const progress = totalDuration > 0 ? clamped / totalDuration : 0;
+    const offset = -totalDistance * progress;
+    readerText.style.transform = `translateY(${offset}px)`;
+    updateReaderTimer(Math.floor(clamped), totalDuration);
+    if (elapsed < totalDuration) {
+      animationId = requestAnimationFrame(tick);
+    }
+  };
+  animationId = requestAnimationFrame(tick);
+}
+
+/**
+ * Pause scrolling animation.
+ */
+function pauseScroll() {
+  if (!animationId) {
+    return;
+  }
+  cancelAnimationFrame(animationId);
+  animationId = null;
+  if (startTimestamp) {
+    accumulatedElapsed += (performance.now() - startTimestamp) / 1000;
+    accumulatedElapsed = Math.min(accumulatedElapsed, totalDuration);
+    startTimestamp = 0;
+  }
 }
 
 /**
@@ -125,11 +207,15 @@ function updateReaderTimer(totalSeconds) {
  */
 function openReader() {
   reader.classList.add("active");
-  isPlaying = true;
-  playPauseBtn.textContent = "Пауза";
-  const totalChars = countChars(inputText.value, includeSpaces.checked);
-  const totalSeconds = Math.ceil((totalChars / Number(speedInput.value)) * 60);
-  updateReaderTimer(totalSeconds);
+  isPlaying = false;
+  playPauseBtn.textContent = "Плей";
+  readerText.textContent = inputText.value;
+  requestAnimationFrame(() => {
+    const metrics = getReaderMetrics();
+    totalDistance = metrics.distance;
+    totalDuration = metrics.duration;
+    resetReaderScroll();
+  });
 }
 
 /**
@@ -137,6 +223,10 @@ function openReader() {
  */
 function closeReader() {
   reader.classList.remove("active");
+  if (animationId) {
+    cancelAnimationFrame(animationId);
+    animationId = null;
+  }
 }
 
 /**
@@ -145,6 +235,11 @@ function closeReader() {
 function togglePlay() {
   isPlaying = !isPlaying;
   playPauseBtn.textContent = isPlaying ? "Пауза" : "Плей";
+  if (isPlaying) {
+    startScroll();
+  } else {
+    pauseScroll();
+  }
 }
 
 loadSettings();
@@ -184,5 +279,15 @@ fullscreenBtn.addEventListener("click", () => {
     document.documentElement.requestFullscreen();
   } else {
     document.exitFullscreen();
+  }
+});
+
+document.addEventListener("keydown", (event) => {
+  if (!reader.classList.contains("active")) {
+    return;
+  }
+  if (event.code === "Space") {
+    event.preventDefault();
+    togglePlay();
   }
 });

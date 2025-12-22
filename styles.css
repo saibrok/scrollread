@@ -226,10 +226,27 @@ input[type="range"] {
 .reader-body {
   flex: 1;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 32px 64px;
+  align-items: stretch;
+  justify-content: stretch;
+  padding: 32px 80px;
   font-size: 32px;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.reader-stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.reader-text {
+  white-space: pre-wrap;
+  line-height: 1.6;
+  transform: translateY(0);
+  will-change: transform;
 }
 
 @media (max-width: 900px) {
