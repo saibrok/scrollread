@@ -29,6 +29,7 @@ const emit = defineEmits(['close']);
             <div><strong>Space</strong> - плей/пауза</div>
             <div><strong>F</strong> - полный экран</div>
             <div><strong>Up/Down</strong> - скорость +100</div>
+            <div><strong>W/S</strong> - удерживать множитель скорости x2 / x0.5</div>
             <div><strong>Left/Right</strong> - размер шрифта +2</div>
             <div><strong>Home/End</strong> - в начало/конец</div>
         </div>

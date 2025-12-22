@@ -23,6 +23,10 @@ const props = defineProps({
         type: String,
         required: true,
     },
+    speedMultiplierLabel: {
+        type: String,
+        default: '',
+    },
 });
 
 const emit = defineEmits(['toggle-play', 'fullscreen', 'reset', 'help', 'close', 'update:theme-tone', 'update:theme-palette']);
@@ -62,6 +66,13 @@ const paletteOptions = computed(() => getPaletteOptions(props.themeTone));
                         @update:model-value="emit('update:theme-palette', $event)"
                     />
                 </label>
+            </div>
+            <div
+                v-if="props.speedMultiplierLabel"
+                class="reader-multiplier"
+                aria-hidden="true"
+            >
+                {{ props.speedMultiplierLabel }}
             </div>
             <SrButton
                 class="reader-btn"

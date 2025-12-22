@@ -59,6 +59,24 @@
   width: 100%;
 }
 
+.reader-multiplier {
+  pointer-events: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 48px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--reader-text);
+  background: var(--reader-surface);
+  border: 1px solid var(--reader-border);
+  border-radius: 12px;
+  box-shadow: var(--ui-shadow, 0 10px 20px rgb(15 23 42 / 8%));
+}
+
 .reader-timer {
   font-size: 14px;
   color: var(--reader-text-muted);

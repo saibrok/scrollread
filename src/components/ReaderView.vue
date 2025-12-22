@@ -50,10 +50,12 @@ const readerStyle = computed(() => {
 
 const readerHtml = computed(() => toParagraphs(props.text));
 
+const speedMultiplier = ref(1);
+
 const { isPlaying, currentSeconds, totalDuration, togglePlay, pauseScroll, jumpToEdge, recalcMetricsPreservePosition, initReader, handleWheel } =
     useReaderPlayer({
         getText: () => props.text,
-        getSpeed: () => settings.speed,
+        getSpeed: () => settings.speed * speedMultiplier.value,
         stageRef: readerStage,
         textRef: readerText,
     });
@@ -65,6 +67,22 @@ const timerText = computed(() => {
 function updateSetting({ key, value }) {
     settings[key] = value;
 }
+
+function setSpeedMultiplier(multiplier) {
+    speedMultiplier.value = multiplier || 1;
+    recalcMetricsPreservePosition();
+}
+
+const speedMultiplierLabel = computed(() => {
+    if (speedMultiplier.value === 2) {
+        return 'x2';
+    }
+    if (speedMultiplier.value === 0.5) {
+        return 'x0.5';
+    }
+
+    return '';
+});
 
 function openHelp() {
     helpOpen.value = true;
@@ -94,6 +112,7 @@ function handleClose() {
     pauseScroll();
     helpOpen.value = false;
     resetOpen.value = false;
+    speedMultiplier.value = 1;
     emit('close');
 }
 
@@ -112,6 +131,7 @@ watch(
             isPlaying.value = false;
             helpOpen.value = false;
             resetOpen.value = false;
+            speedMultiplier.value = 1;
             initReader();
         } else {
             pauseScroll();
@@ -148,6 +168,7 @@ watch(
 useReaderShortcuts({
     isOpen: () => props.open,
     settings,
+    setSpeedMultiplier,
     togglePlay,
     jumpToEdge,
     handleFullscreen,
@@ -169,6 +190,7 @@ useReaderShortcuts({
             :timer-text="timerText"
             :theme-tone="settings.themeTone"
             :theme-palette="settings.themePalette"
+            :speed-multiplier-label="speedMultiplierLabel"
             @toggle-play="togglePlay"
             @fullscreen="handleFullscreen"
             @update:theme-tone="(value) => updateSetting({ key: 'themeTone', value })"
