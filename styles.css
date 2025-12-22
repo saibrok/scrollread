@@ -1,0 +1,239 @@
+﻿:root {
+  color-scheme: light dark;
+  --bg: #f6f7fb;
+  --bg-accent: #e8ebf6;
+  --surface: #ffffff;
+  --text: #1f2633;
+  --muted: #606778;
+  --border: #d9deea;
+  --accent: #2f5ef5;
+  --accent-weak: #e7eeff;
+  --shadow: 0 10px 30px rgba(21, 30, 50, 0.12);
+}
+
+body.theme-dark {
+  --bg: #0e1117;
+  --bg-accent: #161c28;
+  --surface: #141a24;
+  --text: #e8edf7;
+  --muted: #9aa6bc;
+  --border: #283047;
+  --accent: #6ea3ff;
+  --accent-weak: #1a2640;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Rubik", "Segoe UI", Arial, sans-serif;
+  background: radial-gradient(circle at top left, var(--bg-accent), var(--bg));
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  align-items: stretch;
+}
+
+.page {
+  width: min(1100px, 92vw);
+  margin: 48px auto 72px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+.subtitle {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: var(--shadow);
+  display: grid;
+  grid-template-columns: 1.4fr 0.9fr;
+  gap: 24px;
+}
+
+.editor {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.label {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+textarea {
+  width: 100%;
+  min-height: 360px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  padding: 16px 18px;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text);
+  background: transparent;
+  resize: vertical;
+}
+
+textarea:focus,
+select:focus,
+input[type="range"]:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.control {
+  background: var(--bg-accent);
+  border-radius: 16px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.value {
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.range-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.meta {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+select,
+input[type="range"] {
+  width: 100%;
+}
+
+.start {
+  margin-top: auto;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  padding: 14px 18px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 12px 24px rgba(47, 94, 245, 0.3);
+}
+
+.start:hover {
+  transform: translateY(-1px);
+}
+
+.footer-note {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.reader {
+  position: fixed;
+  inset: 0;
+  background: #0d1016;
+  color: #e7ebf3;
+  display: none;
+  flex-direction: column;
+  z-index: 50;
+}
+
+.reader.active {
+  display: flex;
+}
+
+.reader-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background: rgba(14, 18, 26, 0.95);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+}
+
+.reader-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.reader-btn {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.08);
+  color: inherit;
+  padding: 8px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}
+
+.reader-timer {
+  font-size: 14px;
+  color: rgba(231, 235, 243, 0.8);
+}
+
+.reader-body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 64px;
+  font-size: 32px;
+}
+
+@media (max-width: 900px) {
+  .card {
+    grid-template-columns: 1fr;
+  }
+}
