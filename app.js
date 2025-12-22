@@ -1,6 +1,5 @@
 ﻿const STORAGE_KEY = "teleprompter_settings_v1";
-const state = {
-  includeSpaces: true,
+const DEFAULTS = {
   speed: 800,
   theme: "system",
   readerFontSize: 32,
@@ -12,12 +11,14 @@ const state = {
   readerContrast: 100,
   readerSepia: 0,
 };
+const state = { ...DEFAULTS };
 
 const inputText = document.getElementById("inputText");
-const includeSpaces = document.getElementById("includeSpaces");
 const speedInput = document.getElementById("speed");
 const speedValue = document.getElementById("speedValue");
 const charCount = document.getElementById("charCount");
+const wordCount = document.getElementById("wordCount");
+const charCountNoSpaces = document.getElementById("charCountNoSpaces");
 const timeRange = document.getElementById("timeRange");
 const themeSelect = document.getElementById("themeSelect");
 const reader = document.getElementById("reader");
@@ -25,6 +26,11 @@ const startBtn = document.getElementById("startBtn");
 const closeReaderBtn = document.getElementById("closeReaderBtn");
 const playPauseBtn = document.getElementById("playPauseBtn");
 const fullscreenBtn = document.getElementById("fullscreenBtn");
+const jumpEndBtn = document.getElementById("jumpEndBtn");
+const resetSettingsBtn = document.getElementById("resetSettingsBtn");
+const helpBtn = document.getElementById("helpBtn");
+const readerHelp = document.getElementById("readerHelp");
+const helpCloseBtn = document.getElementById("helpCloseBtn");
 const readerTimer = document.getElementById("readerTimer");
 const readerStage = document.getElementById("readerStage");
 const readerText = document.getElementById("readerText");
@@ -82,13 +88,19 @@ function updateCounts() {
   const text = inputText.value;
   const withSpaces = countChars(text, true);
   const withoutSpaces = countChars(text, false);
-  charCount.textContent = includeSpaces.checked ? withSpaces : withoutSpaces;
+  const words = text.trim().length
+    ? text.trim().split(/\s+/).filter(Boolean).length
+    : 0;
+  wordCount.textContent = words;
+  charCount.textContent = withSpaces;
+  charCountNoSpaces.textContent = withoutSpaces;
 
   const speed = Number(speedInput.value);
   const minSeconds = Math.ceil((withoutSpaces / speed) * 60);
   const maxSeconds = Math.ceil((withSpaces / speed) * 60);
   timeRange.textContent = `${formatTime(minSeconds)}-${formatTime(maxSeconds)}`;
   speedValue.textContent = speed;
+  startBtn.disabled = text.trim().length === 0;
 }
 
 /**
@@ -96,7 +108,6 @@ function updateCounts() {
  */
 function saveSettings() {
   const settings = {
-    includeSpaces: includeSpaces.checked,
     speed: Number(speedInput.value),
     theme: themeSelect.value,
     readerFontSize: Number(readerFontSize.value),
@@ -121,9 +132,6 @@ function loadSettings() {
   }
   try {
     const parsed = JSON.parse(saved);
-    if (typeof parsed.includeSpaces === "boolean") {
-      state.includeSpaces = parsed.includeSpaces;
-    }
     if (typeof parsed.speed === "number") {
       state.speed = parsed.speed;
     }
@@ -227,8 +235,8 @@ function updateReaderTimer(currentSeconds, totalSeconds) {
  * @returns {{distance: number, duration: number}}
  */
 function getReaderMetrics() {
-  const totalChars = countChars(inputText.value, includeSpaces.checked);
-  const speed = Number(speedInput.value);
+  const totalChars = countChars(inputText.value, true);
+  const speed = Number(readerSpeed.value || speedInput.value);
   const duration = totalChars > 0 ? Math.ceil((totalChars / speed) * 60) : 0;
   const stageHeight = readerStage.clientHeight;
   const baseDistance = Math.max(0, readerText.scrollHeight - stageHeight);
@@ -244,6 +252,18 @@ function resetReaderScroll() {
   startTimestamp = 0;
   accumulatedElapsed = 0;
   updateReaderTimer(0, totalDuration);
+}
+
+/**
+ * Render scroll position for a given elapsed time.
+ * @param {number} elapsedSeconds
+ */
+function renderScroll(elapsedSeconds) {
+  const clamped = Math.min(Math.max(elapsedSeconds, 0), totalDuration);
+  const progress = totalDuration > 0 ? clamped / totalDuration : 0;
+  const offset = -totalDistance * progress;
+  readerText.style.transform = `translateY(${offset}px)`;
+  updateReaderTimer(Math.floor(clamped), totalDuration);
 }
 
 /**
@@ -270,13 +290,12 @@ function startScroll() {
       return;
     }
     const elapsed = accumulatedElapsed + (timestamp - startTimestamp) / 1000;
-    const clamped = Math.min(elapsed, totalDuration);
-    const progress = totalDuration > 0 ? clamped / totalDuration : 0;
-    const offset = -totalDistance * progress;
-    readerText.style.transform = `translateY(${offset}px)`;
-    updateReaderTimer(Math.floor(clamped), totalDuration);
+    renderScroll(elapsed);
     if (elapsed < totalDuration) {
       animationId = requestAnimationFrame(tick);
+    } else {
+      isPlaying = false;
+      playPauseBtn.textContent = "Плей";
     }
   };
   animationId = requestAnimationFrame(tick);
@@ -302,6 +321,9 @@ function pauseScroll() {
  * Open reader mode.
  */
 function openReader() {
+  if (startBtn.disabled) {
+    return;
+  }
   reader.classList.add("active");
   isPlaying = false;
   playPauseBtn.textContent = "Плей";
@@ -320,6 +342,7 @@ function openReader() {
  */
 function closeReader() {
   reader.classList.remove("active");
+  readerHelp.classList.remove("active");
   if (animationId) {
     cancelAnimationFrame(animationId);
     animationId = null;
@@ -339,9 +362,53 @@ function togglePlay() {
   }
 }
 
+/**
+ * Jump to start or end.
+ * @param {boolean} toEnd
+ */
+function jumpToEdge(toEnd) {
+  if (!totalDuration) {
+    const metrics = getReaderMetrics();
+    totalDistance = metrics.distance;
+    totalDuration = metrics.duration;
+  }
+  pauseScroll();
+  accumulatedElapsed = toEnd ? totalDuration : 0;
+  startTimestamp = 0;
+  renderScroll(accumulatedElapsed);
+}
+
+/**
+ * Reset settings to defaults.
+ */
+function resetSettings() {
+  Object.assign(state, DEFAULTS);
+  speedInput.value = state.speed;
+  speedValue.textContent = state.speed;
+  readerSpeed.value = state.speed;
+  readerSpeedValue.textContent = state.speed;
+  themeSelect.value = state.theme;
+  readerFontSize.value = state.readerFontSize;
+  readerFontSizeValue.textContent = state.readerFontSize;
+  readerFont.value = state.readerFont;
+  readerAlign.value = state.readerAlign;
+  readerPadding.value = state.readerPadding;
+  readerPaddingValue.textContent = state.readerPadding;
+  readerTheme.value = state.readerTheme;
+  readerBrightness.value = state.readerBrightness;
+  readerBrightnessValue.textContent = state.readerBrightness;
+  readerContrast.value = state.readerContrast;
+  readerContrastValue.textContent = state.readerContrast;
+  readerSepia.value = state.readerSepia;
+  readerSepiaValue.textContent = state.readerSepia;
+  applyTheme();
+  applyReaderSettings();
+  updateCounts();
+  saveSettings();
+}
+
 loadSettings();
 
-includeSpaces.checked = state.includeSpaces;
 speedInput.value = state.speed;
 themeSelect.value = state.theme;
 readerSpeed.value = state.speed;
@@ -365,10 +432,6 @@ applyTheme();
 applyReaderSettings();
 
 inputText.addEventListener("input", updateCounts);
-includeSpaces.addEventListener("change", () => {
-  updateCounts();
-  saveSettings();
-});
 speedInput.addEventListener("input", () => {
   updateCounts();
   syncSpeedControls(speedInput.value);
@@ -394,6 +457,20 @@ fullscreenBtn.addEventListener("click", () => {
   } else {
     document.exitFullscreen();
   }
+});
+
+jumpEndBtn.addEventListener("click", () => {
+  jumpToEdge(true);
+});
+
+resetSettingsBtn.addEventListener("click", resetSettings);
+
+helpBtn.addEventListener("click", () => {
+  readerHelp.classList.add("active");
+});
+
+helpCloseBtn.addEventListener("click", () => {
+  readerHelp.classList.remove("active");
 });
 
 readerSpeed.addEventListener("input", () => {
@@ -463,8 +540,98 @@ document.addEventListener("keydown", (event) => {
   if (!reader.classList.contains("active")) {
     return;
   }
+  const tagName = event.target.tagName.toLowerCase();
+  if (["input", "textarea", "select"].includes(tagName)) {
+    return;
+  }
   if (event.code === "Space") {
     event.preventDefault();
     togglePlay();
+    return;
+  }
+  if (event.key === "?") {
+    event.preventDefault();
+    readerHelp.classList.add("active");
+    return;
+  }
+  if (event.key === "Escape") {
+    event.preventDefault();
+    closeReader();
+    return;
+  }
+  if (event.key.toLowerCase() === "f") {
+    event.preventDefault();
+    fullscreenBtn.click();
+    return;
+  }
+  if (event.key === "ArrowUp") {
+    event.preventDefault();
+    const next = Math.min(2000, Number(readerSpeed.value) + 100);
+    syncSpeedControls(next);
+    updateCounts();
+    saveSettings();
+    const metrics = getReaderMetrics();
+    totalDistance = metrics.distance;
+    totalDuration = metrics.duration;
+    return;
+  }
+  if (event.key === "ArrowDown") {
+    event.preventDefault();
+    const next = Math.max(100, Number(readerSpeed.value) - 100);
+    syncSpeedControls(next);
+    updateCounts();
+    saveSettings();
+    const metrics = getReaderMetrics();
+    totalDistance = metrics.distance;
+    totalDuration = metrics.duration;
+    return;
+  }
+  if (event.key === "ArrowRight") {
+    event.preventDefault();
+    const next = Math.min(100, Number(readerFontSize.value) + 2);
+    readerFontSize.value = next;
+    readerFontSizeValue.textContent = next;
+    applyReaderSettings();
+    saveSettings();
+    const metrics = getReaderMetrics();
+    totalDistance = metrics.distance;
+    totalDuration = metrics.duration;
+    return;
+  }
+  if (event.key === "ArrowLeft") {
+    event.preventDefault();
+    const next = Math.max(10, Number(readerFontSize.value) - 2);
+    readerFontSize.value = next;
+    readerFontSizeValue.textContent = next;
+    applyReaderSettings();
+    saveSettings();
+    const metrics = getReaderMetrics();
+    totalDistance = metrics.distance;
+    totalDuration = metrics.duration;
+    return;
+  }
+  if (event.key === "Home") {
+    event.preventDefault();
+    jumpToEdge(false);
+    return;
+  }
+  if (event.key === "End") {
+    event.preventDefault();
+    jumpToEdge(true);
+    return;
   }
 });
+
+readerStage.addEventListener("wheel", (event) => {
+  if (isPlaying || totalDuration === 0 || totalDistance === 0) {
+    return;
+  }
+  event.preventDefault();
+  const delta = event.deltaY / totalDistance;
+  accumulatedElapsed = Math.min(
+    totalDuration,
+    Math.max(0, accumulatedElapsed + delta * totalDuration)
+  );
+  renderScroll(accumulatedElapsed);
+});
+

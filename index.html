@@ -25,12 +25,10 @@
 
       <div class="controls">
         <div class="control">
-          <div class="label">Символы</div>
-          <div class="value" id="charCount">0</div>
-          <label class="checkbox">
-            <input type="checkbox" id="includeSpaces" checked>
-            включая пробелы
-          </label>
+          <div class="label">Статистика</div>
+          <div class="stat-line">Всего слов: <strong id="wordCount">0</strong></div>
+          <div class="stat-line">Всего символов: <strong id="charCount">0</strong></div>
+          <div class="stat-line">Без пробелов: <strong id="charCountNoSpaces">0</strong></div>
         </div>
 
         <div class="control">
@@ -52,7 +50,7 @@
           </select>
         </div>
 
-        <button class="start" id="startBtn">НАЧАТЬ</button>
+        <button class="start" id="startBtn" disabled>НАЧАТЬ</button>
       </div>
     </section>
   </div>
@@ -62,9 +60,12 @@
       <div class="reader-controls">
         <button class="reader-btn" id="playPauseBtn">Пауза</button>
         <button class="reader-btn" id="fullscreenBtn">Полный экран</button>
+        <button class="reader-btn" id="jumpEndBtn">В конец</button>
       </div>
       <div class="reader-timer" id="readerTimer">0:00 / 0:00</div>
       <div class="reader-controls">
+        <button class="reader-btn" id="resetSettingsBtn">Сброс</button>
+        <button class="reader-btn" id="helpBtn">?</button>
         <button class="reader-btn" id="closeReaderBtn">Закрыть</button>
       </div>
     </div>
@@ -135,6 +136,23 @@
         <div class="reader-text" id="readerText"></div>
       </div>
       <div class="reader-overlay reader-overlay-bottom" aria-hidden="true"></div>
+    </div>
+    <div class="reader-help" id="readerHelp" aria-hidden="true">
+      <div class="reader-help-card">
+        <div class="reader-help-header">
+          <div>Горячие клавиши</div>
+          <button class="reader-btn" id="helpCloseBtn">Закрыть</button>
+        </div>
+        <div class="reader-help-grid">
+          <div><strong>Space</strong> — плей/пауза</div>
+          <div><strong>Esc</strong> — закрыть</div>
+          <div><strong>F</strong> — полный экран</div>
+          <div><strong>?</strong> — справка</div>
+          <div><strong>↑/↓</strong> — скорость ±100</div>
+          <div><strong>←/→</strong> — размер шрифта ±2</div>
+          <div><strong>Home/End</strong> — в начало/конец</div>
+        </div>
+      </div>
     </div>
   </div>
 
