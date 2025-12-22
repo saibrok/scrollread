@@ -1,0 +1,23 @@
+body.theme-gray-light-light {
+  --bg: #fbfcfe;
+  --bg-accent: #f1f3f6;
+  --surface: #ffffff;
+  --text: #171b21;
+  --muted: #525a66;
+  --border: #c6ccd6;
+  --accent: #3f5bff;
+  --accent-weak: #dde3ff;
+  --shadow: 0 12px 26px rgba(24, 30, 40, 0.12);
+  --reader-text-rgb: 23 27 33;
+  --reader-text: rgb(var(--reader-text-rgb));
+  --reader-text-muted: rgb(var(--reader-text-rgb) / 0.62);
+  --reader-border: rgb(var(--reader-text-rgb) / 0.12);
+  --reader-help-border: rgb(var(--reader-text-rgb) / 0.12);
+  --reader-bg: #f6f7fa;
+  --reader-surface: rgba(255, 255, 255, 0.97);
+  --reader-surface-strong: rgb(247, 249, 252);
+  --reader-help-bg: rgba(255, 255, 255, 0.98);
+  --reader-overlay-base: 231 234 239;
+}
+
+

@@ -18,80 +18,6 @@
   --read-padding: 120px;
 }
 
-.reader--theme-dark-gray {
-  --reader-bg: #0d1016;
-  --reader-text: #e7ebf3;
-  --reader-text-muted: rgba(231, 235, 243, 0.7);
-  --reader-border: rgba(255, 255, 255, 0.08);
-  --reader-surface: rgba(14, 18, 26, 0.95);
-  --reader-surface-strong: rgb(12, 16, 24);
-  --reader-help-bg: rgba(18, 22, 32, 0.95);
-  --reader-help-border: rgba(255, 255, 255, 0.12);
-  --reader-overlay-base: 6 9 13;
-}
-
-.reader--theme-light-gray {
-  --reader-bg: #f0f1f5;
-  --reader-text: #1a1f2b;
-  --reader-text-muted: rgba(26, 31, 43, 0.65);
-  --reader-border: rgba(26, 31, 43, 0.12);
-  --reader-surface: rgba(248, 249, 252, 0.95);
-  --reader-surface-strong: rgb(242, 244, 248);
-  --reader-help-bg: rgba(255, 255, 255, 0.96);
-  --reader-help-border: rgba(26, 31, 43, 0.12);
-  --reader-overlay-base: 229 232 240;
-}
-
-.reader--theme-sepia {
-  --reader-bg: #f2e6d0;
-  --reader-text: #3b2f25;
-  --reader-text-muted: rgba(59, 47, 37, 0.65);
-  --reader-border: rgba(59, 47, 37, 0.12);
-  --reader-surface: rgba(248, 237, 216, 0.95);
-  --reader-surface-strong: rgb(242, 230, 208);
-  --reader-help-bg: rgba(252, 245, 232, 0.96);
-  --reader-help-border: rgba(59, 47, 37, 0.12);
-  --reader-overlay-base: 222 207 183;
-}
-
-.reader--theme-paper {
-  --reader-bg: #fbf8f0;
-  --reader-text: #2d2a26;
-  --reader-text-muted: rgba(45, 42, 38, 0.62);
-  --reader-border: rgba(45, 42, 38, 0.12);
-  --reader-surface: rgba(255, 252, 246, 0.96);
-  --reader-surface-strong: rgb(249, 244, 235);
-  --reader-help-bg: rgba(255, 253, 249, 0.97);
-  --reader-help-border: rgba(45, 42, 38, 0.12);
-  --reader-overlay-base: 223 214 199;
-}
-
-.reader--theme-system {
-  --reader-bg: #f0f1f5;
-  --reader-text: #1a1f2b;
-  --reader-text-muted: rgba(26, 31, 43, 0.65);
-  --reader-border: rgba(26, 31, 43, 0.12);
-  --reader-surface: rgba(248, 249, 252, 0.95);
-  --reader-surface-strong: rgb(242, 244, 248);
-  --reader-help-bg: rgba(255, 255, 255, 0.96);
-  --reader-help-border: rgba(26, 31, 43, 0.12);
-  --reader-overlay-base: 229 232 240;
-}
-
-@media (prefers-color-scheme: dark) {
-  .reader--theme-system {
-    --reader-bg: #0d1016;
-    --reader-text: #e7ebf3;
-    --reader-text-muted: rgba(231, 235, 243, 0.7);
-    --reader-border: rgba(255, 255, 255, 0.08);
-    --reader-surface: rgba(14, 18, 26, 0.95);
-    --reader-surface-strong: rgb(12, 16, 24);
-    --reader-help-bg: rgba(18, 22, 32, 0.95);
-    --reader-help-border: rgba(255, 255, 255, 0.12);
-    --reader-overlay-base: 6 9 13;
-  }
-}
-
 .reader.active {
   display: flex;
 }
@@ -180,10 +106,12 @@
   padding-top: calc(var(--read-band) * var(--read-line-height) / 2 - 1em * var(--read-line-height) + 1em);
   font-family: var(--reader-font);
   width: 100%;
+  text-align: var(--reader-align);
 }
 
 .reader-text p {
   margin: 0 0 var(--read-paragraph-gap);
+  text-indent: var(--reader-indent);
 }
 
 .reader-text p:last-child {
@@ -196,7 +124,7 @@
   z-index: 10;
 }
 
-.reader-help {
+.sr-modal {
   position: absolute;
   inset: 0;
   display: none;
@@ -207,11 +135,11 @@
   z-index: 60;
 }
 
-.reader-help.active {
+.sr-modal.active {
   display: flex;
 }
 
-.reader-help-card {
+.sr-modal-card {
   width: min(520px, 90vw);
   background: var(--reader-help-bg);
   border: 1px solid var(--reader-help-border);
@@ -221,7 +149,11 @@
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
 }
 
-.reader-help-header {
+.sr-modal-card--compact {
+  width: min(420px, 90vw);
+}
+
+.sr-modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -232,8 +164,21 @@
   margin-bottom: 12px;
 }
 
-.reader-help-grid {
+.sr-modal-grid {
   display: grid;
   gap: 8px;
   font-size: 14px;
+}
+
+.sr-modal-text {
+  font-size: 14px;
+  color: var(--reader-text);
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.sr-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
 }

@@ -1,5 +1,6 @@
 ﻿<script setup>
 import SrButton from '../ui/SrButton.vue';
+import SrModal from '../ui/SrModal.vue';
 
 const props = defineProps({
     open: {
@@ -12,29 +13,25 @@ const emit = defineEmits(['close']);
 </script>
 
 <template>
-    <div
-        class="reader-help"
-        :class="{ active: props.open }"
-        aria-hidden="true"
+    <SrModal
+        :open="props.open"
+        @close="emit('close')"
     >
-        <div class="reader-help-card">
-            <div class="reader-help-header">
-                <div>Горячие клавиши</div>
-                <SrButton
-                    class="reader-btn"
-                    @click="emit('close')"
-                    >Закрыть</SrButton
-                >
-            </div>
-            <div class="reader-help-grid">
-                <div><strong>Space</strong> - плей/пауза</div>
-                <div><strong>Esc</strong> - закрыть</div>
-                <div><strong>F</strong> - полный экран</div>
-                <div><strong>?</strong> - справка</div>
-                <div><strong>↑/↓</strong> - скорость +100</div>
-                <div><strong>←/→</strong> - размер шрифта +2</div>
-                <div><strong>Home/End</strong> - в начало/конец</div>
-            </div>
+        <div class="sr-modal-header">
+            <div>Горячие клавиши</div>
+            <SrButton
+                class="reader-btn"
+                @click="emit('close')"
+                >Закрыть</SrButton
+            >
         </div>
-    </div>
+        <div class="sr-modal-grid">
+            <div><strong>Space</strong> - плей/пауза</div>
+            <div><strong>Esc</strong> - закрыть окно горячих клавиш</div>
+            <div><strong>F</strong> - полный экран</div>
+            <div><strong>Up/Down</strong> - скорость +100</div>
+            <div><strong>Left/Right</strong> - размер шрифта +2</div>
+            <div><strong>Home/End</strong> - в начало/конец</div>
+        </div>
+    </SrModal>
 </template>

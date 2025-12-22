@@ -1,6 +1,10 @@
 ﻿<script setup>
+import { computed } from 'vue';
+
 import SrRange from '../ui/SrRange.vue';
 import SrSelect from '../ui/SrSelect.vue';
+
+import { THEME_TONE_OPTIONS, getPaletteOptions } from '../utils/themes';
 
 const props = defineProps({
     settings: {
@@ -27,13 +31,7 @@ const alignOptions = [
     { value: 'justify', text: 'На всю ширину' },
 ];
 
-const themeOptions = [
-    { value: 'system', text: 'Как в системе' },
-    { value: 'dark-gray', text: 'Dark Gray' },
-    { value: 'light-gray', text: 'Light Gray' },
-    { value: 'sepia', text: 'Sepia' },
-    { value: 'paper', text: 'Paper' },
-];
+const paletteOptions = computed(() => getPaletteOptions(props.settings.themeTone));
 
 function emitUpdate(key, value) {
     emit('update', { key, value });
@@ -63,205 +61,236 @@ function emitUpdate(key, value) {
         <div class="reader-control">
             <label
                 class="reader-label"
-                for="readerFontSize"
+                for="fontSize"
                 >Размер</label
             >
             <SrRange
-                id="readerFontSize"
-                :model-value="props.settings.readerFontSize"
+                id="fontSize"
+                :model-value="props.settings.fontSize"
                 min="10"
                 max="100"
                 step="2"
-                @update:model-value="emitUpdate('readerFontSize', $event)"
+                @update:model-value="emitUpdate('fontSize', $event)"
             />
             <div class="reader-value">
-                <span>{{ props.settings.readerFontSize }}</span> px
+                <span>{{ props.settings.fontSize }}</span> px
             </div>
         </div>
         <div class="reader-control">
             <label
                 class="reader-label"
-                for="readerLineHeight"
+                for="lineHeight"
                 >Интерлиньяж</label
             >
             <SrRange
-                id="readerLineHeight"
-                :model-value="props.settings.readerLineHeight"
+                id="lineHeight"
+                :model-value="props.settings.lineHeight"
                 min="1"
                 max="2.4"
                 step="0.1"
-                @update:model-value="emitUpdate('readerLineHeight', $event)"
+                @update:model-value="emitUpdate('lineHeight', $event)"
             />
             <div class="reader-value">
-                <span>{{ props.settings.readerLineHeight }}</span>
+                <span>{{ props.settings.lineHeight }}</span>
             </div>
         </div>
         <div class="reader-control">
             <label
                 class="reader-label"
-                for="readerParagraphGap"
+                for="paragraphGap"
                 >Отступ абзаца</label
             >
             <SrRange
-                id="readerParagraphGap"
-                :model-value="props.settings.readerParagraphGap"
+                id="paragraphGap"
+                :model-value="props.settings.paragraphGap"
                 min="0"
                 max="2"
                 step="0.1"
-                @update:model-value="emitUpdate('readerParagraphGap', $event)"
+                @update:model-value="emitUpdate('paragraphGap', $event)"
             />
             <div class="reader-value">
-                <span>{{ props.settings.readerParagraphGap }}</span> em
+                <span>{{ props.settings.paragraphGap }}</span> em
             </div>
         </div>
         <div class="reader-control">
             <label
                 class="reader-label"
-                for="readerFont"
+                for="indent"
+                >Красная строка</label
+            >
+            <SrRange
+                id="indent"
+                :model-value="props.settings.indent"
+                min="0"
+                max="4"
+                step="0.1"
+                @update:model-value="emitUpdate('indent', $event)"
+            />
+            <div class="reader-value">
+                <span>{{ props.settings.indent }}</span> em
+            </div>
+        </div>
+        <div class="reader-control">
+            <label
+                class="reader-label"
+                for="font"
                 >Шрифт</label
             >
             <SrSelect
-                id="readerFont"
-                :model-value="props.settings.readerFont"
+                id="font"
+                :model-value="props.settings.font"
                 :items="fontOptions"
-                @update:model-value="emitUpdate('readerFont', $event)"
+                @update:model-value="emitUpdate('font', $event)"
             />
         </div>
         <div class="reader-control">
             <label
                 class="reader-label"
-                for="readerAlign"
+                for="align"
                 >Положение</label
             >
             <SrSelect
-                id="readerAlign"
-                :model-value="props.settings.readerAlign"
+                id="align"
+                :model-value="props.settings.align"
                 :items="alignOptions"
-                @update:model-value="emitUpdate('readerAlign', $event)"
+                @update:model-value="emitUpdate('align', $event)"
             />
         </div>
         <div class="reader-control">
             <label
                 class="reader-label"
-                for="readerPadding"
+                for="padding"
                 >Отступы</label
             >
             <SrRange
-                id="readerPadding"
-                :model-value="props.settings.readerPadding"
+                id="padding"
+                :model-value="props.settings.padding"
                 min="0"
-                max="1500"
+                max="1000"
                 step="10"
-                @update:model-value="emitUpdate('readerPadding', $event)"
+                @update:model-value="emitUpdate('padding', $event)"
             />
             <div class="reader-value">
-                <span>{{ props.settings.readerPadding }}</span> px
+                <span>{{ props.settings.padding }}</span> px
             </div>
         </div>
         <div class="reader-control">
             <label
                 class="reader-label"
-                for="readerTheme"
-                >Тема</label
+                for="themeTone"
+                >Тон</label
             >
             <SrSelect
-                id="readerTheme"
-                :model-value="props.settings.theme"
-                :items="themeOptions"
-                @update:model-value="emitUpdate('theme', $event)"
+                id="themeTone"
+                :model-value="props.settings.themeTone"
+                :items="THEME_TONE_OPTIONS"
+                @update:model-value="emitUpdate('themeTone', $event)"
             />
         </div>
         <div class="reader-control">
             <label
                 class="reader-label"
-                for="readerBrightness"
+                for="themePalette"
+                >Цветовая схема</label
+            >
+            <SrSelect
+                id="themePalette"
+                :model-value="props.settings.themePalette"
+                :items="paletteOptions"
+                @update:model-value="emitUpdate('themePalette', $event)"
+            />
+        </div>
+        <div class="reader-control">
+            <label
+                class="reader-label"
+                for="brightness"
                 >Яркость</label
             >
             <SrRange
-                id="readerBrightness"
-                :model-value="props.settings.readerBrightness"
+                id="brightness"
+                :model-value="props.settings.brightness"
                 min="50"
                 max="150"
                 step="5"
-                @update:model-value="emitUpdate('readerBrightness', $event)"
+                @update:model-value="emitUpdate('brightness', $event)"
             />
             <div class="reader-value">
-                <span>{{ props.settings.readerBrightness }}</span
+                <span>{{ props.settings.brightness }}</span
                 >%
             </div>
         </div>
         <div class="reader-control">
             <label
                 class="reader-label"
-                for="readerContrast"
+                for="contrast"
                 >Контраст</label
             >
             <SrRange
-                id="readerContrast"
-                :model-value="props.settings.readerContrast"
+                id="contrast"
+                :model-value="props.settings.contrast"
                 min="50"
                 max="150"
                 step="5"
-                @update:model-value="emitUpdate('readerContrast', $event)"
+                @update:model-value="emitUpdate('contrast', $event)"
             />
             <div class="reader-value">
-                <span>{{ props.settings.readerContrast }}</span
+                <span>{{ props.settings.contrast }}</span
                 >%
             </div>
         </div>
         <div class="reader-control">
             <label
                 class="reader-label"
-                for="readerSepia"
+                for="sepia"
                 >Сепия</label
             >
             <SrRange
-                id="readerSepia"
-                :model-value="props.settings.readerSepia"
+                id="sepia"
+                :model-value="props.settings.sepia"
                 min="0"
                 max="100"
                 step="5"
-                @update:model-value="emitUpdate('readerSepia', $event)"
+                @update:model-value="emitUpdate('sepia', $event)"
             />
             <div class="reader-value">
-                <span>{{ props.settings.readerSepia }}</span
+                <span>{{ props.settings.sepia }}</span
                 >%
             </div>
         </div>
         <div class="reader-control">
             <label
                 class="reader-label"
-                for="readerOverlaySize"
+                for="overlaySize"
                 >Размер окна</label
             >
             <SrRange
-                id="readerOverlaySize"
-                :model-value="props.settings.readerOverlaySize"
+                id="overlaySize"
+                :model-value="props.settings.overlaySize"
                 min="1"
                 max="10"
                 step="1"
-                @update:model-value="emitUpdate('readerOverlaySize', $event)"
+                @update:model-value="emitUpdate('overlaySize', $event)"
             />
             <div class="reader-value">
-                <span>{{ props.settings.readerOverlaySize }}</span> строк(и)
+                <span>{{ props.settings.overlaySize }}</span> строк(и)
             </div>
         </div>
         <div class="reader-control">
             <label
                 class="reader-label"
-                for="readerOverlayOpacity"
+                for="overlayOpacity"
                 >Прозрачность</label
             >
             <SrRange
-                id="readerOverlayOpacity"
-                :model-value="props.settings.readerOverlayOpacity"
+                id="overlayOpacity"
+                :model-value="props.settings.overlayOpacity"
                 min="0"
                 max="100"
                 step="5"
-                @update:model-value="emitUpdate('readerOverlayOpacity', $event)"
+                @update:model-value="emitUpdate('overlayOpacity', $event)"
             />
             <div class="reader-value">
-                <span>{{ props.settings.readerOverlayOpacity }}</span
+                <span>{{ props.settings.overlayOpacity }}</span
                 >%
             </div>
         </div>

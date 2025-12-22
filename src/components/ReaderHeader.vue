@@ -40,12 +40,12 @@ const emit = defineEmits(['toggle-play', 'fullscreen', 'jump-end', 'reset', 'hel
             <SrButton
                 class="reader-btn"
                 @click="emit('reset')"
-                >Сброс</SrButton
+                >Сброс настроек</SrButton
             >
             <SrButton
                 class="reader-btn"
                 @click="emit('help')"
-                >?</SrButton
+                >Горячие клавиши</SrButton
             >
             <SrButton
                 class="reader-btn"

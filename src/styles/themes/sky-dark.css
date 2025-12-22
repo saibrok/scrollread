@@ -1,0 +1,24 @@
+body.theme-sky-dark {
+  --bg: #101624;
+  --bg-accent: #182036;
+  --surface: #151d2d;
+  --text: #e4ecfb;
+  --muted: #9fb0c9;
+  --border: #2a3550;
+  --accent: #7aa2ff;
+  --accent-weak: #1d2742;
+  --shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+  --ui-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+  --reader-text-rgb: 228 236 251;
+  --reader-text: rgb(var(--reader-text-rgb));
+  --reader-text-muted: rgb(var(--reader-text-rgb) / 0.7);
+  --reader-border: rgb(var(--reader-text-rgb) / 0.08);
+  --reader-help-border: rgb(var(--reader-text-rgb) / 0.12);
+  --reader-bg: #0f1420;
+  --reader-surface: rgba(16, 22, 36, 0.95);
+  --reader-surface-strong: rgb(14, 20, 32);
+  --reader-help-bg: rgba(18, 24, 40, 0.95);
+  --reader-overlay-base: 7 10 16;
+}
+
+

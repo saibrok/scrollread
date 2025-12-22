@@ -1,15 +1,19 @@
 ﻿<script setup>
-defineProps({
+const props = defineProps({
     type: {
         type: String,
         default: 'button',
+    },
+    variant: {
+        type: String,
+        default: 'default',
     },
 });
 </script>
 
 <template>
     <button
-        class="sr-button"
+        :class="['sr-button', `sr-button--${props.variant}`]"
         :type="type"
         v-bind="$attrs"
     >
@@ -61,5 +65,17 @@ defineProps({
     cursor: not-allowed;
     opacity: 0.6;
     box-shadow: none;
+}
+
+.sr-button--accent {
+    color: #fff;
+    background: var(--accent);
+    border-color: var(--accent);
+}
+
+.sr-button--accent:hover {
+    filter: brightness(1.05);
+    background: var(--accent);
+    border-color: var(--accent);
 }
 </style>

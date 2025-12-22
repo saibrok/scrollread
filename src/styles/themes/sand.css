@@ -1,0 +1,23 @@
+body.theme-sand {
+  --bg: #f3ede3;
+  --bg-accent: #e9e0d2;
+  --surface: #fdfbf7;
+  --text: #3b342c;
+  --muted: #7a6f63;
+  --border: #ddd2c4;
+  --accent: #c48a58;
+  --accent-weak: #efe2d3;
+  --shadow: 0 12px 28px rgba(80, 70, 60, 0.12);
+  --reader-text-rgb: 58 51 43;
+  --reader-text: rgb(var(--reader-text-rgb));
+  --reader-text-muted: rgb(var(--reader-text-rgb) / 0.65);
+  --reader-border: rgb(var(--reader-text-rgb) / 0.12);
+  --reader-help-border: rgb(var(--reader-text-rgb) / 0.12);
+  --reader-bg: #f1e9dd;
+  --reader-surface: rgba(252, 248, 242, 0.96);
+  --reader-surface-strong: rgb(246, 238, 229);
+  --reader-help-bg: rgba(255, 251, 246, 0.97);
+  --reader-overlay-base: 223 214 202;
+}
+
+

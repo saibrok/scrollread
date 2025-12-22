@@ -1,24 +1,22 @@
-export const STORAGE_KEY = 'scrollread_settings_v1';
+export const STORAGE_KEY = 'scrollread_settings';
+export const TEXT_SAVES_KEY = 'scrollread_text_saves';
 
 export const DEFAULTS = {
     speed: 800,
-    theme: 'system',
-    readerFontSize: 32,
-    readerFont: "'Rubik', 'Segoe UI', Arial, sans-serif",
-    readerAlign: 'left',
-    readerPadding: 120,
-    readerBrightness: 100,
-    readerContrast: 100,
-    readerSepia: 0,
-    readerOverlaySize: 3,
-    readerOverlayOpacity: 75,
-    readerLineHeight: 1.6,
-    readerParagraphGap: 0.6,
-};
-
-const THEME_MAP = {
-    dark: 'dark-gray',
-    light: 'light-gray',
+    themeTone: 'light',
+    themePalette: 'gray-medium',
+    fontSize: 32,
+    font: "'Rubik', 'Segoe UI', Arial, sans-serif",
+    align: 'left',
+    padding: 120,
+    brightness: 100,
+    contrast: 100,
+    sepia: 0,
+    overlaySize: 3,
+    overlayOpacity: 75,
+    lineHeight: 1.6,
+    paragraphGap: 0.6,
+    indent: 1,
 };
 
 /**
@@ -33,10 +31,8 @@ export function loadSettings() {
     }
     try {
         const parsed = JSON.parse(saved);
-        const themeValue = parsed.theme ?? parsed.readerTheme;
-        const normalizedTheme = THEME_MAP[themeValue] || themeValue || DEFAULTS.theme;
 
-        return { ...DEFAULTS, ...parsed, theme: normalizedTheme };
+        return { ...DEFAULTS, ...parsed };
     } catch (error) {
         console.warn('Settings parse error', error);
 
@@ -52,3 +48,41 @@ export function saveSettings(settings) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
 }
 
+/**
+ * Load saved texts from localStorage.
+ * @returns {{ id: string, text: string, savedAt: string }[]}
+ */
+export function loadTextSaves() {
+    const saved = localStorage.getItem(TEXT_SAVES_KEY);
+
+    if (!saved) {
+        return [];
+    }
+    try {
+        const parsed = JSON.parse(saved);
+
+        if (!Array.isArray(parsed)) {
+            return [];
+        }
+
+        return parsed.filter(
+            (item) =>
+                item &&
+                typeof item.id === 'string' &&
+                typeof item.text === 'string' &&
+                typeof item.savedAt === 'string',
+        );
+    } catch (error) {
+        console.warn('Text saves parse error', error);
+
+        return [];
+    }
+}
+
+/**
+ * Save texts to localStorage.
+ * @param {{ id: string, text: string, savedAt: string }[]} saves
+ */
+export function saveTextSaves(saves) {
+    localStorage.setItem(TEXT_SAVES_KEY, JSON.stringify(saves));
+}

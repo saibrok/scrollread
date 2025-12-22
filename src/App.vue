@@ -1,7 +1,8 @@
 ﻿<script setup>
-import { computed, onBeforeUnmount, onMounted, provide, reactive, ref, watch } from 'vue';
+import { computed, onMounted, provide, reactive, ref, watch } from 'vue';
 
-import { DEFAULTS, loadSettings, saveSettings } from './utils/storage';
+import { DEFAULTS, loadSettings, loadTextSaves, saveSettings, saveTextSaves } from './utils/storage';
+import { THEME_CLASS_NAMES, normalizePalette, resolveThemeName } from './utils/themes';
 import { countChars, countWords, formatTime } from './utils/text';
 
 import EditorView from './components/EditorView.vue';
@@ -10,6 +11,11 @@ import ReaderView from './components/ReaderView.vue';
 const text = ref('');
 const settings = reactive(loadSettings());
 const readerOpen = ref(false);
+const textSaves = ref(loadTextSaves());
+const selectedSaveId = ref('');
+const saveConfirmOpen = ref(false);
+const loadConfirmOpen = ref(false);
+const deleteConfirmOpen = ref(false);
 
 const stats = computed(() => {
     return {
@@ -30,6 +36,21 @@ const timeRange = computed(() => {
 });
 
 const canStart = computed(() => text.value.trim().length > 0);
+const canSave = computed(() => text.value.trim().length > 0);
+const canLoad = computed(() => {
+    if (!selectedSaveId.value) {
+        return false;
+    }
+
+    return textSaves.value.some((save) => save.id === selectedSaveId.value);
+});
+
+const saveOptions = computed(() =>
+    textSaves.value.map((entry) => ({
+        value: entry.id,
+        text: formatSaveLabel(entry),
+    })),
+);
 
 function openReader() {
     if (!canStart.value) {
@@ -46,42 +67,37 @@ function resetSettings() {
     Object.assign(settings, DEFAULTS);
 }
 
-const themeClasses = ['theme-system', 'theme-dark-gray', 'theme-light-gray', 'theme-sepia', 'theme-paper'];
+function applyTheme(tone, palette) {
+    const normalizedPalette = normalizePalette(tone, palette);
+    const themeName = resolveThemeName(tone, normalizedPalette);
 
-function applyTheme(theme) {
-    const nextTheme = theme || 'system';
-
-    document.body.classList.remove(...themeClasses);
-    document.body.classList.add(`theme-${nextTheme}`);
+    document.body.classList.remove(...THEME_CLASS_NAMES);
+    document.body.classList.add(`theme-${themeName}`);
 }
 
 provide('settings', settings);
 provide('resetSettings', resetSettings);
 
-let mediaQuery = null;
-let handleMediaChange = null;
-
 onMounted(() => {
-    mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    applyTheme(settings.theme);
-    handleMediaChange = () => {
-        if (settings.theme === 'system') {
-            applyTheme(settings.theme);
-        }
-    };
-    mediaQuery.addEventListener('change', handleMediaChange);
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    if (!['dark', 'light'].includes(settings.themeTone)) {
+        settings.themeTone = prefersDark ? 'dark' : 'light';
+    }
+
+    applyTheme(settings.themeTone, settings.themePalette);
 });
 
-onBeforeUnmount(() => {
-    if (mediaQuery && handleMediaChange) {
-        mediaQuery.removeEventListener('change', handleMediaChange);
-    }
-});
 
 watch(
-    () => settings.theme,
-    (theme) => {
-        applyTheme(theme);
+    () => [settings.themeTone, settings.themePalette],
+    ([tone, palette]) => {
+        const normalizedPalette = normalizePalette(tone, palette);
+
+        if (normalizedPalette !== palette) {
+            settings.themePalette = normalizedPalette;
+        }
+        applyTheme(tone, normalizedPalette);
     },
 );
 
@@ -93,14 +109,153 @@ function updateSpeed(value) {
     settings.speed = value;
 }
 
-function updateTheme(value) {
-    settings.theme = value;
+function updateThemeTone(value) {
+    settings.themeTone = value;
+}
+
+function updateThemePalette(value) {
+    settings.themePalette = value;
+}
+
+function normalizePreview(value) {
+    return value.replace(/\s+/g, ' ').trim();
+}
+
+function formatSaveLabel(entry) {
+    const preview = normalizePreview(entry.text);
+    const shortPreview = preview.slice(0, 50);
+    const suffix = preview.length > 50 ? '...' : '';
+    const savedAt = new Date(entry.savedAt);
+    const dateLabel = Number.isNaN(savedAt.getTime())
+        ? ''
+        : savedAt.toLocaleString('ru-RU', {
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+              hour: '2-digit',
+              minute: '2-digit',
+          });
+
+    return `${shortPreview}${suffix}${dateLabel ? ` - ${dateLabel}` : ''}`;
+}
+
+function createSave(textValue) {
+    const id = `${Date.now()}_${Math.random().toString(16).slice(2, 8)}`;
+    const entry = {
+        id,
+        text: textValue,
+        savedAt: new Date().toISOString(),
+    };
+
+    textSaves.value = [entry, ...textSaves.value];
+    selectedSaveId.value = id;
+}
+
+function overwriteSave(id, textValue) {
+    const index = textSaves.value.findIndex((save) => save.id === id);
+
+    if (index === -1) {
+        createSave(textValue);
+        return;
+    }
+
+    const entry = {
+        ...textSaves.value[index],
+        text: textValue,
+        savedAt: new Date().toISOString(),
+    };
+
+    const next = [...textSaves.value];
+    next.splice(index, 1);
+    textSaves.value = [entry, ...next];
+    selectedSaveId.value = entry.id;
+}
+
+function handleSaveRequest() {
+    if (!canSave.value) {
+        return;
+    }
+
+    if (selectedSaveId.value) {
+        saveConfirmOpen.value = true;
+        return;
+    }
+
+    createSave(text.value);
+}
+
+function handleSaveOverwrite() {
+    if (!selectedSaveId.value) {
+        saveConfirmOpen.value = false;
+        return;
+    }
+
+    overwriteSave(selectedSaveId.value, text.value);
+    saveConfirmOpen.value = false;
+}
+
+function handleSaveNew() {
+    createSave(text.value);
+    saveConfirmOpen.value = false;
+}
+
+function handleLoadRequest() {
+    if (!canLoad.value) {
+        return;
+    }
+
+    if (text.value.trim().length) {
+        loadConfirmOpen.value = true;
+        return;
+    }
+
+    handleLoadReplace();
+}
+
+function handleLoadReplace() {
+    const entry = textSaves.value.find((save) => save.id === selectedSaveId.value);
+
+    if (entry) {
+        text.value = entry.text;
+    }
+    loadConfirmOpen.value = false;
+}
+
+function handleSaveSelect(value) {
+    selectedSaveId.value = value;
+}
+
+function handleDeleteSave() {
+    if (!selectedSaveId.value) {
+        return;
+    }
+
+    deleteConfirmOpen.value = true;
+}
+
+function handleDeleteConfirm() {
+    if (!selectedSaveId.value) {
+        deleteConfirmOpen.value = false;
+        return;
+    }
+
+    textSaves.value = textSaves.value.filter((save) => save.id !== selectedSaveId.value);
+    selectedSaveId.value = '';
+    deleteConfirmOpen.value = false;
 }
 
 watch(
     settings,
     () => {
         saveSettings({ ...settings });
+    },
+    { deep: true },
+);
+
+watch(
+    textSaves,
+    () => {
+        saveTextSaves(textSaves.value);
     },
     { deep: true },
 );
@@ -112,12 +267,32 @@ watch(
         :stats="stats"
         :speed="settings.speed"
         :time-range="timeRange"
-        :theme="settings.theme"
+        :theme-tone="settings.themeTone"
+        :theme-palette="settings.themePalette"
         :can-start="canStart"
+        :save-items="saveOptions"
+        :selected-save-id="selectedSaveId"
+        :save-confirm-open="saveConfirmOpen"
+        :load-confirm-open="loadConfirmOpen"
+        :delete-confirm-open="deleteConfirmOpen"
+        :can-save="canSave"
+        :can-load="canLoad"
         @update:text="updateText"
         @update:speed="updateSpeed"
-        @update:theme="updateTheme"
+        @update:theme-tone="updateThemeTone"
+        @update:theme-palette="updateThemePalette"
         @start="openReader"
+        @save="handleSaveRequest"
+        @load="handleLoadRequest"
+        @select-save="handleSaveSelect"
+        @close-save-confirm="saveConfirmOpen = false"
+        @confirm-save-overwrite="handleSaveOverwrite"
+        @confirm-save-new="handleSaveNew"
+        @close-load-confirm="loadConfirmOpen = false"
+        @confirm-load-replace="handleLoadReplace"
+        @delete-save="handleDeleteSave"
+        @close-delete-confirm="deleteConfirmOpen = false"
+        @confirm-delete-save="handleDeleteConfirm"
     />
     <ReaderView
         :open="readerOpen"

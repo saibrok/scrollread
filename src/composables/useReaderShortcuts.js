@@ -9,12 +9,15 @@
  *  jumpToEdge: (toEnd: boolean) => void,
  *  handleFullscreen: () => void,
  *  handleClose: () => void,
- *  openHelp: () => void,
+ *  isHelpOpen: () => boolean,
+ *  closeHelp: () => void,
  *  recalcMetrics: () => void,
  * }} options
  */
 export function useReaderShortcuts(options) {
     const onKeydown = (event) => {
+        console.log('LOG ::: useReaderShortcuts.js : event:', event);
+
         if (!options.isOpen()) {
             return;
         }
@@ -29,15 +32,12 @@ export function useReaderShortcuts(options) {
 
             return;
         }
-        if (event.key === '?') {
-            event.preventDefault();
-            options.openHelp();
-
-            return;
-        }
         if (event.key === 'Escape') {
             event.preventDefault();
-            options.handleClose();
+
+            if (options.isHelpOpen()) {
+                options.closeHelp();
+            }
 
             return;
         }
@@ -63,14 +63,14 @@ export function useReaderShortcuts(options) {
         }
         if (event.key === 'ArrowRight') {
             event.preventDefault();
-            options.settings.readerFontSize = Math.min(100, Number(options.settings.readerFontSize) + 2);
+            options.settings.fontSize = Math.min(100, Number(options.settings.fontSize) + 2);
             options.recalcMetrics();
 
             return;
         }
         if (event.key === 'ArrowLeft') {
             event.preventDefault();
-            options.settings.readerFontSize = Math.max(10, Number(options.settings.readerFontSize) - 2);
+            options.settings.fontSize = Math.max(10, Number(options.settings.fontSize) - 2);
             options.recalcMetrics();
 
             return;

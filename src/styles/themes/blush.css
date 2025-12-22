@@ -1,0 +1,23 @@
+body.theme-blush {
+  --bg: #f7e9ec;
+  --bg-accent: #f0dce2;
+  --surface: #fff7f9;
+  --text: #3c2a2f;
+  --muted: #7a6369;
+  --border: #e3cbd2;
+  --accent: #d36c85;
+  --accent-weak: #f2dbe3;
+  --shadow: 0 12px 28px rgba(90, 60, 70, 0.12);
+  --reader-text-rgb: 55 37 43;
+  --reader-text: rgb(var(--reader-text-rgb));
+  --reader-text-muted: rgb(var(--reader-text-rgb) / 0.65);
+  --reader-border: rgb(var(--reader-text-rgb) / 0.12);
+  --reader-help-border: rgb(var(--reader-text-rgb) / 0.12);
+  --reader-bg: #f4e4e8;
+  --reader-surface: rgba(255, 245, 248, 0.96);
+  --reader-surface-strong: rgb(247, 233, 238);
+  --reader-help-bg: rgba(255, 250, 252, 0.97);
+  --reader-overlay-base: 233 213 220;
+}
+
+

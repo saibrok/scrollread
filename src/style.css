@@ -2,3 +2,17 @@
 @import './styles/base.css';
 @import './styles/editor.css';
 @import './styles/reader.css';
+@import './styles/themes/gray-hard-dark.css';
+@import './styles/themes/gray-hard-light.css';
+@import './styles/themes/gray-medium-dark.css';
+@import './styles/themes/gray-medium-light.css';
+@import './styles/themes/gray-light-dark.css';
+@import './styles/themes/gray-light-light.css';
+@import './styles/themes/sage.css';
+@import './styles/themes/sand.css';
+@import './styles/themes/sky.css';
+@import './styles/themes/blush.css';
+@import './styles/themes/sage-dark.css';
+@import './styles/themes/sand-dark.css';
+@import './styles/themes/sky-dark.css';
+@import './styles/themes/blush-dark.css';

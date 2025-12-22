@@ -1,7 +1,12 @@
 ﻿<script setup>
+import { computed } from 'vue';
+
 import SrButton from '../ui/SrButton.vue';
 import SrRange from '../ui/SrRange.vue';
 import SrSelect from '../ui/SrSelect.vue';
+import SrModal from '../ui/SrModal.vue';
+
+import { THEME_TONE_OPTIONS, getPaletteOptions } from '../utils/themes';
 
 const props = defineProps({
     text: {
@@ -20,7 +25,11 @@ const props = defineProps({
         type: String,
         required: true,
     },
-    theme: {
+    themeTone: {
+        type: String,
+        required: true,
+    },
+    themePalette: {
         type: String,
         required: true,
     },
@@ -28,17 +37,56 @@ const props = defineProps({
         type: Boolean,
         required: true,
     },
+    saveItems: {
+        type: Array,
+        required: true,
+    },
+    selectedSaveId: {
+        type: String,
+        required: true,
+    },
+    saveConfirmOpen: {
+        type: Boolean,
+        required: true,
+    },
+    loadConfirmOpen: {
+        type: Boolean,
+        required: true,
+    },
+    deleteConfirmOpen: {
+        type: Boolean,
+        required: true,
+    },
+    canSave: {
+        type: Boolean,
+        required: true,
+    },
+    canLoad: {
+        type: Boolean,
+        required: true,
+    },
 });
 
-const emit = defineEmits(['update:text', 'update:speed', 'update:theme', 'start']);
+const emit = defineEmits([
+    'update:text',
+    'update:speed',
+    'update:theme-tone',
+    'update:theme-palette',
+    'start',
+    'save',
+    'load',
+    'select-save',
+    'close-save-confirm',
+    'confirm-save-overwrite',
+    'confirm-save-new',
+    'close-load-confirm',
+    'confirm-load-replace',
+    'delete-save',
+    'close-delete-confirm',
+    'confirm-delete-save',
+]);
 
-const themeOptions = [
-    { value: 'system', text: 'Как в системе' },
-    { value: 'dark-gray', text: 'Dark Gray' },
-    { value: 'light-gray', text: 'Light Gray' },
-    { value: 'sepia', text: 'Sepia' },
-    { value: 'paper', text: 'Paper' },
-];
+const paletteOptions = computed(() => getPaletteOptions(props.themeTone));
 
 function onTextInput(event) {
     emit('update:text', event.target.value);
@@ -63,6 +111,40 @@ function onTextInput(event) {
                     placeholder="Вставьте текст, который будете читать"
                     @input="onTextInput"
                 ></textarea>
+                <div class="editor-saves">
+                    <div class="label">Сохранения</div>
+                    <div class="editor-saves__select">
+                        <SrSelect
+                            :model-value="props.selectedSaveId"
+                            :items="props.saveItems"
+                            placeholder="Выберите сохранение"
+                            @update:model-value="emit('select-save', $event)"
+                        />
+                    </div>
+                    <div class="editor-saves__actions">
+                        <SrButton
+                            variant="accent"
+                            :disabled="!props.canSave"
+                            @click="emit('save')"
+                        >
+                            Сохранить
+                        </SrButton>
+                        <SrButton
+                            variant="default"
+                            :disabled="!props.canLoad"
+                            @click="emit('load')"
+                        >
+                            Загрузить
+                        </SrButton>
+                        <SrButton
+                            variant="default"
+                            :disabled="!props.canLoad"
+                            @click="emit('delete-save')"
+                        >
+                            Удалить
+                        </SrButton>
+                    </div>
+                </div>
             </div>
 
             <div class="controls">
@@ -98,22 +180,119 @@ function onTextInput(event) {
                 </div>
 
                 <div class="control">
-                    <div class="label">Тема интерфейса</div>
+                    <div class="label">Тон</div>
                     <SrSelect
-                        :model-value="props.theme"
-                        :items="themeOptions"
-                        @update:model-value="emit('update:theme', $event)"
+                        :model-value="props.themeTone"
+                        :items="THEME_TONE_OPTIONS"
+                        @update:model-value="emit('update:theme-tone', $event)"
+                    />
+                </div>
+
+                <div class="control">
+                    <div class="label">Цветовая схема</div>
+                    <SrSelect
+                        :model-value="props.themePalette"
+                        :items="paletteOptions"
+                        @update:model-value="emit('update:theme-palette', $event)"
                     />
                 </div>
 
                 <SrButton
                     class="start"
                     :disabled="!props.canStart"
+                    variant="accent"
                     @click="emit('start')"
                 >
                     НАЧАТЬ
                 </SrButton>
             </div>
         </section>
+
+        <SrModal
+            :open="props.saveConfirmOpen"
+            card-class="sr-modal-card--compact"
+            @close="emit('close-save-confirm')"
+        >
+            <div class="sr-modal-header">
+                <div>Сохранение текста</div>
+            </div>
+            <div class="sr-modal-text">
+                Выберите действие для выбранного сохранения.
+            </div>
+            <div class="sr-modal-actions">
+                <SrButton
+                    variant="default"
+                    @click="emit('close-save-confirm')"
+                >
+                    Отмена
+                </SrButton>
+                <SrButton
+                    variant="default"
+                    @click="emit('confirm-save-new')"
+                >
+                    Новое сохранение
+                </SrButton>
+                <SrButton
+                    variant="accent"
+                    @click="emit('confirm-save-overwrite')"
+                >
+                    Перезаписать
+                </SrButton>
+            </div>
+        </SrModal>
+
+        <SrModal
+            :open="props.loadConfirmOpen"
+            card-class="sr-modal-card--compact"
+            @close="emit('close-load-confirm')"
+        >
+            <div class="sr-modal-header">
+                <div>Загрузка текста</div>
+            </div>
+            <div class="sr-modal-text">
+                В тексте есть данные. Заменить содержимое?
+            </div>
+            <div class="sr-modal-actions">
+                <SrButton
+                    variant="default"
+                    @click="emit('close-load-confirm')"
+                >
+                    Отмена
+                </SrButton>
+                <SrButton
+                    variant="accent"
+                    @click="emit('confirm-load-replace')"
+                >
+                    Заменить
+                </SrButton>
+            </div>
+        </SrModal>
+
+        <SrModal
+            :open="props.deleteConfirmOpen"
+            card-class="sr-modal-card--compact"
+            @close="emit('close-delete-confirm')"
+        >
+            <div class="sr-modal-header">
+                <div>Удаление сохранения</div>
+            </div>
+            <div class="sr-modal-text">
+                Удалить выбранное сохранение без возможности восстановления?
+            </div>
+            <div class="sr-modal-actions">
+                <SrButton
+                    variant="default"
+                    @click="emit('close-delete-confirm')"
+                >
+                    Отмена
+                </SrButton>
+                <SrButton
+                    variant="accent"
+                    @click="emit('confirm-delete-save')"
+                >
+                    Удалить
+                </SrButton>
+            </div>
+        </SrModal>
     </div>
 </template>

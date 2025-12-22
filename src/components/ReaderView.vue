@@ -8,6 +8,7 @@ import { useReaderShortcuts } from '../composables/useReaderShortcuts';
 import ReaderHeader from './ReaderHeader.vue';
 import ReaderHelp from './ReaderHelp.vue';
 import ReaderPanel from './ReaderPanel.vue';
+import ReaderResetConfirm from './ReaderResetConfirm.vue';
 
 const props = defineProps({
     open: {
@@ -28,21 +29,22 @@ const resetSettings = inject('resetSettings');
 const readerStage = ref(null);
 const readerText = ref(null);
 const helpOpen = ref(false);
-
-const readerThemeClass = computed(() => `reader--theme-${settings.theme || 'system'}`);
+const resetOpen = ref(false);
 
 const readerStyle = computed(() => {
     return {
-        '--reader-font-size': `${settings.readerFontSize}px`,
-        '--reader-font': settings.readerFont,
-        '--reader-brightness': `${settings.readerBrightness}%`,
-        '--reader-contrast': `${settings.readerContrast}%`,
-        '--reader-sepia': `${settings.readerSepia}%`,
-        '--reader-overlay-opacity': settings.readerOverlayOpacity / 100,
-        '--read-band': `${settings.readerOverlaySize}em`,
-        '--read-line-height': settings.readerLineHeight,
-        '--read-paragraph-gap': `${settings.readerParagraphGap}em`,
-        '--read-padding': `${settings.readerPadding}px`,
+        '--reader-font-size': `${settings.fontSize}px`,
+        '--reader-font': settings.font,
+        '--reader-brightness': `${settings.brightness}%`,
+        '--reader-contrast': `${settings.contrast}%`,
+        '--reader-sepia': `${settings.sepia}%`,
+        '--reader-overlay-opacity': settings.overlayOpacity / 100,
+        '--read-band': `${settings.overlaySize}em`,
+        '--read-line-height': settings.lineHeight,
+        '--read-paragraph-gap': `${settings.paragraphGap}em`,
+        '--read-padding': `${settings.padding}px`,
+        '--reader-align': settings.align,
+        '--reader-indent': `${settings.indent}em`,
     };
 });
 
@@ -73,15 +75,25 @@ function closeHelp() {
 }
 
 function handleReset() {
+    resetOpen.value = true;
+}
+
+function closeReset() {
+    resetOpen.value = false;
+}
+
+function confirmReset() {
     if (typeof resetSettings === 'function') {
         resetSettings();
     }
     recalcMetricsPreservePosition();
+    resetOpen.value = false;
 }
 
 function handleClose() {
     pauseScroll();
     helpOpen.value = false;
+    resetOpen.value = false;
     emit('close');
 }
 
@@ -99,6 +111,7 @@ watch(
         if (value) {
             isPlaying.value = false;
             helpOpen.value = false;
+            resetOpen.value = false;
             initReader();
         } else {
             pauseScroll();
@@ -118,12 +131,12 @@ watch(
 watch(
     () => [
         settings.speed,
-        settings.readerFontSize,
-        settings.readerFont,
-        settings.readerLineHeight,
-        settings.readerParagraphGap,
-        settings.readerPadding,
-        settings.readerOverlaySize,
+        settings.fontSize,
+        settings.font,
+        settings.lineHeight,
+        settings.paragraphGap,
+        settings.padding,
+        settings.overlaySize,
     ],
     () => {
         if (props.open) {
@@ -139,7 +152,8 @@ useReaderShortcuts({
     jumpToEdge,
     handleFullscreen,
     handleClose,
-    openHelp,
+    isHelpOpen: () => helpOpen.value,
+    closeHelp,
     recalcMetrics: recalcMetricsPreservePosition,
 });
 </script>
@@ -147,7 +161,7 @@ useReaderShortcuts({
 <template>
     <div
         class="reader"
-        :class="[{ active: props.open }, readerThemeClass]"
+        :class="{ active: props.open }"
         :style="readerStyle"
     >
         <ReaderHeader
@@ -188,6 +202,11 @@ useReaderShortcuts({
         <ReaderHelp
             :open="helpOpen"
             @close="closeHelp"
+        />
+        <ReaderResetConfirm
+            :open="resetOpen"
+            @close="closeReset"
+            @confirm="confirmReset"
         />
     </div>
 </template>

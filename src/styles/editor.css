@@ -24,7 +24,7 @@
 
 textarea {
     width: 100%;
-    min-height: 360px;
+    min-height: 430px;
     border-radius: 16px;
     border: 1px solid var(--border);
     padding: 16px 18px;
@@ -33,6 +33,23 @@ textarea {
     color: var(--text);
     background: transparent;
     resize: vertical;
+}
+
+.editor-saves {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.editor-saves__select {
+    flex: 1;
+    min-width: 220px;
+}
+
+.editor-saves__actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 
 .controls {
@@ -89,5 +106,10 @@ input[type='range'] {
 @media (max-width: 900px) {
     .card {
         grid-template-columns: 1fr;
+    }
+
+    .editor-saves__actions {
+        width: 100%;
+        justify-content: flex-start;
     }
 }
