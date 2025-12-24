@@ -65,13 +65,7 @@ export function loadTextSaves() {
             return [];
         }
 
-        return parsed.filter(
-            (item) =>
-                item &&
-                typeof item.id === 'string' &&
-                typeof item.text === 'string' &&
-                typeof item.savedAt === 'string',
-        );
+        return parsed.filter((item) => item && typeof item.id === 'string' && typeof item.text === 'string' && typeof item.savedAt === 'string');
     } catch (error) {
         console.warn('Text saves parse error', error);
 

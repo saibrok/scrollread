@@ -24,18 +24,21 @@ function onInput(event) {
 
 <style scoped>
 .sr-textarea {
+    resize: vertical;
+    scrollbar-color: var(--ui-border, var(--border)) var(--ui-surface, var(--surface));
+    scrollbar-width: thin;
+
     width: 100%;
     min-height: 430px;
-    border-radius: 16px;
-    border: 1px solid var(--border);
     padding: 16px 18px;
+
     font-size: 16px;
     line-height: 1.6;
     color: var(--text);
+
     background: transparent;
-    resize: vertical;
-    scrollbar-width: thin;
-    scrollbar-color: var(--ui-border, var(--border)) var(--ui-surface, var(--surface));
+    border: 1px solid var(--border);
+    border-radius: 16px;
 }
 
 .sr-textarea:focus-visible {
@@ -54,8 +57,8 @@ function onInput(event) {
 
 .sr-textarea::-webkit-scrollbar-thumb {
     background: var(--ui-border, var(--border));
-    border-radius: 999px;
     border: 2px solid var(--ui-surface, var(--surface));
+    border-radius: 999px;
 }
 
 .sr-textarea::-webkit-scrollbar-thumb:hover {

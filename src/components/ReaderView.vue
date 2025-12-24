@@ -6,13 +6,13 @@ import { getPaletteOptions, THEME_TONE_OPTIONS } from '../utils/themes';
 import { useReaderPlayer } from '../composables/useReaderPlayer';
 import { useReaderShortcuts } from '../composables/useReaderShortcuts';
 
+import SrButton from '../ui/SrButton.vue';
+import SrModal from '../ui/SrModal.vue';
+import SrSelect from '../ui/SrSelect.vue';
 import ReaderHeader from './ReaderHeader.vue';
 import ReaderHelp from './ReaderHelp.vue';
 import ReaderPanel from './ReaderPanel.vue';
 import ReaderResetConfirm from './ReaderResetConfirm.vue';
-import SrButton from '../ui/SrButton.vue';
-import SrModal from '../ui/SrModal.vue';
-import SrSelect from '../ui/SrSelect.vue';
 
 const props = defineProps({
     open: {
@@ -171,6 +171,7 @@ function syncFullscreen() {
 
 function syncCompact(value) {
     isCompact.value = value;
+
     if (!value) {
         settingsOpen.value = false;
     }
@@ -202,15 +203,7 @@ watch(
 );
 
 watch(
-    () => [
-        settings.speed,
-        settings.fontSize,
-        settings.font,
-        settings.lineHeight,
-        settings.paragraphGap,
-        settings.padding,
-        settings.overlaySize,
-    ],
+    () => [settings.speed, settings.fontSize, settings.font, settings.lineHeight, settings.paragraphGap, settings.padding, settings.overlaySize],
     () => {
         if (props.open) {
             recalcMetricsPreservePosition();
@@ -246,6 +239,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
     document.removeEventListener('fullscreenchange', syncFullscreen);
+
     if (compactQuery && onCompactChange) {
         compactQuery.removeEventListener('change', onCompactChange);
     }
@@ -258,6 +252,7 @@ function startSessionTimer() {
     sessionStart = performance.now();
     sessionTimerId = window.setInterval(() => {
         const elapsed = (performance.now() - sessionStart) / 1000;
+
         sessionSeconds.value = Math.floor(sessionAccumulated + elapsed);
     }, 250);
 }
@@ -433,4 +428,3 @@ watch(
         </SrModal>
     </div>
 </template>
-

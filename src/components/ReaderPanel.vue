@@ -1,9 +1,9 @@
 ﻿<script setup>
 import { onMounted, ref } from 'vue';
 
+import SrButton from '../ui/SrButton.vue';
 import SrRange from '../ui/SrRange.vue';
 import SrSelect from '../ui/SrSelect.vue';
-import SrButton from '../ui/SrButton.vue';
 
 const props = defineProps({
     settings: {
@@ -85,7 +85,7 @@ onMounted(() => {
                     :model-value="props.settings.speed"
                     min="100"
                     max="2000"
-                    step="50"
+                    step="10"
                     @update:model-value="emitUpdate('speed', $event)"
                 />
                 <div class="reader-panel__speed-value">{{ props.settings.speed }}</div>

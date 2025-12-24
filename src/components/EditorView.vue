@@ -92,7 +92,6 @@ const paletteOptions = computed(() => getPaletteOptions(props.themeTone));
 function openSupport() {
     window.open('https://dalink.to/saibrok', '_blank', 'noopener,noreferrer');
 }
-
 </script>
 
 <template>
@@ -185,7 +184,7 @@ function openSupport() {
                         :model-value="props.speed"
                         min="100"
                         max="2000"
-                        step="50"
+                        step="10"
                         @update:model-value="emit('update:speed', $event)"
                     />
                     <div class="range-row">
@@ -322,4 +321,3 @@ function openSupport() {
         </SrButton>
     </div>
 </template>
-
