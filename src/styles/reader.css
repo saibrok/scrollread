@@ -40,6 +40,16 @@
     gap: 12px;
 }
 
+.reader-delay__input {
+    width: 72px;
+}
+
+.reader-countdown {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+}
+
 .reader-btn .material-icons {
     font-size: 20px;
     line-height: 1;

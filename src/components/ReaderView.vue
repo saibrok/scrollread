@@ -42,6 +42,9 @@ const sessionSeconds = ref(0);
 let sessionStart = 0;
 let sessionAccumulated = 0;
 let sessionTimerId = null;
+const pendingStartId = ref(null);
+const pendingStartSeconds = ref(null);
+const pendingStartTickId = ref(null);
 
 const readerStyle = computed(() => {
     return {
@@ -147,7 +150,74 @@ function stopSettingsPeek() {
     settingsPeeking.value = false;
 }
 
+function clearPendingStart() {
+    if (pendingStartId.value) {
+        clearTimeout(pendingStartId.value);
+        pendingStartId.value = null;
+    }
+    if (pendingStartTickId.value) {
+        clearInterval(pendingStartTickId.value);
+        pendingStartTickId.value = null;
+    }
+    pendingStartSeconds.value = null;
+}
+
+function getStartDelaySeconds() {
+    const parsed = Number(settings.startDelay);
+
+    if (Number.isNaN(parsed)) {
+        return 0;
+    }
+
+    return Math.min(60, Math.max(0, parsed));
+}
+
+function handleTogglePlay() {
+    if (isPlaying.value) {
+        clearPendingStart();
+        togglePlay();
+
+        return;
+    }
+    if (pendingStartId.value) {
+        clearPendingStart();
+
+        return;
+    }
+    const delay = getStartDelaySeconds();
+
+    if (delay > 0) {
+        const startedAt = performance.now();
+
+        pendingStartSeconds.value = delay;
+        pendingStartTickId.value = window.setInterval(() => {
+            const elapsed = (performance.now() - startedAt) / 1000;
+            const remaining = Math.max(0, Math.ceil(delay - elapsed));
+
+            pendingStartSeconds.value = remaining;
+        }, 200);
+        pendingStartId.value = window.setTimeout(() => {
+            pendingStartId.value = null;
+
+            if (pendingStartTickId.value) {
+                clearInterval(pendingStartTickId.value);
+                pendingStartTickId.value = null;
+            }
+            pendingStartSeconds.value = null;
+
+            if (!isPlaying.value && props.open) {
+                togglePlay();
+            }
+        }, delay * 1000);
+
+        return;
+    }
+
+    togglePlay();
+}
+
 function handleClose() {
+    clearPendingStart();
     pauseScroll();
     helpOpen.value = false;
     resetOpen.value = false;
@@ -180,6 +250,8 @@ function syncCompact(value) {
 watch(
     () => props.open,
     (value) => {
+        clearPendingStart();
+
         if (value) {
             isPlaying.value = false;
             helpOpen.value = false;
@@ -215,7 +287,7 @@ useReaderShortcuts({
     isOpen: () => props.open,
     settings,
     setSpeedMultiplier,
-    togglePlay,
+    togglePlay: handleTogglePlay,
     jumpToEdge,
     handleFullscreen,
     handleClose,
@@ -239,6 +311,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
     document.removeEventListener('fullscreenchange', syncFullscreen);
+    clearPendingStart();
 
     if (compactQuery && onCompactChange) {
         compactQuery.removeEventListener('change', onCompactChange);
@@ -305,10 +378,13 @@ watch(
             :is-fullscreen="isFullscreen"
             :theme-tone="settings.themeTone"
             :theme-palette="settings.themePalette"
-            @toggle-play="togglePlay"
+            :pending-start-seconds="pendingStartSeconds"
+            :start-delay="settings.startDelay"
+            @toggle-play="handleTogglePlay"
             @fullscreen="handleFullscreen"
             @update:theme-tone="(value) => updateSetting({ key: 'themeTone', value })"
             @update:theme-palette="(value) => updateSetting({ key: 'themePalette', value })"
+            @update:start-delay="(value) => updateSetting({ key: 'startDelay', value })"
             @reset="handleReset"
             @help="openHelp"
             @open-settings="openSettings"

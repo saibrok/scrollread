@@ -17,6 +17,7 @@ export const DEFAULTS = {
     lineHeight: 1.6,
     paragraphGap: 0.6,
     indent: 1,
+    startDelay: 0,
 };
 
 /**

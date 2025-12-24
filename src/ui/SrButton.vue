@@ -4,17 +4,33 @@ const props = defineProps({
         type: String,
         default: 'button',
     },
+    width: {
+        type: [String, Number],
+        default: '',
+    },
     variant: {
         type: String,
         default: 'default',
     },
 });
+
+function resolveWidth(value) {
+    if (value === null || value === undefined || value === '') {
+        return undefined;
+    }
+    if (typeof value === 'number') {
+        return `${value}px`;
+    }
+
+    return value;
+}
 </script>
 
 <template>
     <button
         :class="['sr-button', `sr-button--${props.variant}`]"
         :type="type"
+        :style="{ width: resolveWidth(props.width) }"
         v-bind="$attrs"
     >
         <slot />
