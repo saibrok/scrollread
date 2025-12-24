@@ -264,6 +264,13 @@
 
 .reader-body {
     flex: 1;
+    display: flex;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.reader-content {
+    flex: 1;
     display: grid;
     grid-template-rows: 1fr calc(var(--read-band) * var(--read-line-height)) 1fr;
     align-items: stretch;
@@ -284,7 +291,6 @@
     display: flex;
     align-items: start;
     padding-inline: var(--read-padding);
-    padding-right: calc(var(--read-padding) + var(--reader-minimap-width));
 }
 
 .reader-text {
@@ -314,12 +320,9 @@
 }
 
 .reader-minimap {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
+    position: relative;
     width: var(--reader-minimap-width);
-    z-index: 20;
+    flex: 0 0 var(--reader-minimap-width);
     user-select: none;
     touch-action: none;
     overflow: hidden;
@@ -392,7 +395,7 @@
     padding: 18px 20px 16px;
     color: var(--reader-text);
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-    max-height: calc(100vh - 32px);
+    max-height: calc(80vh - 32px);
     overflow: auto;
 }
 
@@ -473,7 +476,7 @@
     .sr-modal-card--compact,
     .sr-modal-card--wide {
         width: 100%;
-        max-height: calc(100vh - 32px);
+        max-height: calc(80vh - 32px);
     }
 
     .reader-settings {

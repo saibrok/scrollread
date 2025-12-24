@@ -139,4 +139,8 @@ input[type='range'] {
         width: 100%;
         justify-content: flex-start;
     }
+
+    .sr-textarea {
+        min-height: 100px !important;
+    }
 }

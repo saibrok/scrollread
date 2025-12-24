@@ -180,13 +180,6 @@ function openSupport() {
 
                 <div class="control">
                     <div class="label">Скорость</div>
-                    <SrRange
-                        :model-value="props.speed"
-                        min="100"
-                        max="2000"
-                        step="10"
-                        @update:model-value="emit('update:speed', $event)"
-                    />
                     <div class="range-row">
                         <strong>{{ props.speed }}</strong>
                         знаков/мин
@@ -194,6 +187,13 @@ function openSupport() {
                     <div class="meta">
                         Оценка времени: <span>{{ props.timeRange }}</span>
                     </div>
+                    <SrRange
+                        :model-value="props.speed"
+                        min="100"
+                        max="2000"
+                        step="10"
+                        @update:model-value="emit('update:speed', $event)"
+                    />
                 </div>
 
                 <SrButton

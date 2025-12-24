@@ -479,29 +479,31 @@ function handleMinimapSeek(progress) {
             @toggle="handlePanelToggle"
         />
         <div class="reader-body">
-            <div
-                class="reader-overlay reader-overlay-top"
-                aria-hidden="true"
-            ></div>
-            <div
-                ref="readerStage"
-                class="reader-stage"
-                @wheel="handleWheel"
-                @touchstart="handleTouchStart"
-                @touchmove.prevent="handleTouchMove"
-                @touchend="handleTouchEnd"
-                @touchcancel="handleTouchEnd"
-            >
+            <div class="reader-content">
                 <div
-                    ref="readerText"
-                    class="reader-text"
-                    v-html="readerHtml"
+                    class="reader-overlay reader-overlay-top"
+                    aria-hidden="true"
+                ></div>
+                <div
+                    ref="readerStage"
+                    class="reader-stage"
+                    @wheel="handleWheel"
+                    @touchstart="handleTouchStart"
+                    @touchmove.prevent="handleTouchMove"
+                    @touchend="handleTouchEnd"
+                    @touchcancel="handleTouchEnd"
+                >
+                    <div
+                        ref="readerText"
+                        class="reader-text"
+                        v-html="readerHtml"
+                    ></div>
+                </div>
+                <div
+                    class="reader-overlay reader-overlay-bottom"
+                    aria-hidden="true"
                 ></div>
             </div>
-            <div
-                class="reader-overlay reader-overlay-bottom"
-                aria-hidden="true"
-            ></div>
             <ReaderMinimap
                 v-if="showMinimap"
                 :stage-el="readerStage"
