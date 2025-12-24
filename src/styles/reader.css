@@ -102,6 +102,19 @@
     }
 }
 
+@media (max-width: 900px) {
+    .reader-header {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .reader-timers {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+    }
+}
+
 .reader-timer {
     display: flex;
     flex-direction: column;
@@ -180,14 +193,13 @@
     letter-spacing: 0.04em;
 }
 
-.reader-panel__toggle {
-    padding: 6px 12px;
+.reader-panel__icon {
+    padding: 6px 8px;
     font-size: 12px;
 }
 
-.reader-panel__fullscreen {
-    padding: 6px 12px;
-    font-size: 12px;
+.reader-panel__icon .material-icons {
+    font-size: 18px;
 }
 
 .reader-panel__body {

@@ -49,8 +49,9 @@ const pendingStartId = ref(null);
 const pendingStartSeconds = ref(null);
 const pendingStartTickId = ref(null);
 const minimapRenderKey = ref(0);
+const bodyOverflow = ref('');
 
-const showMinimap = computed(() => settings.showMinimap !== false);
+const showMinimap = computed(() => settings.showMinimap !== false && !isCompact.value);
 
 const readerStyle = computed(() => {
     return {
@@ -75,13 +76,26 @@ const paletteOptions = computed(() => getPaletteOptions(settings.themeTone));
 
 const speedMultiplier = ref(1);
 
-const { isPlaying, currentSeconds, totalDuration, togglePlay, pauseScroll, jumpToEdge, smoothSeek, recalcMetricsPreservePosition, initReader, handleWheel } =
-    useReaderPlayer({
-        getText: () => props.text,
-        getSpeed: () => settings.speed * speedMultiplier.value,
-        stageRef: readerStage,
-        textRef: readerText,
-    });
+const {
+    isPlaying,
+    currentSeconds,
+    totalDuration,
+    togglePlay,
+    pauseScroll,
+    jumpToEdge,
+    smoothSeek,
+    recalcMetricsPreservePosition,
+    initReader,
+    handleWheel,
+    handleTouchStart,
+    handleTouchMove,
+    handleTouchEnd,
+} = useReaderPlayer({
+    getText: () => props.text,
+    getSpeed: () => settings.speed * speedMultiplier.value,
+    stageRef: readerStage,
+    textRef: readerText,
+});
 
 const timerText = computed(() => {
     return `${formatTime(currentSeconds.value)} / ${formatTime(totalDuration.value)}`;
@@ -279,12 +293,22 @@ function syncCompact(value) {
     }
 }
 
+function lockBodyScroll() {
+    bodyOverflow.value = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+}
+
+function unlockBodyScroll() {
+    document.body.style.overflow = bodyOverflow.value;
+}
+
 watch(
     () => props.open,
     (value) => {
         clearPendingStart();
 
         if (value) {
+            lockBodyScroll();
             isPlaying.value = false;
             helpOpen.value = false;
             resetOpen.value = false;
@@ -293,6 +317,7 @@ watch(
             initReader();
             minimapRenderKey.value += 1;
         } else {
+            unlockBodyScroll();
             pauseScroll();
         }
     },
@@ -357,6 +382,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
     document.removeEventListener('fullscreenchange', syncFullscreen);
     clearPendingStart();
+    unlockBodyScroll();
 
     if (compactQuery && onCompactChange) {
         compactQuery.removeEventListener('change', onCompactChange);
@@ -446,6 +472,7 @@ function handleMinimapSeek(progress) {
             :settings="settings"
             :speed-multiplier-label="speedMultiplierLabel"
             :is-fullscreen="isFullscreen"
+            :is-compact="isCompact"
             @update="updateSetting"
             @update-end="handlePanelUpdateEnd"
             @fullscreen="handleFullscreen"
@@ -460,6 +487,10 @@ function handleMinimapSeek(progress) {
                 ref="readerStage"
                 class="reader-stage"
                 @wheel="handleWheel"
+                @touchstart="handleTouchStart"
+                @touchmove.prevent="handleTouchMove"
+                @touchend="handleTouchEnd"
+                @touchcancel="handleTouchEnd"
             >
                 <div
                     ref="readerText"
@@ -550,6 +581,8 @@ function handleMinimapSeek(progress) {
                 :settings="settings"
                 :speed-multiplier-label="speedMultiplierLabel"
                 :is-fullscreen="isFullscreen"
+                :is-compact="isCompact"
+                :show-speed-in-bar="false"
                 @update="updateSetting"
                 @update-end="handlePanelUpdateEnd"
                 @fullscreen="handleFullscreen"

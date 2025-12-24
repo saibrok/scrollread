@@ -15,6 +15,14 @@ const props = defineProps({
         type: Boolean,
         required: true,
     },
+    isCompact: {
+        type: Boolean,
+        required: true,
+    },
+    showSpeedInBar: {
+        type: Boolean,
+        default: true,
+    },
     speedMultiplierLabel: {
         type: String,
         default: '',
@@ -93,7 +101,7 @@ onMounted(() => {
             <div class="reader-panel__title">Настройки текста</div>
 
             <div
-                v-if="!isOpen"
+                v-if="props.showSpeedInBar && !isOpen"
                 class="reader-panel__speed"
             >
                 <label class="reader-panel__speed-label">Скорость</label>
@@ -121,6 +129,7 @@ onMounted(() => {
             <div class="separator"></div>
 
             <SrCheckbox
+                v-if="!props.isCompact"
                 :model-value="props.settings.showMinimap !== false"
                 @update:model-value="emitUpdate('showMinimap', $event)"
             >
@@ -128,20 +137,32 @@ onMounted(() => {
             </SrCheckbox>
 
             <SrButton
-                class="reader-panel__fullscreen"
+                class="reader-btn reader-panel__icon"
                 type="button"
                 :variant="props.isFullscreen ? 'accent' : 'default'"
+                aria-label="Полный экран"
                 @click="emit('fullscreen')"
             >
-                Полный экран
+                <span
+                    class="material-icons"
+                    aria-hidden="true"
+                >
+                    {{ props.isFullscreen ? 'fullscreen_exit' : 'fullscreen' }}
+                </span>
             </SrButton>
 
             <SrButton
-                class="reader-panel__toggle"
+                class="reader-btn reader-panel__icon"
                 type="button"
+                :aria-label="isOpen ? 'Свернуть настройки' : 'Развернуть настройки'"
                 @click="togglePanel"
             >
-                {{ isOpen ? 'Свернуть настройки' : 'Развернуть настройки' }}
+                <span
+                    class="material-icons"
+                    aria-hidden="true"
+                >
+                    {{ isOpen ? 'expand_less' : 'expand_more' }}
+                </span>
             </SrButton>
         </div>
         <div

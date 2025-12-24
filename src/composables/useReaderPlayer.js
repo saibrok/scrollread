@@ -21,6 +21,9 @@ export function useReaderPlayer({ getText, getSpeed, stageRef, textRef }) {
     const currentSeconds = ref(0);
     const wheelAnimId = ref(null);
     const wheelTargetElapsed = ref(0);
+    const touchStartY = ref(0);
+    const touchStartElapsed = ref(0);
+    const touchActive = ref(false);
 
     /**
      * Measure scroll distance and duration.
@@ -273,6 +276,44 @@ export function useReaderPlayer({ getText, getSpeed, stageRef, textRef }) {
         startWheelAnimation();
     }
 
+    function handleTouchStart(event) {
+        if (isPlaying.value || totalDuration.value === 0 || totalDistance.value === 0) {
+            return;
+        }
+        const touch = event.touches?.[0];
+
+        if (!touch) {
+            return;
+        }
+
+        touchActive.value = true;
+        touchStartY.value = touch.clientY;
+        touchStartElapsed.value = accumulatedElapsed.value;
+        wheelTargetElapsed.value = accumulatedElapsed.value;
+    }
+
+    function handleTouchMove(event) {
+        if (!touchActive.value || isPlaying.value || totalDuration.value === 0 || totalDistance.value === 0) {
+            return;
+        }
+        const touch = event.touches?.[0];
+
+        if (!touch) {
+            return;
+        }
+
+        const deltaY = touchStartY.value - touch.clientY;
+        const delta = (deltaY / totalDistance.value) * totalDuration.value;
+        const next = Math.min(totalDuration.value, Math.max(0, touchStartElapsed.value + delta));
+
+        wheelTargetElapsed.value = next;
+        startWheelAnimation();
+    }
+
+    function handleTouchEnd() {
+        touchActive.value = false;
+    }
+
     return {
         isPlaying,
         currentSeconds,
@@ -287,5 +328,8 @@ export function useReaderPlayer({ getText, getSpeed, stageRef, textRef }) {
         initReader,
         resetReaderScroll,
         handleWheel,
+        handleTouchStart,
+        handleTouchMove,
+        handleTouchEnd,
     };
 }
