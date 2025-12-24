@@ -185,6 +185,11 @@
     font-size: 12px;
 }
 
+.reader-panel__fullscreen {
+    padding: 6px 12px;
+    font-size: 12px;
+}
+
 .reader-panel__body {
     display: flex;
     flex-direction: column;
@@ -256,6 +261,7 @@
     overflow: hidden;
     background: var(--reader-bg);
     filter: brightness(var(--reader-brightness)) contrast(var(--reader-contrast)) sepia(var(--reader-sepia));
+    position: relative;
 }
 
 .reader-stage {
@@ -266,6 +272,7 @@
     display: flex;
     align-items: start;
     padding-inline: var(--read-padding);
+    padding-right: calc(var(--read-padding) + var(--reader-minimap-width));
 }
 
 .reader-text {
@@ -292,6 +299,48 @@
     pointer-events: none;
     background: rgb(0 0 0 / var(--reader-overlay-opacity));
     z-index: 10;
+}
+
+.reader-minimap {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: var(--reader-minimap-width);
+    z-index: 20;
+    user-select: none;
+    touch-action: none;
+    overflow: hidden;
+    background: var(--reader-surface);
+    border-left: 1px solid var(--reader-border);
+}
+
+.reader-minimap__canvas {
+    position: absolute;
+    inset: 0;
+    display: block;
+}
+
+.reader-minimap__viewport {
+    position: absolute;
+    left: 0;
+    right: 0;
+    background: color-mix(in srgb, var(--reader-text) 12%, transparent);
+    cursor: grab;
+    transition:
+        top 0.12s ease,
+        height 0.12s ease;
+}
+
+.reader-minimap__viewport.dragging {
+    cursor: grabbing;
+    background: color-mix(in srgb, var(--accent) 20%, transparent);
+    transition: none;
+}
+
+.reader-minimap--locked {
+    pointer-events: none;
+    opacity: 0.65;
 }
 
 .sr-modal {

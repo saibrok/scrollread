@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue';
 
 import SrButton from '../ui/SrButton.vue';
+import SrCheckbox from '../ui/SrCheckbox.vue';
 import SrRange from '../ui/SrRange.vue';
 import SrSelect from '../ui/SrSelect.vue';
 
@@ -10,13 +11,17 @@ const props = defineProps({
         type: Object,
         required: true,
     },
+    isFullscreen: {
+        type: Boolean,
+        required: true,
+    },
     speedMultiplierLabel: {
         type: String,
         default: '',
     },
 });
 
-const emit = defineEmits(['update', 'toggle']);
+const emit = defineEmits(['update', 'toggle', 'fullscreen', 'update-end']);
 
 const isOpen = ref(true);
 const STORAGE_KEY = 'scrollread_reader_panel_open';
@@ -56,11 +61,22 @@ function emitUpdate(key, value) {
     emit('update', { key, value });
 }
 
+function emitUpdateEnd(key, value) {
+    emit('update-end', { key, value });
+}
+
+function handleSelectUpdate(key, value) {
+    emitUpdate(key, value);
+    emitUpdateEnd(key, value);
+}
+
 function togglePanel() {
     isOpen.value = !isOpen.value;
     emit('toggle', isOpen.value);
     localStorage.setItem(STORAGE_KEY, String(isOpen.value));
 }
+
+defineExpose({ togglePanel });
 
 onMounted(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -87,6 +103,7 @@ onMounted(() => {
                     max="2000"
                     step="10"
                     @update:model-value="emitUpdate('speed', $event)"
+                    @change="emitUpdateEnd('speed', $event)"
                 />
                 <div class="reader-panel__speed-value">{{ props.settings.speed }}</div>
             </div>
@@ -103,12 +120,28 @@ onMounted(() => {
 
             <div class="separator"></div>
 
+            <SrCheckbox
+                :model-value="props.settings.showMinimap !== false"
+                @update:model-value="emitUpdate('showMinimap', $event)"
+            >
+                Показывать миникарту
+            </SrCheckbox>
+
+            <SrButton
+                class="reader-panel__fullscreen"
+                type="button"
+                :variant="props.isFullscreen ? 'accent' : 'default'"
+                @click="emit('fullscreen')"
+            >
+                Полный экран
+            </SrButton>
+
             <SrButton
                 class="reader-panel__toggle"
                 type="button"
                 @click="togglePanel"
             >
-                {{ isOpen ? 'Свернуть' : 'Развернуть' }}
+                {{ isOpen ? 'Свернуть настройки' : 'Развернуть настройки' }}
             </SrButton>
         </div>
         <div
@@ -134,8 +167,9 @@ onMounted(() => {
                             :model-value="props.settings.speed"
                             min="100"
                             max="2000"
-                            step="50"
+                            step="10"
                             @update:model-value="emitUpdate('speed', $event)"
+                            @change="emitUpdateEnd('speed', $event)"
                         />
                     </div>
                 </div>
@@ -161,6 +195,7 @@ onMounted(() => {
                             max="100"
                             step="1"
                             @update:model-value="emitUpdate('fontSize', $event)"
+                            @change="emitUpdateEnd('fontSize', $event)"
                         />
                     </div>
                     <div class="reader-control">
@@ -181,6 +216,7 @@ onMounted(() => {
                             max="2.4"
                             step="0.1"
                             @update:model-value="emitUpdate('lineHeight', $event)"
+                            @change="emitUpdateEnd('lineHeight', $event)"
                         />
                     </div>
                     <div class="reader-control">
@@ -201,6 +237,7 @@ onMounted(() => {
                             max="2"
                             step="0.1"
                             @update:model-value="emitUpdate('paragraphGap', $event)"
+                            @change="emitUpdateEnd('paragraphGap', $event)"
                         />
                     </div>
                     <div class="reader-control">
@@ -222,6 +259,7 @@ onMounted(() => {
                             step="0.1"
                             :disabled="props.settings.align === 'center'"
                             @update:model-value="emitUpdate('indent', $event)"
+                            @change="emitUpdateEnd('indent', $event)"
                         />
                     </div>
                     <div class="reader-control">
@@ -236,7 +274,7 @@ onMounted(() => {
                             id="font"
                             :model-value="props.settings.font"
                             :items="fontOptions"
-                            @update:model-value="emitUpdate('font', $event)"
+                            @update:model-value="handleSelectUpdate('font', $event)"
                         />
                     </div>
                     <div class="reader-control">
@@ -251,7 +289,7 @@ onMounted(() => {
                             id="align"
                             :model-value="props.settings.align"
                             :items="alignOptions"
-                            @update:model-value="emitUpdate('align', $event)"
+                            @update:model-value="handleSelectUpdate('align', $event)"
                         />
                     </div>
                 </div>
@@ -278,6 +316,7 @@ onMounted(() => {
                             max="150"
                             step="5"
                             @update:model-value="emitUpdate('brightness', $event)"
+                            @change="emitUpdateEnd('brightness', $event)"
                         />
                     </div>
                     <div class="reader-control">
@@ -299,6 +338,7 @@ onMounted(() => {
                             max="150"
                             step="5"
                             @update:model-value="emitUpdate('contrast', $event)"
+                            @change="emitUpdateEnd('contrast', $event)"
                         />
                     </div>
                     <div class="reader-control">
@@ -320,6 +360,7 @@ onMounted(() => {
                             max="100"
                             step="5"
                             @update:model-value="emitUpdate('sepia', $event)"
+                            @change="emitUpdateEnd('sepia', $event)"
                         />
                     </div>
                 </div>
@@ -345,6 +386,7 @@ onMounted(() => {
                             max="1000"
                             step="10"
                             @update:model-value="emitUpdate('padding', $event)"
+                            @change="emitUpdateEnd('padding', $event)"
                         />
                     </div>
                     <div class="reader-control">
@@ -365,6 +407,7 @@ onMounted(() => {
                             max="10"
                             step="1"
                             @update:model-value="emitUpdate('overlaySize', $event)"
+                            @change="emitUpdateEnd('overlaySize', $event)"
                         />
                     </div>
                     <div class="reader-control">
@@ -386,6 +429,7 @@ onMounted(() => {
                             max="100"
                             step="5"
                             @update:model-value="emitUpdate('overlayOpacity', $event)"
+                            @change="emitUpdateEnd('overlayOpacity', $event)"
                         />
                     </div>
                 </div>

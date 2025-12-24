@@ -28,7 +28,8 @@ const emit = defineEmits(['close']);
         <div class="sr-modal-grid">
             <div><strong>Space</strong> - плей/пауза</div>
             <div><strong>F</strong> - полный экран</div>
-            <div><strong>Left/Right (A/D)</strong> - скорость +50</div>
+            <div><strong>Q</strong> - свернуть/развернуть панель настроек</div>
+            <div><strong>Left/Right (A/D)</strong> - скорость +10</div>
             <div><strong>W/S</strong> - удерживать множитель скорости x2 / x0.5</div>
             <div><strong>Up/Down</strong> - размер шрифта +1</div>
             <div><strong>Home/End</strong> - в начало/конец</div>

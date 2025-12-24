@@ -7,9 +7,11 @@
  *  settings: Record<string, any>,
  *  setSpeedMultiplier: (multiplier: number | null) => void,
  *  togglePlay: () => void,
+ *  isPlaying: () => boolean,
  *  jumpToEdge: (toEnd: boolean) => void,
  *  handleFullscreen: () => void,
  *  handleClose: () => void,
+ *  togglePanel: () => void,
  *  isHelpOpen: () => boolean,
  *  closeHelp: () => void,
  *  recalcMetrics: () => void,
@@ -17,7 +19,7 @@
  */
 export function useReaderShortcuts(options) {
     const clampSpeed = (value) => {
-        const normalized = Math.round(Number(value) / 50) * 50;
+        const normalized = Math.round(Number(value) / 10) * 10;
 
         return Math.min(2000, Math.max(100, normalized));
     };
@@ -77,27 +79,21 @@ export function useReaderShortcuts(options) {
 
             return;
         }
-        if (event.code === 'ArrowRight') {
+        if (event.code === 'KeyQ') {
             event.preventDefault();
-            adjustSpeed(50);
+            options.togglePanel();
 
             return;
         }
-        if (event.code === 'ArrowLeft') {
+        if (event.code === 'ArrowRight' || event.code === 'KeyD') {
             event.preventDefault();
-            adjustSpeed(-50);
+            adjustSpeed(10);
 
             return;
         }
-        if (event.code === 'KeyD') {
+        if (event.code === 'ArrowLeft' || event.code === 'KeyA') {
             event.preventDefault();
-            adjustSpeed(50);
-
-            return;
-        }
-        if (event.code === 'KeyA') {
-            event.preventDefault();
-            adjustSpeed(-50);
+            adjustSpeed(-10);
 
             return;
         }
@@ -131,13 +127,19 @@ export function useReaderShortcuts(options) {
         }
         if (event.code === 'Home') {
             event.preventDefault();
-            options.jumpToEdge(false);
+
+            if (!options.isPlaying()) {
+                options.jumpToEdge(false);
+            }
 
             return;
         }
         if (event.code === 'End') {
             event.preventDefault();
-            options.jumpToEdge(true);
+
+            if (!options.isPlaying()) {
+                options.jumpToEdge(true);
+            }
         }
     };
 

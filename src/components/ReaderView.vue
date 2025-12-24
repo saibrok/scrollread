@@ -11,6 +11,7 @@ import SrModal from '../ui/SrModal.vue';
 import SrSelect from '../ui/SrSelect.vue';
 import ReaderHeader from './ReaderHeader.vue';
 import ReaderHelp from './ReaderHelp.vue';
+import ReaderMinimap from './ReaderMinimap.vue';
 import ReaderPanel from './ReaderPanel.vue';
 import ReaderResetConfirm from './ReaderResetConfirm.vue';
 
@@ -36,6 +37,8 @@ const helpOpen = ref(false);
 const resetOpen = ref(false);
 const isFullscreen = ref(false);
 const isCompact = ref(false);
+const readerPanelRef = ref(null);
+const readerModalPanelRef = ref(null);
 const settingsOpen = ref(false);
 const settingsPeeking = ref(false);
 const sessionSeconds = ref(0);
@@ -45,6 +48,9 @@ let sessionTimerId = null;
 const pendingStartId = ref(null);
 const pendingStartSeconds = ref(null);
 const pendingStartTickId = ref(null);
+const minimapRenderKey = ref(0);
+
+const showMinimap = computed(() => settings.showMinimap !== false);
 
 const readerStyle = computed(() => {
     return {
@@ -60,6 +66,7 @@ const readerStyle = computed(() => {
         '--read-padding': `${settings.padding}px`,
         '--reader-align': settings.align,
         '--reader-indent': settings.align === 'center' ? '0em' : `${settings.indent}em`,
+        '--reader-minimap-width': showMinimap.value ? '120px' : '0px',
     };
 });
 
@@ -68,7 +75,7 @@ const paletteOptions = computed(() => getPaletteOptions(settings.themeTone));
 
 const speedMultiplier = ref(1);
 
-const { isPlaying, currentSeconds, totalDuration, togglePlay, pauseScroll, jumpToEdge, recalcMetricsPreservePosition, initReader, handleWheel } =
+const { isPlaying, currentSeconds, totalDuration, togglePlay, pauseScroll, jumpToEdge, smoothSeek, recalcMetricsPreservePosition, initReader, handleWheel } =
     useReaderPlayer({
         getText: () => props.text,
         getSpeed: () => settings.speed * speedMultiplier.value,
@@ -81,6 +88,13 @@ const timerText = computed(() => {
 });
 
 const sessionTimerText = computed(() => formatTime(sessionSeconds.value));
+const playbackProgress = computed(() => {
+    if (totalDuration.value === 0) {
+        return 0;
+    }
+
+    return Math.min(1, Math.max(0, currentSeconds.value / totalDuration.value));
+});
 
 function updateSetting({ key, value }) {
     settings[key] = value;
@@ -89,6 +103,24 @@ function updateSetting({ key, value }) {
 function handlePanelToggle() {
     if (props.open) {
         recalcMetricsPreservePosition();
+    }
+}
+
+function handlePanelUpdateEnd() {
+    minimapRenderKey.value += 1;
+}
+
+function handlePanelShortcut() {
+    if (isCompact.value) {
+        if (settingsOpen.value && readerModalPanelRef.value?.togglePanel) {
+            readerModalPanelRef.value.togglePanel();
+        }
+
+        return;
+    }
+
+    if (readerPanelRef.value?.togglePanel) {
+        readerPanelRef.value.togglePanel();
     }
 }
 function setSpeedMultiplier(multiplier) {
@@ -259,6 +291,7 @@ watch(
             speedMultiplier.value = 1;
             resetSessionTimer();
             initReader();
+            minimapRenderKey.value += 1;
         } else {
             pauseScroll();
         }
@@ -270,12 +303,22 @@ watch(
     () => {
         if (props.open) {
             initReader();
+            minimapRenderKey.value += 1;
         }
     },
 );
 
 watch(
-    () => [settings.speed, settings.fontSize, settings.font, settings.lineHeight, settings.paragraphGap, settings.padding, settings.overlaySize],
+    () => [
+        settings.speed,
+        settings.fontSize,
+        settings.font,
+        settings.lineHeight,
+        settings.paragraphGap,
+        settings.padding,
+        settings.overlaySize,
+        settings.showMinimap,
+    ],
     () => {
         if (props.open) {
             recalcMetricsPreservePosition();
@@ -288,9 +331,11 @@ useReaderShortcuts({
     settings,
     setSpeedMultiplier,
     togglePlay: handleTogglePlay,
+    isPlaying: () => isPlaying.value,
     jumpToEdge,
     handleFullscreen,
     handleClose,
+    togglePanel: handlePanelShortcut,
     isHelpOpen: () => helpOpen.value,
     closeHelp,
     recalcMetrics: recalcMetricsPreservePosition,
@@ -362,6 +407,13 @@ watch(
     },
     { immediate: false },
 );
+
+function handleMinimapSeek(progress) {
+    if (isPlaying.value) {
+        return;
+    }
+    smoothSeek(progress);
+}
 </script>
 
 <template>
@@ -375,13 +427,11 @@ watch(
             :is-compact="isCompact"
             :timer-text="timerText"
             :session-timer-text="sessionTimerText"
-            :is-fullscreen="isFullscreen"
             :theme-tone="settings.themeTone"
             :theme-palette="settings.themePalette"
             :pending-start-seconds="pendingStartSeconds"
             :start-delay="settings.startDelay"
             @toggle-play="handleTogglePlay"
-            @fullscreen="handleFullscreen"
             @update:theme-tone="(value) => updateSetting({ key: 'themeTone', value })"
             @update:theme-palette="(value) => updateSetting({ key: 'themePalette', value })"
             @update:start-delay="(value) => updateSetting({ key: 'startDelay', value })"
@@ -392,9 +442,13 @@ watch(
         />
         <ReaderPanel
             v-if="!isCompact"
+            ref="readerPanelRef"
             :settings="settings"
             :speed-multiplier-label="speedMultiplierLabel"
+            :is-fullscreen="isFullscreen"
             @update="updateSetting"
+            @update-end="handlePanelUpdateEnd"
+            @fullscreen="handleFullscreen"
             @toggle="handlePanelToggle"
         />
         <div class="reader-body">
@@ -417,6 +471,16 @@ watch(
                 class="reader-overlay reader-overlay-bottom"
                 aria-hidden="true"
             ></div>
+            <ReaderMinimap
+                v-if="showMinimap"
+                :stage-el="readerStage"
+                :text-el="readerText"
+                :content="props.text"
+                :render-key="minimapRenderKey"
+                :progress="playbackProgress"
+                :is-playing="isPlaying"
+                @seek="handleMinimapSeek"
+            />
         </div>
         <ReaderHelp
             :open="helpOpen"
@@ -482,9 +546,13 @@ watch(
                 </div>
             </div>
             <ReaderPanel
+                ref="readerModalPanelRef"
                 :settings="settings"
                 :speed-multiplier-label="speedMultiplierLabel"
+                :is-fullscreen="isFullscreen"
                 @update="updateSetting"
+                @update-end="handlePanelUpdateEnd"
+                @fullscreen="handleFullscreen"
                 @toggle="handlePanelToggle"
             />
             <div class="reader-settings__actions">

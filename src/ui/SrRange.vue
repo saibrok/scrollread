@@ -18,10 +18,14 @@ const props = defineProps({
     },
 });
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(['update:modelValue', 'change']);
 
 function onInput(event) {
     emit('update:modelValue', Number(event.target.value));
+}
+
+function onChange(event) {
+    emit('change', Number(event.target.value));
 }
 </script>
 
@@ -35,6 +39,7 @@ function onInput(event) {
         :value="props.modelValue"
         v-bind="$attrs"
         @input="onInput"
+        @change="onChange"
     />
 </template>
 

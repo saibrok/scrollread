@@ -40,23 +40,9 @@ const props = defineProps({
         type: Number,
         default: null,
     },
-    isFullscreen: {
-        type: Boolean,
-        required: true,
-    },
 });
 
-const emit = defineEmits([
-    'toggle-play',
-    'fullscreen',
-    'reset',
-    'help',
-    'close',
-    'open-settings',
-    'update:theme-tone',
-    'update:theme-palette',
-    'update:start-delay',
-]);
+const emit = defineEmits(['toggle-play', 'reset', 'help', 'close', 'open-settings', 'update:theme-tone', 'update:theme-palette', 'update:start-delay']);
 
 const paletteOptions = computed(() => getPaletteOptions(props.themeTone));
 
@@ -112,13 +98,6 @@ function handleDelayInput(value) {
             >
                 <template #append-inner>с</template>
             </SrInput>
-            <SrButton
-                v-if="!props.isCompact"
-                class="reader-btn"
-                :variant="props.isFullscreen ? 'accent' : 'default'"
-                @click="emit('fullscreen')"
-                >Полный экран</SrButton
-            >
         </div>
         <div class="reader-timers">
             <div class="reader-timer">

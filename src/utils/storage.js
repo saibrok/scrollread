@@ -18,6 +18,7 @@ export const DEFAULTS = {
     paragraphGap: 0.6,
     indent: 1,
     startDelay: 0,
+    showMinimap: true,
 };
 
 /**

@@ -19,6 +19,8 @@ export function useReaderPlayer({ getText, getSpeed, stageRef, textRef }) {
     const totalDuration = ref(0);
     const totalDistance = ref(0);
     const currentSeconds = ref(0);
+    const wheelAnimId = ref(null);
+    const wheelTargetElapsed = ref(0);
 
     /**
      * Measure scroll distance and duration.
@@ -115,6 +117,57 @@ export function useReaderPlayer({ getText, getSpeed, stageRef, textRef }) {
         }
     }
 
+    function stopWheelAnimation() {
+        if (wheelAnimId.value) {
+            cancelAnimationFrame(wheelAnimId.value);
+            wheelAnimId.value = null;
+        }
+    }
+
+    function startWheelAnimation() {
+        if (wheelAnimId.value) {
+            return;
+        }
+        const tick = () => {
+            const duration = totalDuration.value;
+
+            if (duration === 0) {
+                stopWheelAnimation();
+
+                return;
+            }
+            const delta = wheelTargetElapsed.value - accumulatedElapsed.value;
+
+            if (Math.abs(delta) < 0.02) {
+                accumulatedElapsed.value = wheelTargetElapsed.value;
+                renderScroll(accumulatedElapsed.value);
+                stopWheelAnimation();
+
+                return;
+            }
+            accumulatedElapsed.value += delta * 0.18;
+            renderScroll(accumulatedElapsed.value);
+            wheelAnimId.value = requestAnimationFrame(tick);
+        };
+
+        wheelAnimId.value = requestAnimationFrame(tick);
+    }
+
+    function smoothSeek(progress) {
+        const duration = totalDuration.value;
+
+        if (duration === 0) {
+            renderScroll(0);
+
+            return;
+        }
+
+        const clamped = Math.min(1, Math.max(0, progress));
+
+        wheelTargetElapsed.value = duration * clamped;
+        startWheelAnimation();
+    }
+
     /**
      * Toggle play state.
      */
@@ -122,6 +175,7 @@ export function useReaderPlayer({ getText, getSpeed, stageRef, textRef }) {
         isPlaying.value = !isPlaying.value;
 
         if (isPlaying.value) {
+            stopWheelAnimation();
             startScroll();
         } else {
             pauseScroll();
@@ -134,7 +188,30 @@ export function useReaderPlayer({ getText, getSpeed, stageRef, textRef }) {
      */
     function jumpToEdge(toEnd) {
         pauseScroll();
+        stopWheelAnimation();
         accumulatedElapsed.value = toEnd ? totalDuration.value : 0;
+        startTimestamp.value = 0;
+        renderScroll(accumulatedElapsed.value);
+    }
+
+    /**
+     * Seek to progress position.
+     * @param {number} progress
+     */
+    function setProgress(progress) {
+        const duration = totalDuration.value;
+
+        if (duration === 0) {
+            renderScroll(0);
+
+            return;
+        }
+
+        stopWheelAnimation();
+
+        const clamped = Math.min(1, Math.max(0, progress));
+
+        accumulatedElapsed.value = duration * clamped;
         startTimestamp.value = 0;
         renderScroll(accumulatedElapsed.value);
     }
@@ -190,8 +267,10 @@ export function useReaderPlayer({ getText, getSpeed, stageRef, textRef }) {
 
         const delta = event.deltaY / totalDistance.value;
 
-        accumulatedElapsed.value = Math.min(totalDuration.value, Math.max(0, accumulatedElapsed.value + delta * totalDuration.value));
-        renderScroll(accumulatedElapsed.value);
+        const next = Math.min(totalDuration.value, Math.max(0, accumulatedElapsed.value + delta * totalDuration.value));
+
+        wheelTargetElapsed.value = next;
+        startWheelAnimation();
     }
 
     return {
@@ -202,6 +281,8 @@ export function useReaderPlayer({ getText, getSpeed, stageRef, textRef }) {
         togglePlay,
         pauseScroll,
         jumpToEdge,
+        setProgress,
+        smoothSeek,
         recalcMetricsPreservePosition,
         initReader,
         resetReaderScroll,
