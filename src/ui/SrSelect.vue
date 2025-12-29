@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 
 const props = defineProps({
     modelValue: {
@@ -18,12 +18,18 @@ const props = defineProps({
         type: String,
         default: '',
     },
+    teleport: {
+        type: Boolean,
+        default: true,
+    },
 });
 
 const emit = defineEmits(['update:modelValue', 'select']);
 
 const isMenuOpen = ref(false);
 const wrapper = ref(null);
+const menu = ref(null);
+const menuStyle = ref({});
 
 const selectedItem = computed(() => props.items.find((item) => item.value === props.modelValue));
 const selectedLabel = computed(() => {
@@ -58,9 +64,30 @@ function handleOutsideClick(event) {
     }
 
     const root = wrapper.value;
+    const menuRoot = menu.value;
 
-    if (root && !root.contains(event.target)) {
+    if (root && !root.contains(event.target) && (!menuRoot || !menuRoot.contains(event.target))) {
         isMenuOpen.value = false;
+    }
+}
+
+function updateMenuPosition() {
+    if (!props.teleport || !wrapper.value) {
+        return;
+    }
+
+    const rect = wrapper.value.getBoundingClientRect();
+
+    menuStyle.value = {
+        top: `${rect.bottom + 6}px`,
+        left: `${rect.left}px`,
+        width: `${rect.width}px`,
+    };
+}
+
+function handleViewportChange() {
+    if (isMenuOpen.value) {
+        updateMenuPosition();
     }
 }
 
@@ -70,7 +97,27 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
     document?.removeEventListener('click', handleOutsideClick);
+    window?.removeEventListener('resize', handleViewportChange);
+    window?.removeEventListener('scroll', handleViewportChange, true);
 });
+
+watch(
+    () => isMenuOpen.value,
+    (open) => {
+        if (!props.teleport) {
+            return;
+        }
+
+        if (open) {
+            nextTick(updateMenuPosition);
+            window?.addEventListener('resize', handleViewportChange);
+            window?.addEventListener('scroll', handleViewportChange, true);
+        } else {
+            window?.removeEventListener('resize', handleViewportChange);
+            window?.removeEventListener('scroll', handleViewportChange, true);
+        }
+    },
+);
 </script>
 
 <template>
@@ -90,9 +137,36 @@ onBeforeUnmount(() => {
             <span class="sr-select__icon"></span>
         </button>
 
-        <Transition name="ui-fade">
+        <Teleport
+            v-if="props.teleport"
+            to="body"
+        >
+            <Transition name="ui-fade">
+                <ul
+                    v-show="isMenuOpen"
+                    ref="menu"
+                    class="sr-select__menu sr-select__menu--teleport"
+                    :style="menuStyle"
+                >
+                    <li
+                        v-for="item in props.items"
+                        :key="item.value ?? 'none'"
+                        class="sr-select__menu-item"
+                        :class="{ 'sr-select__menu-item--active': item.value === props.modelValue }"
+                        @click="handleSelect(item.value)"
+                    >
+                        {{ item.text }}
+                    </li>
+                </ul>
+            </Transition>
+        </Teleport>
+        <Transition
+            v-else
+            name="ui-fade"
+        >
             <ul
                 v-show="isMenuOpen"
+                ref="menu"
                 class="sr-select__menu"
             >
                 <li
@@ -183,6 +257,10 @@ onBeforeUnmount(() => {
     border: 1px solid var(--ui-border, var(--border));
     border-radius: 14px;
     box-shadow: var(--ui-shadow, 0 16px 32px rgb(15 23 42 / 16%));
+}
+
+.sr-select__menu--teleport {
+    position: fixed;
 }
 
 .sr-select__menu-item {

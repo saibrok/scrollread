@@ -14,6 +14,7 @@ import SrModal from '../../ui/SrModal.vue';
 import SrSelect from '../../ui/SrSelect.vue';
 import ReaderHeader from './components/ReaderHeader.vue';
 import ReaderHelp from './components/ReaderHelp.vue';
+import ReaderMinimap from './components/ReaderMinimap.vue';
 import ReaderPanel from './components/ReaderPanel.vue';
 import ReaderResetConfirm from './components/ReaderResetConfirm.vue';
 
@@ -39,9 +40,14 @@ const pendingStartSeconds = ref(null);
 const pendingStartTickId = ref(null);
 const bodyOverflow = ref('');
 
-const showMinimap = computed(() => readerSettings.showMinimap !== false && !isCompact.value);
+const showMinimap = computed(() => readerSettings.showMinimap !== false);
 
 const readerStyle = computed(() => {
+    const parsedIndent = Number.parseFloat(readerSettings.indent);
+    const indentValue = Number.isFinite(parsedIndent) ? parsedIndent : 0;
+    const parsedMinimapWidth = Number.parseFloat(readerSettings.minimapWidth);
+    const minimapWidthValue = Number.isFinite(parsedMinimapWidth) ? parsedMinimapWidth : 120;
+
     return {
         '--reader-font-size': `${readerSettings.fontSize}px`,
         '--reader-font': readerSettings.font,
@@ -54,8 +60,8 @@ const readerStyle = computed(() => {
         '--read-paragraph-gap': `${readerSettings.paragraphGap}em`,
         '--read-padding': `${readerSettings.padding}px`,
         '--reader-align': readerSettings.align,
-        '--reader-indent': readerSettings.align === 'center' ? '0em' : `${readerSettings.indent}em`,
-        '--reader-minimap-width': showMinimap.value ? '120px' : '0px',
+        '--reader-indent': readerSettings.align === 'center' ? '0em' : `${indentValue}em`,
+        '--reader-minimap-width': showMinimap.value ? `${minimapWidthValue}px` : '0px',
     };
 });
 
@@ -66,11 +72,14 @@ const speedMultiplier = ref(1);
 
 const {
     isPlaying,
+    currentElapsed,
     currentSeconds,
     totalDuration,
     togglePlay,
     pauseScroll,
     jumpToEdge,
+    smoothSeek,
+    setProgress,
     recalcMetricsPreservePosition,
     initReader,
     handleWheel,
@@ -89,6 +98,13 @@ const timerText = computed(() => {
 });
 
 const sessionTimerText = computed(() => formatTime(sessionSeconds.value));
+const readerProgress = computed(() => {
+    if (totalDuration.value <= 0) {
+        return 0;
+    }
+
+    return Math.min(1, Math.max(0, currentElapsed.value / totalDuration.value));
+});
 
 function updateReaderSetting({ key, value }) {
     readerSettings[key] = value;
@@ -114,16 +130,13 @@ function handleSpeedMultiplier(multiplier) {
     setSpeedMultiplier(multiplier === 1 ? null : multiplier);
 }
 
-const speedMultiplierLabel = computed(() => {
-    if (speedMultiplier.value === 2) {
-        return 'x2';
+function handleMinimapSeek({ progress, smooth }) {
+    if (smooth) {
+        smoothSeek(progress);
+    } else {
+        setProgress(progress);
     }
-    if (speedMultiplier.value === 0.5) {
-        return 'x0.5';
-    }
-
-    return '';
-});
+}
 
 function openHelp() {
     helpOpen.value = true;
@@ -419,16 +432,17 @@ watch(
         <ReaderHeader
             :is-playing="isPlaying"
             :is-compact="isCompact"
+            :pending-start-seconds="pendingStartSeconds"
+            :settings="readerSettings"
             :timer-text="timerText"
             :session-timer-text="sessionTimerText"
-            :pending-start-seconds="pendingStartSeconds"
-            :start-delay="readerSettings.startDelay"
+            :speed-multiplier="speedMultiplier"
             @toggle-play="handleTogglePlay"
-            @update:start-delay="(value) => updateReaderSetting({ key: 'startDelay', value })"
+            @update-setting="updateReaderSetting"
             @reset="handleReset"
-            @help="openHelp"
             @open-settings="openSettings"
             @open-theme="openTheme"
+            @speed-multiplier="handleSpeedMultiplier"
             @close="handleClose"
         />
         <div class="reader-body">
@@ -459,9 +473,18 @@ watch(
             </div>
             <div
                 v-if="showMinimap"
-                class="reader-minimap reader-minimap--placeholder"
-                aria-hidden="true"
-            ></div>
+                class="reader-minimap"
+            >
+                <ReaderMinimap
+                    :html="readerHtml"
+                    :progress="readerProgress"
+                    :is-playing="isPlaying"
+                    :stage-element="readerStage"
+                    :text-element="readerText"
+                    :scale-factor="readerSettings.minimapScale"
+                    @seek="handleMinimapSeek"
+                />
+            </div>
         </div>
         <ReaderHelp
             :open="helpOpen"
@@ -499,6 +522,7 @@ watch(
                         <SrSelect
                             :model-value="themeSettings.themeTone"
                             :items="THEME_TONE_OPTIONS"
+                            teleport
                             @update:model-value="updateThemeTone"
                         />
                     </div>
@@ -507,6 +531,7 @@ watch(
                         <SrSelect
                             :model-value="themeSettings.themePalette"
                             :items="paletteOptions"
+                            teleport
                             @update:model-value="updateThemePalette"
                         />
                     </div>
@@ -536,13 +561,15 @@ watch(
             <div class="sr-modal-body">
                 <ReaderPanel
                     :settings="readerSettings"
-                    :speed-multiplier-label="speedMultiplierLabel"
                     :speed-multiplier="speedMultiplier"
                     :is-fullscreen="isFullscreen"
                     :is-compact="isCompact"
                     :show-speed-in-bar="false"
+                    :timer-text="timerText"
+                    :session-timer-text="sessionTimerText"
                     @update="updateReaderSetting"
                     @fullscreen="handleFullscreen"
+                    @help="openHelp"
                     @speed-multiplier="handleSpeedMultiplier"
                 />
                 <div class="reader-settings__actions">
@@ -551,18 +578,6 @@ watch(
                         @click="handleReset"
                     >
                         Сброс настроек
-                    </SrButton>
-                    <SrButton
-                        class="reader-btn"
-                        aria-label="Горячие клавиши"
-                        @click="openHelp"
-                    >
-                        <span
-                            class="material-icons"
-                            aria-hidden="true"
-                        >
-                            help_outline
-                        </span>
                     </SrButton>
                 </div>
             </div>
@@ -650,12 +665,12 @@ watch(
     word-break: break-word;
 }
 
-.reader-text p {
+:deep(.reader-text p) {
     margin: 0 0 var(--read-paragraph-gap);
     text-indent: var(--reader-indent);
 }
 
-.reader-text p:last-child {
+:deep(.reader-text p:last-child) {
     margin-bottom: 0;
 }
 

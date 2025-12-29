@@ -18,12 +18,22 @@ export function useReaderPlayer({ getText, getSpeed, stageRef, textRef }) {
     const accumulatedElapsed = ref(0);
     const totalDuration = ref(0);
     const totalDistance = ref(0);
+    const currentElapsed = ref(0);
     const currentSeconds = ref(0);
     const wheelAnimId = ref(null);
     const wheelTargetElapsed = ref(0);
     const touchStartY = ref(0);
     const touchStartElapsed = ref(0);
     const touchActive = ref(false);
+    const touchLastY = ref(0);
+    const touchLastTime = ref(0);
+    const touchVelocity = ref(0);
+    const touchMomentumId = ref(null);
+    const wheelProgressMultiplier = 3;
+    const wheelEasing = 0.07;
+    const wheelStopThreshold = 0.01;
+    const touchFriction = 0.98;
+    const touchStopVelocity = 0.005;
 
     /**
      * Measure scroll distance and duration.
@@ -50,6 +60,7 @@ export function useReaderPlayer({ getText, getSpeed, stageRef, textRef }) {
         const distance = totalDistance.value;
 
         if (duration === 0 || !textRef.value) {
+            currentElapsed.value = 0;
             currentSeconds.value = 0;
 
             return;
@@ -59,6 +70,7 @@ export function useReaderPlayer({ getText, getSpeed, stageRef, textRef }) {
         const offset = -distance * progress;
 
         textRef.value.style.transform = `translateY(${offset}px)`;
+        currentElapsed.value = clamped;
         currentSeconds.value = Math.floor(clamped);
     }
 
@@ -127,6 +139,35 @@ export function useReaderPlayer({ getText, getSpeed, stageRef, textRef }) {
         }
     }
 
+    function stopTouchMomentum() {
+        if (touchMomentumId.value) {
+            cancelAnimationFrame(touchMomentumId.value);
+            touchMomentumId.value = null;
+        }
+    }
+
+    function startTouchMomentum() {
+        if (touchMomentumId.value || totalDuration.value === 0) {
+            return;
+        }
+        const tick = () => {
+            touchVelocity.value *= touchFriction;
+
+            if (Math.abs(touchVelocity.value) < touchStopVelocity) {
+                touchVelocity.value = 0;
+                stopTouchMomentum();
+
+                return;
+            }
+
+            accumulatedElapsed.value = Math.min(totalDuration.value, Math.max(0, accumulatedElapsed.value + touchVelocity.value));
+            renderScroll(accumulatedElapsed.value);
+            touchMomentumId.value = requestAnimationFrame(tick);
+        };
+
+        touchMomentumId.value = requestAnimationFrame(tick);
+    }
+
     function startWheelAnimation() {
         if (wheelAnimId.value) {
             return;
@@ -141,14 +182,14 @@ export function useReaderPlayer({ getText, getSpeed, stageRef, textRef }) {
             }
             const delta = wheelTargetElapsed.value - accumulatedElapsed.value;
 
-            if (Math.abs(delta) < 0.02) {
+            if (Math.abs(delta) < wheelStopThreshold) {
                 accumulatedElapsed.value = wheelTargetElapsed.value;
                 renderScroll(accumulatedElapsed.value);
                 stopWheelAnimation();
 
                 return;
             }
-            accumulatedElapsed.value += delta * 0.18;
+            accumulatedElapsed.value += delta * wheelEasing;
             renderScroll(accumulatedElapsed.value);
             wheelAnimId.value = requestAnimationFrame(tick);
         };
@@ -179,6 +220,7 @@ export function useReaderPlayer({ getText, getSpeed, stageRef, textRef }) {
 
         if (isPlaying.value) {
             stopWheelAnimation();
+            stopTouchMomentum();
             startScroll();
         } else {
             pauseScroll();
@@ -192,6 +234,7 @@ export function useReaderPlayer({ getText, getSpeed, stageRef, textRef }) {
     function jumpToEdge(toEnd) {
         pauseScroll();
         stopWheelAnimation();
+        stopTouchMomentum();
         accumulatedElapsed.value = toEnd ? totalDuration.value : 0;
         startTimestamp.value = 0;
         renderScroll(accumulatedElapsed.value);
@@ -211,6 +254,7 @@ export function useReaderPlayer({ getText, getSpeed, stageRef, textRef }) {
         }
 
         stopWheelAnimation();
+        stopTouchMomentum();
 
         const clamped = Math.min(1, Math.max(0, progress));
 
@@ -255,6 +299,7 @@ export function useReaderPlayer({ getText, getSpeed, stageRef, textRef }) {
 
         totalDistance.value = metrics.distance;
         totalDuration.value = metrics.duration;
+        stopTouchMomentum();
         resetReaderScroll();
     }
 
@@ -268,7 +313,9 @@ export function useReaderPlayer({ getText, getSpeed, stageRef, textRef }) {
         }
         event.preventDefault();
 
-        const delta = event.deltaY / totalDistance.value;
+        stopTouchMomentum();
+
+        const delta = (event.deltaY / totalDistance.value) * wheelProgressMultiplier;
 
         const next = Math.min(totalDuration.value, Math.max(0, accumulatedElapsed.value + delta * totalDuration.value));
 
@@ -286,9 +333,13 @@ export function useReaderPlayer({ getText, getSpeed, stageRef, textRef }) {
             return;
         }
 
+        stopTouchMomentum();
         touchActive.value = true;
         touchStartY.value = touch.clientY;
         touchStartElapsed.value = accumulatedElapsed.value;
+        touchLastY.value = touch.clientY;
+        touchLastTime.value = performance.now();
+        touchVelocity.value = 0;
         wheelTargetElapsed.value = accumulatedElapsed.value;
     }
 
@@ -306,16 +357,28 @@ export function useReaderPlayer({ getText, getSpeed, stageRef, textRef }) {
         const delta = (deltaY / totalDistance.value) * totalDuration.value;
         const next = Math.min(totalDuration.value, Math.max(0, touchStartElapsed.value + delta));
 
+        const now = performance.now();
+        const frameDelta = (touchLastY.value - touch.clientY) / totalDistance.value;
+        const elapsedDelta = frameDelta * totalDuration.value;
+        const frameTime = Math.max(1, now - touchLastTime.value);
+
+        touchVelocity.value = elapsedDelta / (frameTime / 16.67);
+        touchLastY.value = touch.clientY;
+        touchLastTime.value = now;
+
         wheelTargetElapsed.value = next;
         startWheelAnimation();
     }
 
     function handleTouchEnd() {
         touchActive.value = false;
+        stopWheelAnimation();
+        startTouchMomentum();
     }
 
     return {
         isPlaying,
+        currentElapsed,
         currentSeconds,
         totalDuration,
         totalDistance,

@@ -65,8 +65,9 @@ onBeforeUnmount(() => {
     align-items: center;
     justify-content: center;
 
-    background: rgb(0 0 0 / 75%);
-    backdrop-filter: blur(8px);
+    /* background: rgb(0 0 0 / 75%); */
+
+    /* backdrop-filter: blur(5px); */
 }
 
 .sr-modal--settings {

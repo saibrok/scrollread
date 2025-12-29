@@ -77,6 +77,17 @@ function resolveWidth(value) {
     border-color: var(--ui-border-hover, var(--accent));
 }
 
+.sr-button--ghost {
+    background: transparent;
+    border-color: transparent;
+}
+
+.sr-button--ghost:hover {
+    background: transparent;
+    border-color: transparent;
+    transform: none;
+}
+
 .sr-button:active {
     transform: translateY(0);
 }

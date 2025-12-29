@@ -141,7 +141,7 @@ function resolveWidth(value) {
 
 .sr-input {
     width: 100%;
-    padding: 8px 14px;
+    padding: 11px 14px;
 }
 
 .sr-input--labeled {

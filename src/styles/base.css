@@ -20,6 +20,9 @@ body {
     --reader-surface: var(--surface);
     --reader-surface-strong: var(--bg-accent);
     --reader-help-bg: var(--surface);
+
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 * {
