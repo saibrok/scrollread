@@ -21,20 +21,22 @@ const emit = defineEmits(['close', 'confirm']);
         <div class="sr-modal-header">
             <div>Сброс настроек</div>
         </div>
-        <div class="sr-modal-text">Сбросить настройки форматирования к значениям по умолчанию?</div>
-        <div class="sr-modal-actions">
-            <SrButton
-                variant="default"
-                @click="emit('close')"
-            >
-                Отмена
-            </SrButton>
-            <SrButton
-                variant="accent"
-                @click="emit('confirm')"
-            >
-                Сбросить
-            </SrButton>
+        <div class="sr-modal-body">
+            <div class="sr-modal-text">Сбросить настройки форматирования к значениям по умолчанию?</div>
+            <div class="sr-modal-actions">
+                <SrButton
+                    variant="default"
+                    @click="emit('close')"
+                >
+                    Отмена
+                </SrButton>
+                <SrButton
+                    variant="accent"
+                    @click="emit('confirm')"
+                >
+                    Сбросить
+                </SrButton>
+            </div>
         </div>
     </SrModal>
 </template>

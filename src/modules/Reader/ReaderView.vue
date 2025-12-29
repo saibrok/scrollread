@@ -14,7 +14,6 @@ import SrModal from '../../ui/SrModal.vue';
 import SrSelect from '../../ui/SrSelect.vue';
 import ReaderHeader from './components/ReaderHeader.vue';
 import ReaderHelp from './components/ReaderHelp.vue';
-import ReaderMinimap from './components/ReaderMinimap.vue';
 import ReaderPanel from './components/ReaderPanel.vue';
 import ReaderResetConfirm from './components/ReaderResetConfirm.vue';
 
@@ -29,11 +28,8 @@ const helpOpen = ref(false);
 const resetOpen = ref(false);
 const isFullscreen = ref(false);
 const isCompact = ref(false);
-const readerPanelRef = ref(null);
-const readerModalPanelRef = ref(null);
 const settingsOpen = ref(false);
 const themeOpen = ref(false);
-const settingsPeeking = ref(false);
 const sessionSeconds = ref(0);
 let sessionStart = 0;
 let sessionAccumulated = 0;
@@ -41,7 +37,6 @@ let sessionTimerId = null;
 const pendingStartId = ref(null);
 const pendingStartSeconds = ref(null);
 const pendingStartTickId = ref(null);
-const minimapRenderKey = ref(0);
 const bodyOverflow = ref('');
 
 const showMinimap = computed(() => readerSettings.showMinimap !== false && !isCompact.value);
@@ -76,7 +71,6 @@ const {
     togglePlay,
     pauseScroll,
     jumpToEdge,
-    smoothSeek,
     recalcMetricsPreservePosition,
     initReader,
     handleWheel,
@@ -95,13 +89,6 @@ const timerText = computed(() => {
 });
 
 const sessionTimerText = computed(() => formatTime(sessionSeconds.value));
-const playbackProgress = computed(() => {
-    if (totalDuration.value === 0) {
-        return 0;
-    }
-
-    return Math.min(1, Math.max(0, currentSeconds.value / totalDuration.value));
-});
 
 function updateReaderSetting({ key, value }) {
     readerSettings[key] = value;
@@ -115,28 +102,8 @@ function updateThemePalette(value) {
     themeSettings.themePalette = value;
 }
 
-function handlePanelToggle() {
-    if (isOpen.value) {
-        recalcMetricsPreservePosition();
-    }
-}
-
-function handlePanelUpdateEnd() {
-    minimapRenderKey.value += 1;
-}
-
 function handlePanelShortcut() {
-    if (isCompact.value) {
-        if (settingsOpen.value && readerModalPanelRef.value?.togglePanel) {
-            readerModalPanelRef.value.togglePanel();
-        }
-
-        return;
-    }
-
-    if (readerPanelRef.value?.togglePanel) {
-        readerPanelRef.value.togglePanel();
-    }
+    toggleSettingsVisibility();
 }
 function setSpeedMultiplier(multiplier) {
     speedMultiplier.value = multiplier || 1;
@@ -183,14 +150,15 @@ function confirmReset() {
 }
 
 function openSettings() {
-    if (!isCompact.value) {
-        return;
-    }
     settingsOpen.value = true;
 }
 
 function closeSettings() {
     settingsOpen.value = false;
+}
+
+function toggleSettingsVisibility() {
+    settingsOpen.value = !settingsOpen.value;
 }
 
 function openTheme() {
@@ -199,14 +167,6 @@ function openTheme() {
 
 function closeTheme() {
     themeOpen.value = false;
-}
-
-function startSettingsPeek() {
-    settingsPeeking.value = true;
-}
-
-function stopSettingsPeek() {
-    settingsPeeking.value = false;
 }
 
 function clearPendingStart() {
@@ -314,11 +274,6 @@ function syncFullscreen() {
 
 function syncCompact(value) {
     isCompact.value = value;
-
-    if (!value) {
-        settingsOpen.value = false;
-        themeOpen.value = false;
-    }
 }
 
 function lockBodyScroll() {
@@ -341,7 +296,6 @@ watch(isOpen, (value) => {
         speedMultiplier.value = 1;
         resetSessionTimer();
         initReader();
-        minimapRenderKey.value += 1;
     } else {
         unlockBodyScroll();
         pauseScroll();
@@ -351,7 +305,6 @@ watch(isOpen, (value) => {
 watch(text, () => {
     if (isOpen.value) {
         initReader();
-        minimapRenderKey.value += 1;
     }
 });
 
@@ -455,13 +408,6 @@ watch(
     },
     { immediate: false },
 );
-
-function handleMinimapSeek(progress) {
-    if (isPlaying.value) {
-        return;
-    }
-    smoothSeek(progress);
-}
 </script>
 
 <template>
@@ -484,20 +430,6 @@ function handleMinimapSeek(progress) {
             @open-settings="openSettings"
             @open-theme="openTheme"
             @close="handleClose"
-        />
-        <ReaderPanel
-            v-if="!isCompact"
-            ref="readerPanelRef"
-            :settings="readerSettings"
-            :speed-multiplier-label="speedMultiplierLabel"
-            :speed-multiplier="speedMultiplier"
-            :is-fullscreen="isFullscreen"
-            :is-compact="isCompact"
-            @update="updateReaderSetting"
-            @update-end="handlePanelUpdateEnd"
-            @fullscreen="handleFullscreen"
-            @speed-multiplier="handleSpeedMultiplier"
-            @toggle="handlePanelToggle"
         />
         <div class="reader-body">
             <div class="reader-content">
@@ -525,16 +457,11 @@ function handleMinimapSeek(progress) {
                     aria-hidden="true"
                 ></div>
             </div>
-            <ReaderMinimap
+            <div
                 v-if="showMinimap"
-                :stage-el="readerStage"
-                :text-el="readerText"
-                :content="text"
-                :render-key="minimapRenderKey"
-                :progress="playbackProgress"
-                :is-playing="isPlaying"
-                @seek="handleMinimapSeek"
-            />
+                class="reader-minimap reader-minimap--placeholder"
+                aria-hidden="true"
+            ></div>
         </div>
         <ReaderHelp
             :open="helpOpen"
@@ -565,49 +492,35 @@ function handleMinimapSeek(progress) {
                     </span>
                 </SrButton>
             </div>
-            <div class="reader-settings">
-                <div class="reader-settings__group">
-                    <div class="reader-settings__label">Тон</div>
-                    <SrSelect
-                        :model-value="themeSettings.themeTone"
-                        :items="THEME_TONE_OPTIONS"
-                        @update:model-value="updateThemeTone"
-                    />
-                </div>
-                <div class="reader-settings__group">
-                    <div class="reader-settings__label">Цветовая схема</div>
-                    <SrSelect
-                        :model-value="themeSettings.themePalette"
-                        :items="paletteOptions"
-                        @update:model-value="updateThemePalette"
-                    />
+            <div class="sr-modal-body">
+                <div class="reader-settings">
+                    <div class="reader-settings__group">
+                        <div class="reader-settings__label">Тон</div>
+                        <SrSelect
+                            :model-value="themeSettings.themeTone"
+                            :items="THEME_TONE_OPTIONS"
+                            @update:model-value="updateThemeTone"
+                        />
+                    </div>
+                    <div class="reader-settings__group">
+                        <div class="reader-settings__label">Цветовая схема</div>
+                        <SrSelect
+                            :model-value="themeSettings.themePalette"
+                            :items="paletteOptions"
+                            @update:model-value="updateThemePalette"
+                        />
+                    </div>
                 </div>
             </div>
         </SrModal>
         <SrModal
             :open="settingsOpen"
-            :modal-class="settingsPeeking ? 'sr-modal--settings sr-modal--peek' : 'sr-modal--settings'"
+            modal-class="sr-modal--settings"
             card-class="sr-modal-card--wide"
             @close="closeSettings"
         >
             <div class="sr-modal-header">
                 <div>Настройки</div>
-                <SrButton
-                    class="reader-btn"
-                    @mousedown="startSettingsPeek"
-                    @mouseup="stopSettingsPeek"
-                    @mouseleave="stopSettingsPeek"
-                    @touchstart.prevent="startSettingsPeek"
-                    @touchend="stopSettingsPeek"
-                    @touchcancel="stopSettingsPeek"
-                >
-                    <span
-                        class="material-icons"
-                        aria-hidden="true"
-                    >
-                        visibility
-                    </span>
-                </SrButton>
                 <SrButton
                     class="reader-btn"
                     @click="closeSettings"
@@ -620,40 +533,187 @@ function handleMinimapSeek(progress) {
                     </span>
                 </SrButton>
             </div>
-            <ReaderPanel
-                ref="readerModalPanelRef"
-                :settings="readerSettings"
-                :speed-multiplier-label="speedMultiplierLabel"
-                :speed-multiplier="speedMultiplier"
-                :is-fullscreen="isFullscreen"
-                :is-compact="isCompact"
-                :show-speed-in-bar="false"
-                @update="updateReaderSetting"
-                @update-end="handlePanelUpdateEnd"
-                @fullscreen="handleFullscreen"
-                @speed-multiplier="handleSpeedMultiplier"
-                @toggle="handlePanelToggle"
-            />
-            <div class="reader-settings__actions">
-                <SrButton
-                    class="reader-btn"
-                    @click="handleReset"
-                >
-                    Сброс настроек
-                </SrButton>
-                <SrButton
-                    class="reader-btn"
-                    aria-label="Горячие клавиши"
-                    @click="openHelp"
-                >
-                    <span
-                        class="material-icons"
-                        aria-hidden="true"
+            <div class="sr-modal-body">
+                <ReaderPanel
+                    :settings="readerSettings"
+                    :speed-multiplier-label="speedMultiplierLabel"
+                    :speed-multiplier="speedMultiplier"
+                    :is-fullscreen="isFullscreen"
+                    :is-compact="isCompact"
+                    :show-speed-in-bar="false"
+                    @update="updateReaderSetting"
+                    @fullscreen="handleFullscreen"
+                    @speed-multiplier="handleSpeedMultiplier"
+                />
+                <div class="reader-settings__actions">
+                    <SrButton
+                        class="reader-btn"
+                        @click="handleReset"
                     >
-                        help_outline
-                    </span>
-                </SrButton>
+                        Сброс настроек
+                    </SrButton>
+                    <SrButton
+                        class="reader-btn"
+                        aria-label="Горячие клавиши"
+                        @click="openHelp"
+                    >
+                        <span
+                            class="material-icons"
+                            aria-hidden="true"
+                        >
+                            help_outline
+                        </span>
+                    </SrButton>
+                </div>
             </div>
         </SrModal>
     </div>
 </template>
+
+<style scoped>
+.reader {
+    --reader-font-size: 32px;
+    --reader-font: 'Rubik', 'Segoe UI', arial, sans-serif;
+    --read-line-height: 1.6;
+    --read-paragraph-gap: 0.6em;
+    --reader-brightness: 100%;
+    --reader-contrast: 100%;
+    --reader-sepia: 0%;
+    --reader-overlay-opacity: 0.75;
+    --read-band: 3.2em;
+    --read-padding: 120px;
+
+    position: fixed;
+    z-index: 50;
+    inset: 0;
+
+    display: none;
+    flex-direction: column;
+
+    color: var(--reader-text);
+
+    background: transparent;
+}
+
+.reader.active {
+    display: flex;
+}
+
+.reader-body {
+    overflow: hidden;
+    display: flex;
+    flex: 1;
+    min-height: 0;
+}
+
+.reader-content {
+    position: relative;
+
+    overflow: hidden;
+    display: grid;
+    grid-template-rows: 1fr calc(var(--read-band) * var(--read-line-height)) 1fr;
+    flex: 1;
+    align-items: stretch;
+    justify-content: stretch;
+
+    min-height: 0;
+
+    font-size: var(--reader-font-size);
+
+    background: var(--reader-bg);
+    filter: brightness(var(--reader-brightness)) contrast(var(--reader-contrast)) sepia(var(--reader-sepia));
+}
+
+.reader-stage {
+    position: relative;
+
+    display: flex;
+    align-items: start;
+
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    padding-inline: var(--read-padding);
+}
+
+.reader-text {
+    will-change: transform;
+
+    transform: translateY(0);
+
+    width: 100%;
+    padding-top: calc(var(--read-band) * var(--read-line-height) / 2 - 1em * var(--read-line-height) + 1em);
+
+    font-family: var(--reader-font);
+    line-height: var(--read-line-height);
+    text-align: var(--reader-align);
+    word-break: break-word;
+}
+
+.reader-text p {
+    margin: 0 0 var(--read-paragraph-gap);
+    text-indent: var(--reader-indent);
+}
+
+.reader-text p:last-child {
+    margin-bottom: 0;
+}
+
+.reader-overlay {
+    pointer-events: none;
+    z-index: 10;
+    background: rgb(0 0 0 / var(--reader-overlay-opacity));
+}
+
+.reader-settings {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(180px, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.reader-settings__group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.reader-settings__label {
+    font-size: 11px;
+    color: var(--reader-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.reader-settings__actions {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: flex-end;
+
+    margin-top: 16px;
+}
+
+.reader-btn .material-icons {
+    font-size: 20px;
+    line-height: 1;
+}
+
+.reader-minimap {
+    flex: 0 0 var(--reader-minimap-width);
+    width: var(--reader-minimap-width);
+    background: var(--reader-surface);
+    border-left: 1px solid var(--reader-border);
+}
+
+.reader-minimap--placeholder {
+    opacity: 0.4;
+}
+
+@media (max-width: 900px) {
+    .reader-settings {
+        grid-template-columns: 1fr;
+    }
+}
+</style>

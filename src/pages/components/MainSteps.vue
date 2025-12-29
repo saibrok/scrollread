@@ -6,7 +6,9 @@ import SrCard from '../../ui/SrCard.vue';
     <SrCard
         as="section"
         class="section reveal"
-        style="--delay: 0.2s"
+        style="
+
+    --delay: 0.2s"
         variant="alt"
     >
         <div class="section-title">Как это работает</div>

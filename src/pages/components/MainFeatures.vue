@@ -2,7 +2,9 @@
     <section
         id="features"
         class="section reveal"
-        style="--delay: 0.15s"
+        style="
+
+    --delay: 0.15s"
     >
         <div class="section-title">Преимущества ScrollRead</div>
         <div class="section-lead">Все, что нужно для уверенного чтения с экрана.</div>

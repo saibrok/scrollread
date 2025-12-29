@@ -108,12 +108,6 @@ function handleDelayInput(value) {
             <SrButton
                 v-if="!props.isCompact"
                 class="reader-btn"
-                @click="emit('reset')"
-                >Сброс настроек</SrButton
-            >
-            <SrButton
-                v-if="!props.isCompact"
-                class="reader-btn"
                 aria-label="Горячие клавиши"
                 @click="emit('help')"
             >
@@ -125,7 +119,6 @@ function handleDelayInput(value) {
                 </span>
             </SrButton>
             <SrButton
-                v-if="props.isCompact"
                 class="reader-btn"
                 aria-label="Настройки"
                 @click="emit('open-settings')"
@@ -152,3 +145,77 @@ function handleDelayInput(value) {
         </div>
     </div>
 </template>
+
+<style scoped>
+.reader-header {
+    position: relative;
+    z-index: 30;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 10px;
+
+    background: var(--reader-surface);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--reader-border);
+}
+
+.reader-controls {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.reader-countdown {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+}
+
+.reader-timers {
+    display: flex;
+    gap: 36px;
+    text-align: center;
+}
+
+.reader-timer {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    font-size: 12px;
+    color: var(--reader-text-muted);
+}
+
+.reader-timer__label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.reader-timer__value {
+    font-size: 20px;
+    color: var(--reader-text);
+}
+
+.reader-btn .material-icons {
+    font-size: 20px;
+    line-height: 1;
+}
+
+@media (max-width: 900px) {
+    .reader-header {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .reader-timers {
+        gap: 12px;
+        justify-content: center;
+        order: 3;
+        width: 100%;
+    }
+}
+</style>

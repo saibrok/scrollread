@@ -1,7 +1,9 @@
 <template>
     <section
         class="section reveal"
-        style="--delay: 0.25s"
+        style="
+
+    --delay: 0.25s"
     >
         <div class="section-title">Для кого подходит</div>
         <div class="use-cases">

@@ -1,6 +1,4 @@
 ﻿<script setup>
-import { onMounted, ref, watch } from 'vue';
-
 import SrButton from '../../../ui/SrButton.vue';
 import SrRange from '../../../ui/SrRange.vue';
 import SrSelect from '../../../ui/SrSelect.vue';
@@ -33,9 +31,7 @@ const props = defineProps({
     },
 });
 
-const emit = defineEmits(['update', 'toggle', 'fullscreen', 'update-end', 'speed-multiplier']);
-
-const isOpen = ref(true);
+const emit = defineEmits(['update', 'fullscreen', 'update-end', 'speed-multiplier']);
 
 const fontOptions = [
     { value: "'EB Garamond', 'Times New Roman', serif", text: 'EB Garamond' },
@@ -93,29 +89,6 @@ function toggleMultiplier(value) {
 
     emit('speed-multiplier', nextMultiplier);
 }
-
-function togglePanel() {
-    isOpen.value = !isOpen.value;
-    emitUpdate('panelOpen', isOpen.value);
-    emit('toggle', isOpen.value);
-}
-
-defineExpose({ togglePanel });
-
-onMounted(() => {
-    if (typeof props.settings.panelOpen === 'boolean') {
-        isOpen.value = props.settings.panelOpen;
-    }
-});
-
-watch(
-    () => props.settings.panelOpen,
-    (value) => {
-        if (typeof value === 'boolean') {
-            isOpen.value = value;
-        }
-    },
-);
 </script>
 
 <template>
@@ -124,7 +97,7 @@ watch(
             <div class="reader-panel__title">Настройки текста</div>
 
             <div
-                v-if="props.showSpeedInBar && !isOpen"
+                v-if="props.showSpeedInBar"
                 class="reader-panel__speed"
             >
                 <label class="reader-panel__speed-label">Скорость</label>
@@ -209,25 +182,8 @@ watch(
                     {{ props.isFullscreen ? 'fullscreen_exit' : 'fullscreen' }}
                 </span>
             </SrButton>
-
-            <SrButton
-                class="reader-btn reader-panel__icon"
-                type="button"
-                :aria-label="isOpen ? 'Свернуть настройки' : 'Развернуть настройки'"
-                @click="togglePanel"
-            >
-                <span
-                    class="material-icons"
-                    aria-hidden="true"
-                >
-                    {{ isOpen ? 'expand_less' : 'expand_more' }}
-                </span>
-            </SrButton>
         </div>
-        <div
-            v-show="isOpen"
-            class="reader-panel__body"
-        >
+        <div class="reader-panel__body">
             <section class="reader-group">
                 <div class="reader-group__title">Темп</div>
                 <div class="reader-group__grid">
@@ -549,3 +505,140 @@ watch(
         </div>
     </div>
 </template>
+
+<style scoped>
+.reader-panel {
+    position: relative;
+    z-index: 10;
+
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+
+    padding: 14px 24px 18px;
+
+    border-bottom: 1px solid var(--reader-border);
+}
+
+.reader-panel__bar {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.reader-panel__title {
+    font-size: 13px;
+    color: var(--reader-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+}
+
+.reader-panel__speed {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.reader-panel__speed-label {
+    font-size: 11px;
+    color: var(--reader-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+}
+
+.reader-panel__speed .sr-range {
+    min-width: 140px;
+    max-width: 240px;
+}
+
+.reader-panel__speed-value {
+    font-size: 12px;
+    color: var(--reader-text);
+    white-space: nowrap;
+}
+
+.reader-panel__multiplier {
+    pointer-events: none;
+
+    min-width: 48px;
+    padding: 6px 10px;
+
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.reader-panel__icon {
+    padding: 6px 8px;
+    font-size: 12px;
+}
+
+.reader-panel__icon .material-icons {
+    font-size: 18px;
+}
+
+.reader-panel__body {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.reader-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    padding: 12px;
+
+    background: var(--reader-surface);
+    border: 1px solid var(--reader-border);
+    border-radius: 14px;
+}
+
+.reader-group__title {
+    font-size: 11px;
+    color: var(--reader-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+}
+
+.reader-group__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+}
+
+.reader-control {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    font-size: 12px;
+    color: var(--reader-text-muted);
+}
+
+.reader-control__header {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.reader-label {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.reader-control input[type='range'],
+.reader-control select {
+    width: 100%;
+}
+
+.reader-value {
+    font-size: 12px;
+    color: var(--reader-text);
+    white-space: nowrap;
+}
+</style>

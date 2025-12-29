@@ -37,28 +37,30 @@ const emit = defineEmits([
         <div class="sr-modal-header">
             <div>Сохранение текста</div>
         </div>
-        <div class="sr-modal-text">Выберите действие для выбранного сохранения.</div>
-        <div class="sr-modal-actions">
-            <SrButton
-                variant="default"
-                @click="emit('close-save-confirm')"
-            >
-                Отмена
-            </SrButton>
+        <div class="sr-modal-body">
+            <div class="sr-modal-text">Выберите действие для выбранного сохранения.</div>
+            <div class="sr-modal-actions">
+                <SrButton
+                    variant="default"
+                    @click="emit('close-save-confirm')"
+                >
+                    Отмена
+                </SrButton>
 
-            <SrButton
-                variant="default"
-                @click="emit('confirm-save-overwrite')"
-            >
-                Перезаписать
-            </SrButton>
+                <SrButton
+                    variant="default"
+                    @click="emit('confirm-save-overwrite')"
+                >
+                    Перезаписать
+                </SrButton>
 
-            <SrButton
-                variant="accent"
-                @click="emit('confirm-save-new')"
-            >
-                Новое
-            </SrButton>
+                <SrButton
+                    variant="accent"
+                    @click="emit('confirm-save-new')"
+                >
+                    Новое
+                </SrButton>
+            </div>
         </div>
     </SrModal>
 
@@ -70,20 +72,22 @@ const emit = defineEmits([
         <div class="sr-modal-header">
             <div>Загрузка текста</div>
         </div>
-        <div class="sr-modal-text">В поле есть данные. Заменить содержимое?</div>
-        <div class="sr-modal-actions">
-            <SrButton
-                variant="default"
-                @click="emit('close-load-confirm')"
-            >
-                Отмена
-            </SrButton>
-            <SrButton
-                variant="accent"
-                @click="emit('confirm-load-replace')"
-            >
-                Заменить
-            </SrButton>
+        <div class="sr-modal-body">
+            <div class="sr-modal-text">В поле есть данные. Заменить содержимое?</div>
+            <div class="sr-modal-actions">
+                <SrButton
+                    variant="default"
+                    @click="emit('close-load-confirm')"
+                >
+                    Отмена
+                </SrButton>
+                <SrButton
+                    variant="accent"
+                    @click="emit('confirm-load-replace')"
+                >
+                    Заменить
+                </SrButton>
+            </div>
         </div>
     </SrModal>
 
@@ -95,20 +99,22 @@ const emit = defineEmits([
         <div class="sr-modal-header">
             <div>Удаление сохранения</div>
         </div>
-        <div class="sr-modal-text">Удалить выбранное сохранение без возможности восстановления?</div>
-        <div class="sr-modal-actions">
-            <SrButton
-                variant="default"
-                @click="emit('close-delete-confirm')"
-            >
-                Отмена
-            </SrButton>
-            <SrButton
-                variant="accent"
-                @click="emit('confirm-delete-save')"
-            >
-                Удалить
-            </SrButton>
+        <div class="sr-modal-body">
+            <div class="sr-modal-text">Удалить выбранное сохранение без возможности восстановления?</div>
+            <div class="sr-modal-actions">
+                <SrButton
+                    variant="default"
+                    @click="emit('close-delete-confirm')"
+                >
+                    Отмена
+                </SrButton>
+                <SrButton
+                    variant="accent"
+                    @click="emit('confirm-delete-save')"
+                >
+                    Удалить
+                </SrButton>
+            </div>
         </div>
     </SrModal>
 </template>

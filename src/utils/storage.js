@@ -18,7 +18,6 @@ export const READER_DEFAULTS = {
     indent: 1,
     startDelay: 0,
     showMinimap: true,
-    panelOpen: true,
 };
 
 export const THEME_DEFAULTS = {
