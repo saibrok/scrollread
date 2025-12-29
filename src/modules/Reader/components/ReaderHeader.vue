@@ -1,11 +1,11 @@
 ﻿<script setup>
 import { computed } from 'vue';
 
-import { getPaletteOptions, THEME_TONE_OPTIONS } from '../utils/themes';
+import { getPaletteOptions, THEME_TONE_OPTIONS } from '../../../utils/themes';
 
-import SrButton from '../ui/SrButton.vue';
-import SrInput from '../ui/SrInput.vue';
-import SrSelect from '../ui/SrSelect.vue';
+import SrButton from '../../../ui/SrButton.vue';
+import SrInput from '../../../ui/SrInput.vue';
+import SrSelect from '../../../ui/SrSelect.vue';
 
 const props = defineProps({
     isPlaying: {

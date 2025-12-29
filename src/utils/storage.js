@@ -1,10 +1,9 @@
-export const STORAGE_KEY = 'scrollread_settings';
-export const TEXT_SAVES_KEY = 'scrollread_text_saves';
+export const READER_STORAGE_KEY = 'reader_settings';
+export const THEME_STORAGE_KEY = 'theme_settings';
+export const SAVED_TEXTS_KEY = 'saved_texts';
 
-export const DEFAULTS = {
+export const READER_DEFAULTS = {
     speed: 800,
-    themeTone: 'light',
-    themePalette: 'gray-medium',
     fontSize: 32,
     font: "'EB Garamond', 'Times New Roman', serif",
     align: 'left',
@@ -19,43 +18,78 @@ export const DEFAULTS = {
     indent: 1,
     startDelay: 0,
     showMinimap: true,
+    panelOpen: true,
+};
+
+export const THEME_DEFAULTS = {
+    themeTone: 'light',
+    themePalette: 'gray-medium',
 };
 
 /**
- * Load settings from localStorage.
- * @returns {typeof DEFAULTS}
+ * Load reader settings from localStorage.
+ * @returns {typeof READER_DEFAULTS}
  */
-export function loadSettings() {
-    const saved = localStorage.getItem(STORAGE_KEY);
+export function loadReaderSettings() {
+    const saved = localStorage.getItem(READER_STORAGE_KEY);
 
     if (!saved) {
-        return { ...DEFAULTS };
+        return { ...READER_DEFAULTS };
     }
     try {
         const parsed = JSON.parse(saved);
 
-        return { ...DEFAULTS, ...parsed };
+        return { ...READER_DEFAULTS, ...parsed };
     } catch (error) {
-        console.warn('Settings parse error', error);
+        console.warn('Reader settings parse error', error);
 
-        return { ...DEFAULTS };
+        return { ...READER_DEFAULTS };
     }
 }
 
 /**
- * Save settings to localStorage.
- * @param {typeof DEFAULTS} settings
+ * Save reader settings to localStorage.
+ * @param {typeof READER_DEFAULTS} settings
  */
-export function saveSettings(settings) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+export function saveReaderSettings(settings) {
+    localStorage.setItem(READER_STORAGE_KEY, JSON.stringify(settings));
+}
+
+/**
+ * Load theme settings from localStorage.
+ * @returns {typeof THEME_DEFAULTS}
+ */
+export function loadThemeSettings() {
+    const saved = localStorage.getItem(THEME_STORAGE_KEY);
+
+    if (!saved) {
+        return { ...THEME_DEFAULTS };
+    }
+    try {
+        const parsed = JSON.parse(saved);
+
+        return { ...THEME_DEFAULTS, ...parsed };
+    } catch (error) {
+        console.warn('Theme settings parse error', error);
+
+        return { ...THEME_DEFAULTS };
+    }
+}
+
+/**
+ * Save theme settings to localStorage.
+ * @param {typeof THEME_DEFAULTS} settings
+ */
+export function saveThemeSettings(settings) {
+    localStorage.setItem(THEME_STORAGE_KEY, JSON.stringify(settings));
 }
 
 /**
  * Load saved texts from localStorage.
  * @returns {{ id: string, text: string, savedAt: string }[]}
  */
-export function loadTextSaves() {
-    const saved = localStorage.getItem(TEXT_SAVES_KEY);
+export function loadSavedTexts() {
+    const saved = localStorage.getItem(SAVED_TEXTS_KEY);
 
     if (!saved) {
         return [];
@@ -79,6 +113,6 @@ export function loadTextSaves() {
  * Save texts to localStorage.
  * @param {{ id: string, text: string, savedAt: string }[]} saves
  */
-export function saveTextSaves(saves) {
-    localStorage.setItem(TEXT_SAVES_KEY, JSON.stringify(saves));
+export function saveSavedTexts(saves) {
+    localStorage.setItem(SAVED_TEXTS_KEY, JSON.stringify(saves));
 }

@@ -1,6 +1,6 @@
 ﻿<script setup>
-import SrButton from '../ui/SrButton.vue';
-import SrModal from '../ui/SrModal.vue';
+import SrButton from '../../../ui/SrButton.vue';
+import SrModal from '../../../ui/SrModal.vue';
 
 const props = defineProps({
     open: {

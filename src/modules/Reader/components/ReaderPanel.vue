@@ -1,10 +1,10 @@
 ﻿<script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 
-import SrButton from '../ui/SrButton.vue';
-import SrCheckbox from '../ui/SrCheckbox.vue';
-import SrRange from '../ui/SrRange.vue';
-import SrSelect from '../ui/SrSelect.vue';
+import SrButton from '../../../ui/SrButton.vue';
+import SrCheckbox from '../../../ui/SrCheckbox.vue';
+import SrRange from '../../../ui/SrRange.vue';
+import SrSelect from '../../../ui/SrSelect.vue';
 
 const props = defineProps({
     settings: {
@@ -32,7 +32,6 @@ const props = defineProps({
 const emit = defineEmits(['update', 'toggle', 'fullscreen', 'update-end']);
 
 const isOpen = ref(true);
-const STORAGE_KEY = 'scrollread_reader_panel_open';
 
 const fontOptions = [
     { value: "'EB Garamond', 'Times New Roman', serif", text: 'EB Garamond' },
@@ -78,21 +77,33 @@ function handleSelectUpdate(key, value) {
     emitUpdateEnd(key, value);
 }
 
+function handleMinimapToggle(value) {
+    emitUpdate('showMinimap', value);
+    emitUpdateEnd('showMinimap', value);
+}
+
 function togglePanel() {
     isOpen.value = !isOpen.value;
+    emitUpdate('panelOpen', isOpen.value);
     emit('toggle', isOpen.value);
-    localStorage.setItem(STORAGE_KEY, String(isOpen.value));
 }
 
 defineExpose({ togglePanel });
 
 onMounted(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-
-    if (saved === 'true' || saved === 'false') {
-        isOpen.value = saved === 'true';
+    if (typeof props.settings.panelOpen === 'boolean') {
+        isOpen.value = props.settings.panelOpen;
     }
 });
+
+watch(
+    () => props.settings.panelOpen,
+    (value) => {
+        if (typeof value === 'boolean') {
+            isOpen.value = value;
+        }
+    },
+);
 </script>
 
 <template>
@@ -131,7 +142,7 @@ onMounted(() => {
             <SrCheckbox
                 v-if="!props.isCompact"
                 :model-value="props.settings.showMinimap !== false"
-                @update:model-value="emitUpdate('showMinimap', $event)"
+                @update:model-value="handleMinimapToggle"
             >
                 Показывать миникарту
             </SrCheckbox>

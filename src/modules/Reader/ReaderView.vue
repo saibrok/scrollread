@@ -1,38 +1,30 @@
 <script setup>
-import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 
-import { formatTime, toParagraphs } from '../utils/text';
-import { getPaletteOptions, THEME_TONE_OPTIONS } from '../utils/themes';
-import { useReaderPlayer } from '../composables/useReaderPlayer';
-import { useReaderShortcuts } from '../composables/useReaderShortcuts';
+import { useReaderSettings } from '../../composables/useReaderSettings';
+import { useTextStore } from '../../composables/useTextStore';
+import { useTheme } from '../../composables/useTheme';
+import { useReaderPlayer } from '../../composables/useReaderPlayer';
+import { useReaderShortcuts } from '../../composables/useReaderShortcuts';
+import { formatTime, toParagraphs } from '../../utils/text';
+import { getPaletteOptions, THEME_TONE_OPTIONS } from '../../utils/themes';
 
-import SrButton from '../ui/SrButton.vue';
-import SrModal from '../ui/SrModal.vue';
-import SrSelect from '../ui/SrSelect.vue';
-import ReaderHeader from './ReaderHeader.vue';
-import ReaderHelp from './ReaderHelp.vue';
-import ReaderMinimap from './ReaderMinimap.vue';
-import ReaderPanel from './ReaderPanel.vue';
-import ReaderResetConfirm from './ReaderResetConfirm.vue';
+import SrButton from '../../ui/SrButton.vue';
+import SrModal from '../../ui/SrModal.vue';
+import SrSelect from '../../ui/SrSelect.vue';
+import ReaderHeader from './components/ReaderHeader.vue';
+import ReaderHelp from './components/ReaderHelp.vue';
+import ReaderMinimap from './components/ReaderMinimap.vue';
+import ReaderPanel from './components/ReaderPanel.vue';
+import ReaderResetConfirm from './components/ReaderResetConfirm.vue';
 
-const props = defineProps({
-    open: {
-        type: Boolean,
-        required: true,
-    },
-    text: {
-        type: String,
-        required: true,
-    },
-});
-
-const emit = defineEmits(['close']);
-
-const settings = inject('settings');
-const resetSettings = inject('resetSettings');
+const { readerSettings, resetReaderSettings } = useReaderSettings();
+const { themeSettings } = useTheme();
+const { text } = useTextStore();
 
 const readerStage = ref(null);
 const readerText = ref(null);
+const isOpen = ref(false);
 const helpOpen = ref(false);
 const resetOpen = ref(false);
 const isFullscreen = ref(false);
@@ -51,28 +43,28 @@ const pendingStartTickId = ref(null);
 const minimapRenderKey = ref(0);
 const bodyOverflow = ref('');
 
-const showMinimap = computed(() => settings.showMinimap !== false && !isCompact.value);
+const showMinimap = computed(() => readerSettings.showMinimap !== false && !isCompact.value);
 
 const readerStyle = computed(() => {
     return {
-        '--reader-font-size': `${settings.fontSize}px`,
-        '--reader-font': settings.font,
-        '--reader-brightness': `${settings.brightness}%`,
-        '--reader-contrast': `${settings.contrast}%`,
-        '--reader-sepia': `${settings.sepia}%`,
-        '--reader-overlay-opacity': settings.overlayOpacity / 100,
-        '--read-band': `${settings.overlaySize}em`,
-        '--read-line-height': settings.lineHeight,
-        '--read-paragraph-gap': `${settings.paragraphGap}em`,
-        '--read-padding': `${settings.padding}px`,
-        '--reader-align': settings.align,
-        '--reader-indent': settings.align === 'center' ? '0em' : `${settings.indent}em`,
+        '--reader-font-size': `${readerSettings.fontSize}px`,
+        '--reader-font': readerSettings.font,
+        '--reader-brightness': `${readerSettings.brightness}%`,
+        '--reader-contrast': `${readerSettings.contrast}%`,
+        '--reader-sepia': `${readerSettings.sepia}%`,
+        '--reader-overlay-opacity': readerSettings.overlayOpacity / 100,
+        '--read-band': `${readerSettings.overlaySize}em`,
+        '--read-line-height': readerSettings.lineHeight,
+        '--read-paragraph-gap': `${readerSettings.paragraphGap}em`,
+        '--read-padding': `${readerSettings.padding}px`,
+        '--reader-align': readerSettings.align,
+        '--reader-indent': readerSettings.align === 'center' ? '0em' : `${readerSettings.indent}em`,
         '--reader-minimap-width': showMinimap.value ? '120px' : '0px',
     };
 });
 
-const readerHtml = computed(() => toParagraphs(props.text));
-const paletteOptions = computed(() => getPaletteOptions(settings.themeTone));
+const readerHtml = computed(() => toParagraphs(text.value));
+const paletteOptions = computed(() => getPaletteOptions(themeSettings.themeTone));
 
 const speedMultiplier = ref(1);
 
@@ -91,8 +83,8 @@ const {
     handleTouchMove,
     handleTouchEnd,
 } = useReaderPlayer({
-    getText: () => props.text,
-    getSpeed: () => settings.speed * speedMultiplier.value,
+    getText: () => text.value,
+    getSpeed: () => readerSettings.speed * speedMultiplier.value,
     stageRef: readerStage,
     textRef: readerText,
 });
@@ -110,12 +102,20 @@ const playbackProgress = computed(() => {
     return Math.min(1, Math.max(0, currentSeconds.value / totalDuration.value));
 });
 
-function updateSetting({ key, value }) {
-    settings[key] = value;
+function updateReaderSetting({ key, value }) {
+    readerSettings[key] = value;
+}
+
+function updateThemeTone(value) {
+    themeSettings.themeTone = value;
+}
+
+function updateThemePalette(value) {
+    themeSettings.themePalette = value;
 }
 
 function handlePanelToggle() {
-    if (props.open) {
+    if (isOpen.value) {
         recalcMetricsPreservePosition();
     }
 }
@@ -170,8 +170,8 @@ function closeReset() {
 }
 
 function confirmReset() {
-    if (typeof resetSettings === 'function') {
-        resetSettings();
+    if (typeof resetReaderSettings === 'function') {
+        resetReaderSettings();
     }
     recalcMetricsPreservePosition();
     resetOpen.value = false;
@@ -209,7 +209,7 @@ function clearPendingStart() {
 }
 
 function getStartDelaySeconds() {
-    const parsed = Number(settings.startDelay);
+    const parsed = Number(readerSettings.startDelay);
 
     if (Number.isNaN(parsed)) {
         return 0;
@@ -251,7 +251,7 @@ function handleTogglePlay() {
             }
             pendingStartSeconds.value = null;
 
-            if (!isPlaying.value && props.open) {
+            if (!isPlaying.value && isOpen.value) {
                 togglePlay();
             }
         }, delay * 1000);
@@ -262,6 +262,19 @@ function handleTogglePlay() {
     togglePlay();
 }
 
+function openReader() {
+    isOpen.value = true;
+}
+
+function closeReader() {
+    if (!isOpen.value) {
+        return;
+    }
+    isOpen.value = false;
+}
+
+defineExpose({ openReader, closeReader });
+
 function handleClose() {
     clearPendingStart();
     pauseScroll();
@@ -270,7 +283,7 @@ function handleClose() {
     settingsOpen.value = false;
     speedMultiplier.value = 1;
     resetSessionTimer();
-    emit('close');
+    closeReader();
 }
 
 function handleFullscreen() {
@@ -303,7 +316,7 @@ function unlockBodyScroll() {
 }
 
 watch(
-    () => props.open,
+    isOpen,
     (value) => {
         clearPendingStart();
 
@@ -323,37 +336,34 @@ watch(
     },
 );
 
-watch(
-    () => props.text,
-    () => {
-        if (props.open) {
-            initReader();
-            minimapRenderKey.value += 1;
-        }
-    },
-);
+watch(text, () => {
+    if (isOpen.value) {
+        initReader();
+        minimapRenderKey.value += 1;
+    }
+});
 
 watch(
     () => [
-        settings.speed,
-        settings.fontSize,
-        settings.font,
-        settings.lineHeight,
-        settings.paragraphGap,
-        settings.padding,
-        settings.overlaySize,
-        settings.showMinimap,
+        readerSettings.speed,
+        readerSettings.fontSize,
+        readerSettings.font,
+        readerSettings.lineHeight,
+        readerSettings.paragraphGap,
+        readerSettings.padding,
+        readerSettings.overlaySize,
+        readerSettings.showMinimap,
     ],
     () => {
-        if (props.open) {
+        if (isOpen.value) {
             recalcMetricsPreservePosition();
         }
     },
 );
 
 useReaderShortcuts({
-    isOpen: () => props.open,
-    settings,
+    isOpen: () => isOpen.value,
+    settings: readerSettings,
     setSpeedMultiplier,
     togglePlay: handleTogglePlay,
     isPlaying: () => isPlaying.value,
@@ -445,7 +455,7 @@ function handleMinimapSeek(progress) {
 <template>
     <div
         class="reader"
-        :class="{ active: props.open }"
+        :class="{ active: isOpen }"
         :style="readerStyle"
     >
         <ReaderHeader
@@ -453,14 +463,14 @@ function handleMinimapSeek(progress) {
             :is-compact="isCompact"
             :timer-text="timerText"
             :session-timer-text="sessionTimerText"
-            :theme-tone="settings.themeTone"
-            :theme-palette="settings.themePalette"
+            :theme-tone="themeSettings.themeTone"
+            :theme-palette="themeSettings.themePalette"
             :pending-start-seconds="pendingStartSeconds"
-            :start-delay="settings.startDelay"
+            :start-delay="readerSettings.startDelay"
             @toggle-play="handleTogglePlay"
-            @update:theme-tone="(value) => updateSetting({ key: 'themeTone', value })"
-            @update:theme-palette="(value) => updateSetting({ key: 'themePalette', value })"
-            @update:start-delay="(value) => updateSetting({ key: 'startDelay', value })"
+            @update:theme-tone="updateThemeTone"
+            @update:theme-palette="updateThemePalette"
+            @update:start-delay="(value) => updateReaderSetting({ key: 'startDelay', value })"
             @reset="handleReset"
             @help="openHelp"
             @open-settings="openSettings"
@@ -469,11 +479,11 @@ function handleMinimapSeek(progress) {
         <ReaderPanel
             v-if="!isCompact"
             ref="readerPanelRef"
-            :settings="settings"
+            :settings="readerSettings"
             :speed-multiplier-label="speedMultiplierLabel"
             :is-fullscreen="isFullscreen"
             :is-compact="isCompact"
-            @update="updateSetting"
+            @update="updateReaderSetting"
             @update-end="handlePanelUpdateEnd"
             @fullscreen="handleFullscreen"
             @toggle="handlePanelToggle"
@@ -508,7 +518,7 @@ function handleMinimapSeek(progress) {
                 v-if="showMinimap"
                 :stage-el="readerStage"
                 :text-el="readerText"
-                :content="props.text"
+                :content="text"
                 :render-key="minimapRenderKey"
                 :progress="playbackProgress"
                 :is-playing="isPlaying"
@@ -564,28 +574,28 @@ function handleMinimapSeek(progress) {
                 <div class="reader-settings__group">
                     <div class="reader-settings__label">Тон</div>
                     <SrSelect
-                        :model-value="settings.themeTone"
+                        :model-value="themeSettings.themeTone"
                         :items="THEME_TONE_OPTIONS"
-                        @update:model-value="(value) => updateSetting({ key: 'themeTone', value })"
+                        @update:model-value="updateThemeTone"
                     />
                 </div>
                 <div class="reader-settings__group">
                     <div class="reader-settings__label">Цветовая схема</div>
                     <SrSelect
-                        :model-value="settings.themePalette"
+                        :model-value="themeSettings.themePalette"
                         :items="paletteOptions"
-                        @update:model-value="(value) => updateSetting({ key: 'themePalette', value })"
+                        @update:model-value="updateThemePalette"
                     />
                 </div>
             </div>
             <ReaderPanel
                 ref="readerModalPanelRef"
-                :settings="settings"
+                :settings="readerSettings"
                 :speed-multiplier-label="speedMultiplierLabel"
                 :is-fullscreen="isFullscreen"
                 :is-compact="isCompact"
                 :show-speed-in-bar="false"
-                @update="updateSetting"
+                @update="updateReaderSetting"
                 @update-end="handlePanelUpdateEnd"
                 @fullscreen="handleFullscreen"
                 @toggle="handlePanelToggle"

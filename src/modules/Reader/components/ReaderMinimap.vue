@@ -19,16 +19,18 @@
 <script setup>
 import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 
-import { ReaderMinimapController } from '../composables/readerMinimap/ReaderMinimapController';
+import { ReaderMinimapController } from '../../../composables/readerMinimap/ReaderMinimapController';
 
 const props = defineProps({
     stageEl: {
         type: Object,
-        required: true,
+        default: null,
+        validator: (value) => value === null || typeof value === 'object',
     },
     textEl: {
         type: Object,
-        required: true,
+        default: null,
+        validator: (value) => value === null || typeof value === 'object',
     },
     content: {
         type: String,
