@@ -1,13 +1,24 @@
 body.theme-sage {
-  --bg: #edf2ec;
-  --bg-accent: #e0e8de;
-  --surface: #f7f9f6;
-  --text: #2f372f;
-  --muted: #6d7a70;
-  --border: #cfd7cf;
-  --accent: #6aa57b;
-  --accent-weak: #dfeee4;
-  --shadow: 0 12px 28px rgba(53, 70, 57, 0.12);
+    --bg: #edf2ec;
+    --bg-accent: #e0e8de;
+    --surface: #f7f9f6;
+    --text: #2f372f;
+    --muted: #6d7a70;
+    --border: #cfd7cf;
+    --accent: #6aa57b;
+    --accent-weak: #dfeee4;
+    --shadow: 0 12px 28px rgba(53, 70, 57, 0.12);
 }
 
-
+body.theme-sage.dark {
+    --bg: #181d19;
+    --bg-accent: #222c26;
+    --surface: #222c26;
+    --text: #e2ede6;
+    --muted: #9fb0a4;
+    --border: #394640;
+    --accent: #73b08a;
+    --accent-weak: #24352c;
+    --shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+    --ui-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+}

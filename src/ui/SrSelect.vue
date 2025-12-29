@@ -128,32 +128,19 @@ onBeforeUnmount(() => {
     width: 100%;
     padding: 10px 14px;
 
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--ui-text, var(--text));
-
     appearance: none;
-    background: var(--ui-surface, var(--surface));
-    border: 1px solid var(--ui-border, var(--border));
-    border-radius: 12px;
-
-    transition:
-        transform 0.15s ease,
-        box-shadow 0.15s ease,
-        border-color 0.15s ease,
-        background 0.15s ease;
 }
 
-.sr-select__trigger:hover {
+.sr-select__trigger:disabled {
+    cursor: default;
+    opacity: 0.6;
+    box-shadow: none;
+}
+
+.sr-select__trigger:not(:disabled):hover {
     transform: translateY(-1px);
     background: var(--ui-surface-hover, var(--bg-accent));
     border-color: var(--ui-border-hover, var(--accent));
-}
-
-.sr-select__trigger:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
 }
 
 .sr-select__text {

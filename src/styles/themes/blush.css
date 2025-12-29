@@ -1,13 +1,24 @@
 body.theme-blush {
-  --bg: #f7e9ec;
-  --bg-accent: #f0dce2;
-  --surface: #fff7f9;
-  --text: #3c2a2f;
-  --muted: #7a6369;
-  --border: #e3cbd2;
-  --accent: #d36c85;
-  --accent-weak: #f2dbe3;
-  --shadow: 0 12px 28px rgba(90, 60, 70, 0.12);
+    --bg: #f7e9ec;
+    --bg-accent: #f0dce2;
+    --surface: #fff7f9;
+    --text: #3c2a2f;
+    --muted: #7a6369;
+    --border: #e3cbd2;
+    --accent: #d36c85;
+    --accent-weak: #f2dbe3;
+    --shadow: 0 12px 28px rgba(90, 60, 70, 0.12);
 }
 
-
+body.theme-blush.dark {
+    --bg: #201419;
+    --bg-accent: #2a1a21;
+    --surface: #271b22;
+    --text: #f3e1e7;
+    --muted: #b7a0a8;
+    --border: #47343d;
+    --accent: #d8849b;
+    --accent-weak: #332028;
+    --shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+    --ui-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+}

@@ -1,5 +1,11 @@
 ﻿<script setup>
+import { computed } from 'vue';
+
 const props = defineProps({
+    as: {
+        type: String,
+        default: 'button',
+    },
     type: {
         type: String,
         default: 'button',
@@ -14,6 +20,8 @@ const props = defineProps({
     },
 });
 
+const isButton = computed(() => props.as === 'button');
+
 function resolveWidth(value) {
     if (value === null || value === undefined || value === '') {
         return undefined;
@@ -27,14 +35,15 @@ function resolveWidth(value) {
 </script>
 
 <template>
-    <button
+    <component
+        :is="props.as"
         :class="['sr-button', `sr-button--${props.variant}`]"
-        :type="type"
+        :type="isButton ? props.type : undefined"
         :style="{ width: resolveWidth(props.width) }"
         v-bind="$attrs"
     >
         <slot />
-    </button>
+    </component>
 </template>
 
 <style scoped>
@@ -48,28 +57,8 @@ function resolveWidth(value) {
 
     padding: 10px 16px;
 
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--ui-text, var(--text));
+    text-decoration: none;
     letter-spacing: 0.02em;
-
-    background: var(--ui-surface, var(--surface));
-    border: 1px solid var(--ui-border, var(--border));
-    border-radius: 12px;
-
-    transition:
-        transform 0.15s ease,
-        box-shadow 0.15s ease,
-        border-color 0.15s ease,
-        background 0.15s ease,
-        color 0.15s ease;
-}
-
-.sr-button:hover {
-    transform: translateY(-1px);
-    background: var(--ui-surface-hover, var(--bg-accent));
-    border-color: var(--ui-border-hover, var(--accent));
 }
 
 .sr-button:active {
@@ -77,9 +66,15 @@ function resolveWidth(value) {
 }
 
 .sr-button:disabled {
-    cursor: not-allowed;
+    cursor: default;
     opacity: 0.6;
     box-shadow: none;
+}
+
+.sr-button:not(:disabled):hover {
+    transform: translateY(-1px);
+    background: var(--ui-surface-hover, var(--bg-accent));
+    border-color: var(--ui-border-hover, var(--accent));
 }
 
 .sr-button--accent {

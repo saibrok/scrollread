@@ -29,7 +29,7 @@ function onInput(event) {
     scrollbar-width: thin;
 
     width: 100%;
-    min-height: 430px;
+    min-height: 230px;
     padding: 16px 18px;
 
     font-size: 16px;
@@ -39,11 +39,6 @@ function onInput(event) {
     background: transparent;
     border: 1px solid var(--border);
     border-radius: 16px;
-}
-
-.sr-textarea:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
 }
 
 .sr-textarea::-webkit-scrollbar {

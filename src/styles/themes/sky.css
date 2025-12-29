@@ -1,13 +1,24 @@
 body.theme-sky {
-  --bg: #e9f0f9;
-  --bg-accent: #dbe6f4;
-  --surface: #f7faff;
-  --text: #25324a;
-  --muted: #63718a;
-  --border: #c7d5ea;
-  --accent: #5b8cff;
-  --accent-weak: #dbe6ff;
-  --shadow: 0 12px 28px rgba(40, 60, 90, 0.12);
+    --bg: #e9f0f9;
+    --bg-accent: #dbe6f4;
+    --surface: #f7faff;
+    --text: #25324a;
+    --muted: #63718a;
+    --border: #c7d5ea;
+    --accent: #5b8cff;
+    --accent-weak: #dbe6ff;
+    --shadow: 0 12px 28px rgba(40, 60, 90, 0.12);
 }
 
-
+body.theme-sky.dark {
+    --bg: #151c2b;
+    --bg-accent: #1e2840;
+    --surface: #1b2435;
+    --text: #e4ecfb;
+    --muted: #9fb0c9;
+    --border: #344160;
+    --accent: #7aa2ff;
+    --accent-weak: #233050;
+    --shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+    --ui-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+}

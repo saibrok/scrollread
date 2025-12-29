@@ -74,6 +74,7 @@ function applyTheme(tone, palette) {
 
     document.body.classList.remove(...THEME_CLASS_NAMES);
     document.body.classList.add(`theme-${themeName}`);
+    document.body.classList.toggle('dark', tone === 'dark');
 }
 
 provide('settings', settings);

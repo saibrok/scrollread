@@ -20,14 +20,6 @@ body {
     --reader-surface: var(--surface);
     --reader-surface-strong: var(--bg-accent);
     --reader-help-bg: var(--surface);
-    --ui-surface: var(--surface);
-    --ui-surface-hover: var(--bg-accent);
-    --ui-border: var(--border);
-    --ui-border-hover: var(--accent);
-    --ui-text: var(--text);
-    --ui-icon: var(--muted);
-    --ui-track: var(--border);
-    --ui-shadow: var(--shadow);
 }
 
 * {
@@ -35,23 +27,23 @@ body {
 }
 
 body {
-  margin: 0;
-  font-family: 'Rubik', 'Segoe UI', Arial, sans-serif;
-  background: radial-gradient(circle at top left, var(--bg-accent), var(--bg));
-  color: var(--text);
-  min-height: 100vh;
-  display: flex;
-  align-items: stretch;
+    margin: 0;
+    font-family: 'Rubik', 'Segoe UI', Arial, sans-serif;
+    background: radial-gradient(circle at top left, var(--bg-accent), var(--bg));
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: stretch;
 }
 
 @supports (min-height: 100dvh) {
-  body {
-    min-height: 100dvh;
-  }
+    body {
+        min-height: 100dvh;
+    }
 }
 
 body.modal-open {
-  overflow: hidden;
+    overflow: hidden;
 }
 
 #app {

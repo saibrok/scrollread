@@ -1,0 +1,46 @@
+body {
+    --ui-surface: var(--surface);
+    --ui-surface-hover: var(--bg-accent);
+    --ui-border: var(--border);
+    --ui-border-hover: var(--accent);
+    --ui-text: var(--text);
+    --ui-text-muted: var(--muted);
+    --ui-icon: var(--muted);
+    --ui-track: var(--border);
+    --ui-shadow: var(--shadow);
+    --ui-font-size: 14px;
+    --ui-font-weight: 600;
+    --ui-radius: 12px;
+    --ui-radius-lg: 16px;
+    --ui-padding: 10px 16px;
+    --ui-padding-compact: 8px 14px;
+    --ui-transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease,
+        background 0.15s ease, color 0.15s ease;
+    --ui-focus-outline: 2px solid var(--accent);
+    --ui-focus-offset: 2px;
+}
+
+.sr-button,
+.sr-select__trigger,
+.sr-input {
+    font-family: inherit;
+    font-size: var(--ui-font-size);
+    font-weight: var(--ui-font-weight);
+    color: var(--ui-text, var(--text));
+    background: var(--ui-surface, var(--surface));
+    border: 1px solid var(--ui-border, var(--border));
+    border-radius: var(--ui-radius);
+}
+
+.sr-button,
+.sr-select__trigger {
+    transition: var(--ui-transition);
+}
+
+.sr-button:focus-visible,
+.sr-select__trigger:focus-visible,
+.sr-input:focus-visible,
+.sr-textarea:focus-visible {
+    outline: var(--ui-focus-outline, 2px solid var(--accent));
+    outline-offset: var(--ui-focus-offset, 2px);
+}

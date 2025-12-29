@@ -1,24 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Open+Sans:wght@400;600&family=Roboto:wght@400;500;700&family=Rubik:wght@300;400;600&family=PT+Sans:wght@400;700&family=PT+Sans+Narrow:wght@400;700&family=Fira+Sans:wght@400;600&family=PT+Serif:wght@400;700&family=Vollkorn:wght@400;600&family=Noto+Sans:wght@400;600&family=Noto+Serif:wght@400;600&family=Merriweather:wght@400;700&family=Montserrat:wght@400;600&family=Oswald:wght@400;600&family=Roboto+Condensed:wght@400;700&family=Roboto+Slab:wght@400;600&family=Roboto+Mono:wght@400;600&family=Playfair+Display:wght@400;600&family=Lora:wght@400;600&family=EB+Garamond:wght@400;600&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Serif:wght@400;600&display=swap');
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 @import './styles/base.css';
-@import './styles/editor.css';
+@import './ui/ui.css';
 @import './styles/reader.css';
-@import './styles/themes/gray-hard-dark.css';
-@import './styles/themes/gray-hard-light.css';
-@import './styles/themes/gray-medium-dark.css';
-@import './styles/themes/gray-medium-light.css';
-@import './styles/themes/gray-light-dark.css';
-@import './styles/themes/gray-light-light.css';
+@import './styles/themes/gray-hard.css';
+@import './styles/themes/gray-medium.css';
+@import './styles/themes/gray-light.css';
 @import './styles/themes/sage.css';
 @import './styles/themes/sand.css';
 @import './styles/themes/sky.css';
 @import './styles/themes/blush.css';
 @import './styles/themes/violet.css';
-@import './styles/themes/violet-dark.css';
-@import './styles/themes/sage-dark.css';
-@import './styles/themes/sand-dark.css';
-@import './styles/themes/sky-dark.css';
-@import './styles/themes/blush-dark.css';
-
-
-

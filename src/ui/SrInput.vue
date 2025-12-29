@@ -142,15 +142,6 @@ function resolveWidth(value) {
 .sr-input {
     width: 100%;
     padding: 8px 14px;
-
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--ui-text, var(--text));
-
-    background: var(--ui-surface, var(--surface));
-    border: 1px solid var(--ui-border, var(--border));
-    border-radius: 12px;
 }
 
 .sr-input--labeled {
@@ -186,10 +177,5 @@ function resolveWidth(value) {
 
     font-size: 12px;
     color: var(--ui-text-muted, var(--muted, var(--text)));
-}
-
-.sr-input:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
 }
 </style>
