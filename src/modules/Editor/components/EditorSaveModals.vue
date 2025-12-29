@@ -45,17 +45,19 @@ const emit = defineEmits([
             >
                 Отмена
             </SrButton>
+
             <SrButton
                 variant="default"
-                @click="emit('confirm-save-new')"
-            >
-                Новое сохранение
-            </SrButton>
-            <SrButton
-                variant="accent"
                 @click="emit('confirm-save-overwrite')"
             >
                 Перезаписать
+            </SrButton>
+
+            <SrButton
+                variant="accent"
+                @click="emit('confirm-save-new')"
+            >
+                Новое
             </SrButton>
         </div>
     </SrModal>
@@ -68,7 +70,7 @@ const emit = defineEmits([
         <div class="sr-modal-header">
             <div>Загрузка текста</div>
         </div>
-        <div class="sr-modal-text">В тексте есть данные. Заменить содержимое?</div>
+        <div class="sr-modal-text">В поле есть данные. Заменить содержимое?</div>
         <div class="sr-modal-actions">
             <SrButton
                 variant="default"

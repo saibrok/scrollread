@@ -1,5 +1,35 @@
 <script setup>
+import { ref } from 'vue';
+
+import { useTextStore } from '../../composables/useTextStore';
+import { fetchDemoText } from '../../services/fishText';
+
 import SrButton from '../../ui/SrButton.vue';
+
+const emit = defineEmits(['start']);
+
+const { text } = useTextStore();
+const isLoading = ref(false);
+const errorMessage = ref('');
+
+async function handleDemoClick() {
+    if (isLoading.value) {
+        return;
+    }
+
+    isLoading.value = true;
+    errorMessage.value = '';
+
+    try {
+        text.value = await fetchDemoText();
+        emit('start');
+    } catch (error) {
+        errorMessage.value = 'Не удалось получить демо-текст. Попробуйте еще раз.';
+        console.error(error);
+    } finally {
+        isLoading.value = false;
+    }
+}
 </script>
 
 <template>
@@ -21,19 +51,19 @@ import SrButton from '../../ui/SrButton.vue';
                     class="hero__cta"
                     variant="accent"
                     href="#editor"
+                    :disabled="isLoading"
+                    @click.prevent="handleDemoClick"
                 >
-                    Попробовать
-                </SrButton>
-                <SrButton
-                    as="a"
-                    class="hero__link"
-                    variant="default"
-                    href="#features"
-                >
-                    Возможности
+                    {{ isLoading ? 'Генерируем...' : 'Демо' }}
                 </SrButton>
             </div>
             <div class="hero__note">Без регистрации, рекламы и подписок.</div>
+            <div
+                v-if="errorMessage"
+                class="hero__note"
+            >
+                {{ errorMessage }}
+            </div>
         </div>
         <div class="hero__panel">
             <div class="hero__panel-title">Что внутри</div>

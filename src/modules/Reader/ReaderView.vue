@@ -1,11 +1,11 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 
+import { useReaderPlayer } from '../../composables/useReaderPlayer';
 import { useReaderSettings } from '../../composables/useReaderSettings';
+import { useReaderShortcuts } from '../../composables/useReaderShortcuts';
 import { useTextStore } from '../../composables/useTextStore';
 import { useTheme } from '../../composables/useTheme';
-import { useReaderPlayer } from '../../composables/useReaderPlayer';
-import { useReaderShortcuts } from '../../composables/useReaderShortcuts';
 import { formatTime, toParagraphs } from '../../utils/text';
 import { getPaletteOptions, THEME_TONE_OPTIONS } from '../../utils/themes';
 
@@ -315,26 +315,23 @@ function unlockBodyScroll() {
     document.body.style.overflow = bodyOverflow.value;
 }
 
-watch(
-    isOpen,
-    (value) => {
-        clearPendingStart();
+watch(isOpen, (value) => {
+    clearPendingStart();
 
-        if (value) {
-            lockBodyScroll();
-            isPlaying.value = false;
-            helpOpen.value = false;
-            resetOpen.value = false;
-            speedMultiplier.value = 1;
-            resetSessionTimer();
-            initReader();
-            minimapRenderKey.value += 1;
-        } else {
-            unlockBodyScroll();
-            pauseScroll();
-        }
-    },
-);
+    if (value) {
+        lockBodyScroll();
+        isPlaying.value = false;
+        helpOpen.value = false;
+        resetOpen.value = false;
+        speedMultiplier.value = 1;
+        resetSessionTimer();
+        initReader();
+        minimapRenderKey.value += 1;
+    } else {
+        unlockBodyScroll();
+        pauseScroll();
+    }
+});
 
 watch(text, () => {
     if (isOpen.value) {

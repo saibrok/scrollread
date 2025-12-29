@@ -189,8 +189,7 @@ function handleDeleteConfirm() {
 <template>
     <section
         id="editor"
-        class="card reveal"
-        style="--delay: 0.1s"
+        class="card"
     >
         <EditorTextPanel
             :text="text"

@@ -1,4 +1,5 @@
 <script setup>
+import EditorWorkspace from '../modules/Editor/EditorWorkspace.vue';
 import MainFaq from './components/MainFaq.vue';
 import MainFeatures from './components/MainFeatures.vue';
 import MainFooter from './components/MainFooter.vue';
@@ -6,7 +7,6 @@ import MainHeader from './components/MainHeader.vue';
 import MainHero from './components/MainHero.vue';
 import MainSteps from './components/MainSteps.vue';
 import MainUseCases from './components/MainUseCases.vue';
-import EditorWorkspace from '../modules/Editor/EditorWorkspace.vue';
 
 const emit = defineEmits(['start']);
 </script>
@@ -14,7 +14,7 @@ const emit = defineEmits(['start']);
 <template>
     <div class="page">
         <MainHeader />
-        <MainHero />
+        <MainHero @start="emit('start')" />
         <EditorWorkspace @start="emit('start')" />
         <MainFeatures />
         <MainSteps />

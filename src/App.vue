@@ -1,8 +1,8 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue';
 
-import { useTheme } from './composables/useTheme';
 import { normalizePalette, resolveThemeName, THEME_CLASS_NAMES } from './utils/themes';
+import { useTheme } from './composables/useTheme';
 
 import ReaderView from './modules/Reader/ReaderView.vue';
 import MainPage from './pages/MainPage.vue';
