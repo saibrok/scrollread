@@ -42,5 +42,5 @@ export async function fetchDemoText() {
     const paragraphs = paragraphText.split('\\n\\n').join('\n');
     const attribution = 'Текст сгенерирован на РыбаТекст (fish-text.ru)';
 
-    return [titleText, paragraphs, attribution].join('\n\n');
+    return [titleText, paragraphs, attribution].join('\n');
 }

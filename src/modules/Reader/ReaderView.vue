@@ -32,6 +32,7 @@ const isCompact = ref(false);
 const readerPanelRef = ref(null);
 const readerModalPanelRef = ref(null);
 const settingsOpen = ref(false);
+const themeOpen = ref(false);
 const settingsPeeking = ref(false);
 const sessionSeconds = ref(0);
 let sessionStart = 0;
@@ -142,6 +143,10 @@ function setSpeedMultiplier(multiplier) {
     recalcMetricsPreservePosition();
 }
 
+function handleSpeedMultiplier(multiplier) {
+    setSpeedMultiplier(multiplier === 1 ? null : multiplier);
+}
+
 const speedMultiplierLabel = computed(() => {
     if (speedMultiplier.value === 2) {
         return 'x2';
@@ -186,6 +191,14 @@ function openSettings() {
 
 function closeSettings() {
     settingsOpen.value = false;
+}
+
+function openTheme() {
+    themeOpen.value = true;
+}
+
+function closeTheme() {
+    themeOpen.value = false;
 }
 
 function startSettingsPeek() {
@@ -281,6 +294,7 @@ function handleClose() {
     helpOpen.value = false;
     resetOpen.value = false;
     settingsOpen.value = false;
+    themeOpen.value = false;
     speedMultiplier.value = 1;
     resetSessionTimer();
     closeReader();
@@ -303,6 +317,7 @@ function syncCompact(value) {
 
     if (!value) {
         settingsOpen.value = false;
+        themeOpen.value = false;
     }
 }
 
@@ -460,17 +475,14 @@ function handleMinimapSeek(progress) {
             :is-compact="isCompact"
             :timer-text="timerText"
             :session-timer-text="sessionTimerText"
-            :theme-tone="themeSettings.themeTone"
-            :theme-palette="themeSettings.themePalette"
             :pending-start-seconds="pendingStartSeconds"
             :start-delay="readerSettings.startDelay"
             @toggle-play="handleTogglePlay"
-            @update:theme-tone="updateThemeTone"
-            @update:theme-palette="updateThemePalette"
             @update:start-delay="(value) => updateReaderSetting({ key: 'startDelay', value })"
             @reset="handleReset"
             @help="openHelp"
             @open-settings="openSettings"
+            @open-theme="openTheme"
             @close="handleClose"
         />
         <ReaderPanel
@@ -478,11 +490,13 @@ function handleMinimapSeek(progress) {
             ref="readerPanelRef"
             :settings="readerSettings"
             :speed-multiplier-label="speedMultiplierLabel"
+            :speed-multiplier="speedMultiplier"
             :is-fullscreen="isFullscreen"
             :is-compact="isCompact"
             @update="updateReaderSetting"
             @update-end="handlePanelUpdateEnd"
             @fullscreen="handleFullscreen"
+            @speed-multiplier="handleSpeedMultiplier"
             @toggle="handlePanelToggle"
         />
         <div class="reader-body">
@@ -532,6 +546,45 @@ function handleMinimapSeek(progress) {
             @confirm="confirmReset"
         />
         <SrModal
+            :open="themeOpen"
+            card-class="sr-modal-card--compact"
+            @close="closeTheme"
+        >
+            <div class="sr-modal-header">
+                <div>Тема</div>
+                <SrButton
+                    class="reader-btn"
+                    aria-label="Закрыть"
+                    @click="closeTheme"
+                >
+                    <span
+                        class="material-icons"
+                        aria-hidden="true"
+                    >
+                        close
+                    </span>
+                </SrButton>
+            </div>
+            <div class="reader-settings">
+                <div class="reader-settings__group">
+                    <div class="reader-settings__label">Тон</div>
+                    <SrSelect
+                        :model-value="themeSettings.themeTone"
+                        :items="THEME_TONE_OPTIONS"
+                        @update:model-value="updateThemeTone"
+                    />
+                </div>
+                <div class="reader-settings__group">
+                    <div class="reader-settings__label">Цветовая схема</div>
+                    <SrSelect
+                        :model-value="themeSettings.themePalette"
+                        :items="paletteOptions"
+                        @update:model-value="updateThemePalette"
+                    />
+                </div>
+            </div>
+        </SrModal>
+        <SrModal
             :open="settingsOpen"
             :modal-class="settingsPeeking ? 'sr-modal--settings sr-modal--peek' : 'sr-modal--settings'"
             card-class="sr-modal-card--wide"
@@ -567,34 +620,18 @@ function handleMinimapSeek(progress) {
                     </span>
                 </SrButton>
             </div>
-            <div class="reader-settings">
-                <div class="reader-settings__group">
-                    <div class="reader-settings__label">Тон</div>
-                    <SrSelect
-                        :model-value="themeSettings.themeTone"
-                        :items="THEME_TONE_OPTIONS"
-                        @update:model-value="updateThemeTone"
-                    />
-                </div>
-                <div class="reader-settings__group">
-                    <div class="reader-settings__label">Цветовая схема</div>
-                    <SrSelect
-                        :model-value="themeSettings.themePalette"
-                        :items="paletteOptions"
-                        @update:model-value="updateThemePalette"
-                    />
-                </div>
-            </div>
             <ReaderPanel
                 ref="readerModalPanelRef"
                 :settings="readerSettings"
                 :speed-multiplier-label="speedMultiplierLabel"
+                :speed-multiplier="speedMultiplier"
                 :is-fullscreen="isFullscreen"
                 :is-compact="isCompact"
                 :show-speed-in-bar="false"
                 @update="updateReaderSetting"
                 @update-end="handlePanelUpdateEnd"
                 @fullscreen="handleFullscreen"
+                @speed-multiplier="handleSpeedMultiplier"
                 @toggle="handlePanelToggle"
             />
             <div class="reader-settings__actions">
@@ -606,9 +643,15 @@ function handleMinimapSeek(progress) {
                 </SrButton>
                 <SrButton
                     class="reader-btn"
+                    aria-label="Горячие клавиши"
                     @click="openHelp"
                 >
-                    Горячие клавиши
+                    <span
+                        class="material-icons"
+                        aria-hidden="true"
+                    >
+                        help_outline
+                    </span>
                 </SrButton>
             </div>
         </SrModal>

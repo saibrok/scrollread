@@ -1,11 +1,6 @@
 ﻿<script setup>
-import { computed } from 'vue';
-
-import { getPaletteOptions, THEME_TONE_OPTIONS } from '../../../utils/themes';
-
 import SrButton from '../../../ui/SrButton.vue';
 import SrInput from '../../../ui/SrInput.vue';
-import SrSelect from '../../../ui/SrSelect.vue';
 
 const props = defineProps({
     isPlaying: {
@@ -24,14 +19,6 @@ const props = defineProps({
         type: String,
         required: true,
     },
-    themeTone: {
-        type: String,
-        required: true,
-    },
-    themePalette: {
-        type: String,
-        required: true,
-    },
     startDelay: {
         type: Number,
         required: true,
@@ -42,9 +29,7 @@ const props = defineProps({
     },
 });
 
-const emit = defineEmits(['toggle-play', 'reset', 'help', 'close', 'open-settings', 'update:theme-tone', 'update:theme-palette', 'update:start-delay']);
-
-const paletteOptions = computed(() => getPaletteOptions(props.themeTone));
+const emit = defineEmits(['toggle-play', 'reset', 'help', 'close', 'open-settings', 'open-theme', 'update:start-delay']);
 
 function clampDelay(value) {
     const parsed = Number(value);
@@ -68,7 +53,6 @@ function handleDelayInput(value) {
                 class="reader-btn"
                 :variant="props.isPlaying ? 'accent' : 'default'"
                 :aria-label="props.isPlaying ? 'Пауза' : 'Начать'"
-                width="100px"
                 @click="emit('toggle-play')"
             >
                 <span
@@ -78,13 +62,12 @@ function handleDelayInput(value) {
                     {{ props.pendingStartSeconds }}
                 </span>
                 <span
-                    v-else-if="props.isCompact"
+                    v-else
                     class="material-icons"
                     aria-hidden="true"
                 >
                     {{ props.isPlaying ? 'pause' : 'play_arrow' }}
                 </span>
-                <span v-else>{{ props.isPlaying ? 'Пауза' : 'Начать' }}</span>
             </SrButton>
             <SrInput
                 type="number"
@@ -110,25 +93,18 @@ function handleDelayInput(value) {
             </div>
         </div>
         <div class="reader-controls">
-            <div
-                v-if="!props.isCompact"
-                class="reader-theme"
+            <SrButton
+                class="reader-btn"
+                aria-label="Настройки темы"
+                @click="emit('open-theme')"
             >
-                <label class="reader-theme__control">
-                    <SrSelect
-                        :model-value="props.themeTone"
-                        :items="THEME_TONE_OPTIONS"
-                        @update:model-value="emit('update:theme-tone', $event)"
-                    />
-                </label>
-                <label class="reader-theme__control">
-                    <SrSelect
-                        :model-value="props.themePalette"
-                        :items="paletteOptions"
-                        @update:model-value="emit('update:theme-palette', $event)"
-                    />
-                </label>
-            </div>
+                <span
+                    class="material-icons"
+                    aria-hidden="true"
+                >
+                    style
+                </span>
+            </SrButton>
             <SrButton
                 v-if="!props.isCompact"
                 class="reader-btn"
@@ -138,9 +114,16 @@ function handleDelayInput(value) {
             <SrButton
                 v-if="!props.isCompact"
                 class="reader-btn"
+                aria-label="Горячие клавиши"
                 @click="emit('help')"
-                >Горячие клавиши</SrButton
             >
+                <span
+                    class="material-icons"
+                    aria-hidden="true"
+                >
+                    help_outline
+                </span>
+            </SrButton>
             <SrButton
                 v-if="props.isCompact"
                 class="reader-btn"
@@ -156,17 +139,15 @@ function handleDelayInput(value) {
             </SrButton>
             <SrButton
                 class="reader-btn"
-                :aria-label="props.isCompact ? 'Закрыть' : null"
+                aria-label="Закрыть"
                 @click="emit('close')"
             >
                 <span
-                    v-if="props.isCompact"
                     class="material-icons"
                     aria-hidden="true"
                 >
                     close
                 </span>
-                <span v-else>Закрыть</span>
             </SrButton>
         </div>
     </div>

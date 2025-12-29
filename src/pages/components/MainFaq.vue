@@ -6,9 +6,7 @@ import SrExpansionPanel from '../../ui/SrExpansionPanel.vue';
     <section
         id="faq"
         class="section reveal"
-        style="
-
-    --delay: 0.3s"
+        style="--delay: 0.3s"
     >
         <div class="section-title">Часто задаваемые вопросы</div>
         <div class="faq">

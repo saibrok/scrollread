@@ -55,10 +55,26 @@ function resolveWidth(value) {
     align-items: center;
     justify-content: center;
 
-    padding: 10px 16px;
+    padding: 10px;
 
     text-decoration: none;
     letter-spacing: 0.02em;
+}
+
+.sr-button--accent {
+    color: #fff;
+    background: var(--accent);
+    border-color: var(--accent);
+}
+
+.sr-button--accent:hover {
+    filter: brightness(1.1);
+}
+
+.sr-button--default:hover {
+    background: var(--accent);
+    background: var(--ui-surface-hover, var(--bg-accent));
+    border-color: var(--ui-border-hover, var(--accent));
 }
 
 .sr-button:active {
@@ -73,19 +89,5 @@ function resolveWidth(value) {
 
 .sr-button:not(:disabled):hover {
     transform: translateY(-1px);
-    background: var(--ui-surface-hover, var(--bg-accent));
-    border-color: var(--ui-border-hover, var(--accent));
-}
-
-.sr-button--accent {
-    color: #fff;
-    background: var(--accent);
-    border-color: var(--accent);
-}
-
-.sr-button--accent:hover {
-    background: var(--accent);
-    filter: brightness(1.05);
-    border-color: var(--accent);
 }
 </style>

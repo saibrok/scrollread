@@ -2,9 +2,9 @@
 import { onMounted, ref, watch } from 'vue';
 
 import SrButton from '../../../ui/SrButton.vue';
-import SrCheckbox from '../../../ui/SrCheckbox.vue';
 import SrRange from '../../../ui/SrRange.vue';
 import SrSelect from '../../../ui/SrSelect.vue';
+import SrToggleButton from '../../../ui/SrToggleButton.vue';
 
 const props = defineProps({
     settings: {
@@ -27,9 +27,13 @@ const props = defineProps({
         type: String,
         default: '',
     },
+    speedMultiplier: {
+        type: Number,
+        default: 1,
+    },
 });
 
-const emit = defineEmits(['update', 'toggle', 'fullscreen', 'update-end']);
+const emit = defineEmits(['update', 'toggle', 'fullscreen', 'update-end', 'speed-multiplier']);
 
 const isOpen = ref(true);
 
@@ -77,9 +81,17 @@ function handleSelectUpdate(key, value) {
     emitUpdateEnd(key, value);
 }
 
-function handleMinimapToggle(value) {
-    emitUpdate('showMinimap', value);
-    emitUpdateEnd('showMinimap', value);
+function toggleMinimap() {
+    const nextValue = !(props.settings.showMinimap !== false);
+
+    emitUpdate('showMinimap', nextValue);
+    emitUpdateEnd('showMinimap', nextValue);
+}
+
+function toggleMultiplier(value) {
+    const nextMultiplier = props.speedMultiplier === value ? 1 : value;
+
+    emit('speed-multiplier', nextMultiplier);
 }
 
 function togglePanel() {
@@ -116,6 +128,20 @@ watch(
                 class="reader-panel__speed"
             >
                 <label class="reader-panel__speed-label">Скорость</label>
+                <SrToggleButton
+                    class="reader-btn reader-panel__icon"
+                    type="button"
+                    aria-label="Замедлить x0.5"
+                    :active="props.speedMultiplier === 0.5"
+                    @click="toggleMultiplier(0.5)"
+                >
+                    <span
+                        class="material-icons"
+                        aria-hidden="true"
+                    >
+                        fast_rewind
+                    </span>
+                </SrToggleButton>
                 <SrRange
                     :model-value="props.settings.speed"
                     min="100"
@@ -125,6 +151,20 @@ watch(
                     @change="emitUpdateEnd('speed', $event)"
                 />
                 <div class="reader-panel__speed-value">{{ props.settings.speed }}</div>
+                <SrToggleButton
+                    class="reader-btn reader-panel__icon"
+                    type="button"
+                    aria-label="Ускорить x2"
+                    :active="props.speedMultiplier === 2"
+                    @click="toggleMultiplier(2)"
+                >
+                    <span
+                        class="material-icons"
+                        aria-hidden="true"
+                    >
+                        fast_forward
+                    </span>
+                </SrToggleButton>
             </div>
 
             <SrButton
@@ -139,13 +179,21 @@ watch(
 
             <div class="separator"></div>
 
-            <SrCheckbox
+            <SrToggleButton
                 v-if="!props.isCompact"
-                :model-value="props.settings.showMinimap !== false"
-                @update:model-value="handleMinimapToggle"
+                class="reader-btn reader-panel__icon"
+                type="button"
+                aria-label="Показывать миникарту"
+                :active="props.settings.showMinimap !== false"
+                @click="toggleMinimap"
             >
-                Показывать миникарту
-            </SrCheckbox>
+                <span
+                    class="material-icons"
+                    aria-hidden="true"
+                >
+                    chrome_reader_mode
+                </span>
+            </SrToggleButton>
 
             <SrButton
                 class="reader-btn reader-panel__icon"
@@ -193,6 +241,36 @@ watch(
                             <div class="reader-value">
                                 <span>{{ props.settings.speed }}</span> зн/мин
                             </div>
+                        </div>
+                        <div class="reader-panel__speed">
+                            <SrToggleButton
+                                class="reader-btn reader-panel__icon"
+                                type="button"
+                                aria-label="Замедлить x0.5"
+                                :active="props.speedMultiplier === 0.5"
+                                @click="toggleMultiplier(0.5)"
+                            >
+                                <span
+                                    class="material-icons"
+                                    aria-hidden="true"
+                                >
+                                    fast_rewind
+                                </span>
+                            </SrToggleButton>
+                            <SrToggleButton
+                                class="reader-btn reader-panel__icon"
+                                type="button"
+                                aria-label="Ускорить x2"
+                                :active="props.speedMultiplier === 2"
+                                @click="toggleMultiplier(2)"
+                            >
+                                <span
+                                    class="material-icons"
+                                    aria-hidden="true"
+                                >
+                                    fast_forward
+                                </span>
+                            </SrToggleButton>
                         </div>
                         <SrRange
                             id="readerSpeed"
@@ -326,6 +404,77 @@ watch(
                     </div>
                 </div>
             </section>
+
+            <section class="reader-group">
+                <div class="reader-group__title">Окно</div>
+                <div class="reader-group__grid">
+                    <div class="reader-control">
+                        <div class="reader-control__header">
+                            <label
+                                class="reader-label"
+                                for="padding"
+                                >Отступы</label
+                            >
+                            <div class="reader-value">
+                                <span>{{ props.settings.padding }}</span> px
+                            </div>
+                        </div>
+                        <SrRange
+                            id="padding"
+                            :model-value="props.settings.padding"
+                            min="0"
+                            max="1000"
+                            step="10"
+                            @update:model-value="emitUpdate('padding', $event)"
+                            @change="emitUpdateEnd('padding', $event)"
+                        />
+                    </div>
+                    <div class="reader-control">
+                        <div class="reader-control__header">
+                            <label
+                                class="reader-label"
+                                for="overlaySize"
+                                >Размер окна</label
+                            >
+                            <div class="reader-value">
+                                <span>{{ props.settings.overlaySize }}</span> стр
+                            </div>
+                        </div>
+                        <SrRange
+                            id="overlaySize"
+                            :model-value="props.settings.overlaySize"
+                            min="1"
+                            max="10"
+                            step="1"
+                            @update:model-value="emitUpdate('overlaySize', $event)"
+                            @change="emitUpdateEnd('overlaySize', $event)"
+                        />
+                    </div>
+                    <div class="reader-control">
+                        <div class="reader-control__header">
+                            <label
+                                class="reader-label"
+                                for="overlayOpacity"
+                                >Прозрачность</label
+                            >
+                            <div class="reader-value">
+                                <span>{{ props.settings.overlayOpacity }}</span
+                                >%
+                            </div>
+                        </div>
+                        <SrRange
+                            id="overlayOpacity"
+                            :model-value="props.settings.overlayOpacity"
+                            min="0"
+                            max="100"
+                            step="5"
+                            @update:model-value="emitUpdate('overlayOpacity', $event)"
+                            @change="emitUpdateEnd('overlayOpacity', $event)"
+                        />
+                    </div>
+                </div>
+            </section>
+
             <section class="reader-group">
                 <div class="reader-group__title">Экран</div>
                 <div class="reader-group__grid">
@@ -393,75 +542,6 @@ watch(
                             step="5"
                             @update:model-value="emitUpdate('sepia', $event)"
                             @change="emitUpdateEnd('sepia', $event)"
-                        />
-                    </div>
-                </div>
-            </section>
-            <section class="reader-group">
-                <div class="reader-group__title">Окно</div>
-                <div class="reader-group__grid">
-                    <div class="reader-control">
-                        <div class="reader-control__header">
-                            <label
-                                class="reader-label"
-                                for="padding"
-                                >Отступы</label
-                            >
-                            <div class="reader-value">
-                                <span>{{ props.settings.padding }}</span> px
-                            </div>
-                        </div>
-                        <SrRange
-                            id="padding"
-                            :model-value="props.settings.padding"
-                            min="0"
-                            max="1000"
-                            step="10"
-                            @update:model-value="emitUpdate('padding', $event)"
-                            @change="emitUpdateEnd('padding', $event)"
-                        />
-                    </div>
-                    <div class="reader-control">
-                        <div class="reader-control__header">
-                            <label
-                                class="reader-label"
-                                for="overlaySize"
-                                >Размер окна</label
-                            >
-                            <div class="reader-value">
-                                <span>{{ props.settings.overlaySize }}</span> стр
-                            </div>
-                        </div>
-                        <SrRange
-                            id="overlaySize"
-                            :model-value="props.settings.overlaySize"
-                            min="1"
-                            max="10"
-                            step="1"
-                            @update:model-value="emitUpdate('overlaySize', $event)"
-                            @change="emitUpdateEnd('overlaySize', $event)"
-                        />
-                    </div>
-                    <div class="reader-control">
-                        <div class="reader-control__header">
-                            <label
-                                class="reader-label"
-                                for="overlayOpacity"
-                                >Прозрачность</label
-                            >
-                            <div class="reader-value">
-                                <span>{{ props.settings.overlayOpacity }}</span
-                                >%
-                            </div>
-                        </div>
-                        <SrRange
-                            id="overlayOpacity"
-                            :model-value="props.settings.overlayOpacity"
-                            min="0"
-                            max="100"
-                            step="5"
-                            @update:model-value="emitUpdate('overlayOpacity', $event)"
-                            @change="emitUpdateEnd('overlayOpacity', $event)"
                         />
                     </div>
                 </div>

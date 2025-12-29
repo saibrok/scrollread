@@ -35,9 +35,7 @@ async function handleDemoClick() {
 <template>
     <section
         class="hero reveal"
-        style="
-
-    --delay: 0.05s"
+        style="--delay: 0.05s"
     >
         <div class="hero__content">
             <h1 class="hero__title">Онлайн телесуфлер, который держит темп чтения</h1>
