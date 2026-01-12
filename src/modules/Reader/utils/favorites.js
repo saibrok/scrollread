@@ -2,7 +2,12 @@ export const FAVORITE_GROUPS = [
     {
         id: 'tempo',
         title: 'Темп',
-        keys: ['speed', 'startDelay', 'speedMultiplier', 'sessionTime', 'estimateTime'],
+        keys: ['speed', 'startDelay', 'speedMultiplier'],
+    },
+    {
+        id: 'time',
+        title: 'Время',
+        keys: ['sessionTime', 'estimateTime'],
     },
     {
         id: 'text',

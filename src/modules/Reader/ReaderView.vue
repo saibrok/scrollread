@@ -15,8 +15,8 @@ import SrSelect from '../../ui/SrSelect.vue';
 import ReaderHeader from './components/ReaderHeader.vue';
 import ReaderHelp from './components/ReaderHelp.vue';
 import ReaderMinimap from './components/ReaderMinimap.vue';
-import ReaderPanel from './components/ReaderPanel.vue';
 import ReaderResetConfirm from './components/ReaderResetConfirm.vue';
+import ReaderSettingsPanel from './components/ReaderSettingsPanel.vue';
 
 const { readerSettings, resetReaderSettings } = useReaderSettings();
 const { themeSettings } = useTheme();
@@ -516,9 +516,9 @@ watch(
                 </SrButton>
             </div>
             <div class="sr-modal-body">
-                <div class="reader-settings">
-                    <div class="reader-settings__group">
-                        <div class="reader-settings__label">Тон</div>
+                <div class="reader-theme-settings">
+                    <div class="reader-theme-settings__group">
+                        <div class="reader-theme-settings__label">Тон</div>
                         <SrSelect
                             :model-value="themeSettings.themeTone"
                             :items="THEME_TONE_OPTIONS"
@@ -526,8 +526,8 @@ watch(
                             @update:model-value="updateThemeTone"
                         />
                     </div>
-                    <div class="reader-settings__group">
-                        <div class="reader-settings__label">Цветовая схема</div>
+                    <div class="reader-theme-settings__group">
+                        <div class="reader-theme-settings__label">Цветовая схема</div>
                         <SrSelect
                             :model-value="themeSettings.themePalette"
                             :items="paletteOptions"
@@ -546,33 +546,55 @@ watch(
         >
             <div class="sr-modal-header">
                 <div>Настройки</div>
-                <SrButton
-                    class="reader-btn"
-                    @click="closeSettings"
-                >
-                    <span
-                        class="material-icons"
-                        aria-hidden="true"
+                <div class="sr-modal-header-actions">
+                    <SrButton
+                        class="reader-btn"
+                        aria-label="Горячие клавиши"
+                        @click="openHelp"
                     >
-                        close
-                    </span>
-                </SrButton>
+                        <span
+                            class="material-icons"
+                            aria-hidden="true"
+                        >
+                            help_outline
+                        </span>
+                    </SrButton>
+                    <SrButton
+                        class="reader-btn"
+                        :variant="isFullscreen ? 'accent' : 'default'"
+                        aria-label="Полный экран"
+                        @click="handleFullscreen"
+                    >
+                        <span
+                            class="material-icons"
+                            aria-hidden="true"
+                        >
+                            {{ isFullscreen ? 'fullscreen_exit' : 'fullscreen' }}
+                        </span>
+                    </SrButton>
+                    <SrButton
+                        class="reader-btn"
+                        @click="closeSettings"
+                    >
+                        <span
+                            class="material-icons"
+                            aria-hidden="true"
+                        >
+                            close
+                        </span>
+                    </SrButton>
+                </div>
             </div>
             <div class="sr-modal-body">
-                <ReaderPanel
+                <ReaderSettingsPanel
                     :settings="readerSettings"
                     :speed-multiplier="speedMultiplier"
-                    :is-fullscreen="isFullscreen"
-                    :is-compact="isCompact"
-                    :show-speed-in-bar="false"
                     :timer-text="timerText"
                     :session-timer-text="sessionTimerText"
                     @update="updateReaderSetting"
-                    @fullscreen="handleFullscreen"
-                    @help="openHelp"
                     @speed-multiplier="handleSpeedMultiplier"
                 />
-                <div class="reader-settings__actions">
+                <div class="reader-theme-settings__actions">
                     <SrButton
                         class="reader-btn"
                         @click="handleReset"
@@ -680,27 +702,27 @@ watch(
     background: rgb(0 0 0 / var(--reader-overlay-opacity));
 }
 
-.reader-settings {
+.reader-theme-settings {
     display: grid;
     grid-template-columns: repeat(2, minmax(180px, 1fr));
     gap: 12px;
     margin-bottom: 16px;
 }
 
-.reader-settings__group {
+.reader-theme-settings__group {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
-.reader-settings__label {
+.reader-theme-settings__label {
     font-size: 11px;
     color: var(--reader-text-muted);
     text-transform: uppercase;
     letter-spacing: 0.08em;
 }
 
-.reader-settings__actions {
+.reader-theme-settings__actions {
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
@@ -726,8 +748,14 @@ watch(
     opacity: 0.4;
 }
 
+.sr-modal-header-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
 @media (max-width: 900px) {
-    .reader-settings {
+    .reader-theme-settings {
         grid-template-columns: 1fr;
     }
 }

@@ -83,6 +83,7 @@ onBeforeUnmount(() => {
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    gap: 12px;
 
     width: min(520px, 90vw);
     max-height: calc(80vh - 32px);
@@ -117,8 +118,6 @@ onBeforeUnmount(() => {
     display: flex;
     align-items: center;
     justify-content: space-between;
-
-    margin-bottom: 12px;
 
     font-size: 14px;
     color: var(--reader-text-muted);

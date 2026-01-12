@@ -83,9 +83,9 @@ function resolveWidth(value) {
 }
 
 .sr-button--ghost:hover {
+    transform: none;
     background: transparent;
     border-color: transparent;
-    transform: none;
 }
 
 .sr-button:active {
@@ -96,9 +96,5 @@ function resolveWidth(value) {
     cursor: default;
     opacity: 0.6;
     box-shadow: none;
-}
-
-.sr-button:not(:disabled):hover {
-    transform: translateY(-1px);
 }
 </style>

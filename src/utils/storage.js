@@ -66,28 +66,6 @@ export function saveReaderSettings(settings) {
     localStorage.setItem(READER_STORAGE_KEY, JSON.stringify(settings));
 }
 
-function normalizeFavorites(favorites) {
-    const normalized = { ...FAVORITE_DEFAULTS };
-
-    if (Array.isArray(favorites)) {
-        favorites.forEach((key) => {
-            if (typeof key === 'string') {
-                normalized[key] = true;
-            }
-        });
-
-        return normalized;
-    }
-
-    if (favorites && typeof favorites === 'object') {
-        Object.entries(favorites).forEach(([key, value]) => {
-            normalized[key] = Boolean(value);
-        });
-    }
-
-    return normalized;
-}
-
 /**
  * Load theme settings from localStorage.
  * @returns {typeof THEME_DEFAULTS}
