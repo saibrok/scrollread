@@ -34,3 +34,38 @@ const emit = defineEmits(['update:speed']);
         />
     </div>
 </template>
+
+<style scoped>
+.control {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    padding: 16px;
+
+    background: var(--bg-accent);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+}
+
+.label {
+    font-size: 13px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.range-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+
+    font-size: 14px;
+    color: var(--muted);
+}
+
+.meta {
+    font-size: 14px;
+    color: var(--muted);
+}
+</style>

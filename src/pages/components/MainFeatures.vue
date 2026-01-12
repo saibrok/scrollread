@@ -1,10 +1,7 @@
 <template>
     <section
         id="features"
-        class="section reveal"
-        style="
-
-    --delay: 0.15s"
+        class="section"
     >
         <div class="section-title">Преимущества ScrollRead</div>
         <div class="section-lead">Все, что нужно для уверенного чтения с экрана.</div>
@@ -24,3 +21,55 @@
         </div>
     </section>
 </template>
+
+<style scoped>
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.section-title {
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.section-lead {
+    font-size: 14px;
+    color: var(--muted);
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.feature-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    padding: 18px;
+
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+}
+
+.feature-title {
+    font-weight: 600;
+}
+
+.feature-text {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--muted);
+}
+
+@media (max-width: 900px) {
+    .feature-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>

@@ -1,5 +1,5 @@
 <script setup>
-import { onBeforeUnmount, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 
 let openModals = 0;
 
@@ -13,6 +13,10 @@ const props = defineProps({
         type: Boolean,
         required: true,
     },
+    draggable: {
+        type: Boolean,
+        default: false,
+    },
     modalClass: {
         type: String,
         default: '',
@@ -25,6 +29,69 @@ const props = defineProps({
 
 const emit = defineEmits(['close']);
 
+const cardRef = ref(null);
+const isDragging = ref(false);
+const dragStart = ref({ x: 0, y: 0 });
+const dragOffset = ref({ x: 0, y: 0 });
+let dragListenerActive = false;
+
+const cardStyle = computed(() => {
+    if (!props.draggable) {
+        return null;
+    }
+
+    return {
+        transform: `translate3d(${dragOffset.value.x}px, ${dragOffset.value.y}px, 0)`,
+    };
+});
+
+function stopDrag() {
+    if (!dragListenerActive) {
+        return;
+    }
+    dragListenerActive = false;
+    isDragging.value = false;
+    window.removeEventListener('pointermove', handleDragMove);
+    window.removeEventListener('pointerup', handleDragEnd);
+    window.removeEventListener('pointercancel', handleDragEnd);
+}
+
+function handleDragMove(event) {
+    if (!isDragging.value) {
+        return;
+    }
+    dragOffset.value = {
+        x: event.clientX - dragStart.value.x,
+        y: event.clientY - dragStart.value.y,
+    };
+}
+
+function handleDragEnd() {
+    stopDrag();
+}
+
+function handlePointerDown(event) {
+    if (!props.draggable || !props.open) {
+        return;
+    }
+    if (!event.target?.closest('.sr-modal-header')) {
+        return;
+    }
+    event.preventDefault();
+    isDragging.value = true;
+    dragStart.value = {
+        x: event.clientX - dragOffset.value.x,
+        y: event.clientY - dragOffset.value.y,
+    };
+
+    if (!dragListenerActive) {
+        dragListenerActive = true;
+        window.addEventListener('pointermove', handleDragMove);
+        window.addEventListener('pointerup', handleDragEnd);
+        window.addEventListener('pointercancel', handleDragEnd);
+    }
+}
+
 watch(
     () => props.open,
     (value, prev) => {
@@ -32,24 +99,41 @@ watch(
             return;
         }
         updateBodyLock(value ? 1 : -1);
+
+        if (!value) {
+            dragOffset.value = { x: 0, y: 0 };
+            stopDrag();
+        }
     },
     { immediate: true },
 );
+
+onMounted(() => {
+    if (!props.open) {
+        dragOffset.value = { x: 0, y: 0 };
+    }
+});
 
 onBeforeUnmount(() => {
     if (props.open) {
         updateBodyLock(-1);
     }
+    stopDrag();
 });
 </script>
 
 <template>
     <div
-        :class="['sr-modal', props.modalClass, { active: props.open }]"
+        :class="['sr-modal', props.modalClass, { active: props.open, 'sr-modal--draggable': props.draggable }]"
         :aria-hidden="!props.open"
         @click.self="emit('close')"
     >
-        <div :class="['sr-modal-card', props.cardClass]">
+        <div
+            ref="cardRef"
+            :class="['sr-modal-card', props.cardClass]"
+            :style="cardStyle"
+            @pointerdown="handlePointerDown"
+        >
             <slot />
         </div>
     </div>
@@ -95,6 +179,12 @@ onBeforeUnmount(() => {
     border: 1px solid var(--reader-help-border);
     border-radius: 16px;
     box-shadow: 0 20px 40px rgb(0 0 0 / 40%);
+}
+
+.sr-modal--draggable :deep(.sr-modal-header) {
+    touch-action: none;
+    cursor: move;
+    user-select: none;
 }
 
 .sr-modal--peek .sr-modal-card {

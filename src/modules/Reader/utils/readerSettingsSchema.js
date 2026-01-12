@@ -1,4 +1,8 @@
 export function buildReaderSettingsSchema({ settings, multiplierLabel, timerText, sessionTimerText, options }) {
+    const rawTextWidthMax = Number(options?.textWidthMax);
+    const textWidthMax = Number.isFinite(rawTextWidthMax) && rawTextWidthMax > 0 ? rawTextWidthMax : 1200;
+    const textWidthMin = Math.min(320, textWidthMax);
+
     return [
         {
             id: 'tempo',
@@ -77,6 +81,16 @@ export function buildReaderSettingsSchema({ settings, multiplierLabel, timerText
                     meta: `${settings.lineHeight}`,
                 },
                 {
+                    key: 'textWidth',
+                    label: 'Ширина текста',
+                    type: 'range',
+                    controlId: 'textWidth',
+                    min: textWidthMin,
+                    max: textWidthMax,
+                    step: 10,
+                    meta: `${settings.textWidth} px`,
+                },
+                {
                     key: 'paragraphGap',
                     label: 'Отступ абзаца',
                     type: 'range',
@@ -117,16 +131,6 @@ export function buildReaderSettingsSchema({ settings, multiplierLabel, timerText
             id: 'window',
             title: 'Окно',
             items: [
-                {
-                    key: 'padding',
-                    label: 'Отступы',
-                    type: 'range',
-                    controlId: 'padding',
-                    min: 0,
-                    max: 1000,
-                    step: 10,
-                    meta: `${settings.padding} px`,
-                },
                 {
                     key: 'overlaySize',
                     label: 'Размер окна',

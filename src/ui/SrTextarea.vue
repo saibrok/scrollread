@@ -36,7 +36,7 @@ function onInput(event) {
     line-height: 1.6;
     color: var(--text);
 
-    background: transparent;
+    background: var(--ui-surface);
     border: 1px solid var(--border);
     border-radius: 16px;
 }
@@ -58,5 +58,11 @@ function onInput(event) {
 
 .sr-textarea::-webkit-scrollbar-thumb:hover {
     background: var(--ui-border-hover, var(--accent));
+}
+
+@media (max-width: 900px) {
+    .sr-textarea {
+        min-height: 100px;
+    }
 }
 </style>

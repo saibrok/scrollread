@@ -225,3 +225,24 @@ function handleDeleteConfirm() {
         />
     </section>
 </template>
+
+<style scoped>
+.card {
+    display: grid;
+    grid-template-columns: 1.4fr 0.9fr;
+    gap: 24px;
+
+    padding: 28px;
+
+    background: linear-gradient(135deg, var(--accent-weak), var(--surface));
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+}
+
+@media (max-width: 900px) {
+    .card {
+        grid-template-columns: 1fr;
+    }
+}
+</style>

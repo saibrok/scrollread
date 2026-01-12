@@ -73,3 +73,42 @@ const emit = defineEmits(['update:text', 'save', 'load', 'select-save', 'delete-
         </div>
     </div>
 </template>
+
+<style scoped>
+.text-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.label {
+    font-size: 13px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.text-panel-saves {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.text-panel-saves__select {
+    flex: 1;
+    min-width: 220px;
+}
+
+.text-panel-saves__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+@media (max-width: 900px) {
+    .text-panel-saves__actions {
+        justify-content: flex-start;
+        width: 100%;
+    }
+}
+</style>

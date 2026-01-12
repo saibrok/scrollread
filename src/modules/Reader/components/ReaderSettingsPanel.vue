@@ -1,5 +1,5 @@
 ﻿<script setup>
-import { computed } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 
 import { normalizeFavorites } from '../utils/favorites';
 import { ALIGN_OPTIONS, FONT_OPTIONS, MINIMAP_SCALE_OPTIONS } from '../utils/readerOptions';
@@ -30,6 +30,9 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['update', 'update-end', 'speed-multiplier']);
+
+const windowWidth = ref(typeof window === 'undefined' ? 0 : window.innerWidth);
+let resizeHandler = null;
 
 function emitUpdate(key, value) {
     emit('update', { key, value });
@@ -90,6 +93,7 @@ const settingsGroups = computed(() =>
             fonts: FONT_OPTIONS,
             align: ALIGN_OPTIONS,
             minimapScale: MINIMAP_SCALE_OPTIONS,
+            textWidthMax: windowWidth.value,
         },
     }),
 );
@@ -135,6 +139,19 @@ function handleToggle(item) {
     emitUpdate(item.key, nextValue);
     emitUpdateEnd(item.key, nextValue);
 }
+
+onMounted(() => {
+    resizeHandler = () => {
+        windowWidth.value = window.innerWidth;
+    };
+    window.addEventListener('resize', resizeHandler);
+});
+
+onBeforeUnmount(() => {
+    if (resizeHandler) {
+        window.removeEventListener('resize', resizeHandler);
+    }
+});
 </script>
 
 <template>

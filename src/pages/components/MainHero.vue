@@ -33,31 +33,13 @@ async function handleDemoClick() {
 </script>
 
 <template>
-    <section
-        class="hero reveal"
-        style="
-
-    --delay: 0.05s"
-    >
+    <section class="hero">
         <div class="hero__content">
-            <h1 class="hero__title">Онлайн телесуфлер, который держит темп чтения</h1>
+            <h1 class="hero__title">Онлайн телесуфлер</h1>
             <p class="hero__lead">
-                Вставьте текст, выберите скорость и начните читать без рывков. ScrollRead считает время, ведет текст по экрану и помогает сохранять уверенный
-                ритм.
+                Вставьте текст, выберите скорость и начните читать. ScrollRead считает время, ведет текст по экрану и помогает сохранять заданный темп.
             </p>
-            <div class="hero__actions">
-                <SrButton
-                    as="a"
-                    class="hero__cta"
-                    variant="accent"
-                    href="#editor"
-                    :disabled="isLoading"
-                    @click.prevent="handleDemoClick"
-                >
-                    {{ isLoading ? 'Генерируем...' : 'Демо' }}
-                </SrButton>
-            </div>
-            <div class="hero__note">Без регистрации, рекламы и подписок.</div>
+
             <div
                 v-if="errorMessage"
                 class="hero__note"
@@ -65,14 +47,61 @@ async function handleDemoClick() {
                 {{ errorMessage }}
             </div>
         </div>
-        <div class="hero__panel">
-            <div class="hero__panel-title">Что внутри</div>
-            <ul class="hero__list">
-                <li>Точное время прокрутки и темп чтения</li>
-                <li>Сохранение текстов в браузере</li>
-                <li>Гибкие настройки шрифта, оформления и цвета</li>
-                <li>Полноэкранный режим для выступлений и записи</li>
-            </ul>
+        <div class="hero__actions">
+            <SrButton
+                as="a"
+                class="hero__cta"
+                variant="accent"
+                href="#editor"
+                :disabled="isLoading"
+                @click.prevent="handleDemoClick"
+            >
+                {{ isLoading ? 'Генерируем...' : 'Демо' }}
+            </SrButton>
         </div>
     </section>
 </template>
+
+<style scoped>
+.hero {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 24px;
+
+    padding: 28px;
+
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    box-shadow: var(--shadow);
+}
+
+.hero__title {
+    margin: 0 0 12px;
+    font-size: 34px;
+}
+
+.hero__lead {
+    margin: 0 0 18px;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--muted);
+}
+
+.hero__actions {
+    display: flex;
+    align-items: end;
+    justify-content: end;
+}
+
+.hero__note {
+    font-size: 13px;
+    color: var(--muted);
+}
+
+@media (max-width: 900px) {
+    .hero {
+        grid-template-columns: 1fr;
+    }
+}
+</style>

@@ -47,6 +47,8 @@ const readerStyle = computed(() => {
     const indentValue = Number.isFinite(parsedIndent) ? parsedIndent : 0;
     const parsedMinimapWidth = Number.parseFloat(readerSettings.minimapWidth);
     const minimapWidthValue = Number.isFinite(parsedMinimapWidth) ? parsedMinimapWidth : 120;
+    const parsedTextWidth = Number.parseFloat(readerSettings.textWidth);
+    const textWidthValue = Number.isFinite(parsedTextWidth) ? parsedTextWidth : 720;
 
     return {
         '--reader-font-size': `${readerSettings.fontSize}px`,
@@ -58,7 +60,7 @@ const readerStyle = computed(() => {
         '--read-band': `${readerSettings.overlaySize}em`,
         '--read-line-height': readerSettings.lineHeight,
         '--read-paragraph-gap': `${readerSettings.paragraphGap}em`,
-        '--read-padding': `${readerSettings.padding}px`,
+        '--reader-text-width': `${textWidthValue}px`,
         '--reader-align': readerSettings.align,
         '--reader-indent': readerSettings.align === 'center' ? '0em' : `${indentValue}em`,
         '--reader-minimap-width': showMinimap.value ? `${minimapWidthValue}px` : '0px',
@@ -328,7 +330,7 @@ watch(
         readerSettings.font,
         readerSettings.lineHeight,
         readerSettings.paragraphGap,
-        readerSettings.padding,
+        readerSettings.textWidth,
         readerSettings.overlaySize,
         readerSettings.showMinimap,
     ],
@@ -446,7 +448,10 @@ watch(
             @close="handleClose"
         />
         <div class="reader-body">
-            <div class="reader-content">
+            <div
+                class="reader-content"
+                @wheel="handleWheel"
+            >
                 <div
                     class="reader-overlay reader-overlay-top"
                     aria-hidden="true"
@@ -454,7 +459,6 @@ watch(
                 <div
                     ref="readerStage"
                     class="reader-stage"
-                    @wheel="handleWheel"
                     @touchstart="handleTouchStart"
                     @touchmove.prevent="handleTouchMove"
                     @touchend="handleTouchEnd"
@@ -542,6 +546,7 @@ watch(
             :open="settingsOpen"
             modal-class="sr-modal--settings"
             card-class="sr-modal-card--wide"
+            draggable
             @close="closeSettings"
         >
             <div class="sr-modal-header">
@@ -618,7 +623,7 @@ watch(
     --reader-sepia: 0%;
     --reader-overlay-opacity: 0.75;
     --read-band: 3.2em;
-    --read-padding: 120px;
+    --reader-text-width: 720px;
 
     position: fixed;
     z-index: 50;
@@ -670,7 +675,6 @@ watch(
     width: 100%;
     height: 100%;
     min-height: 0;
-    padding-inline: var(--read-padding);
 }
 
 .reader-text {
@@ -678,7 +682,8 @@ watch(
 
     transform: translateY(0);
 
-    width: 100%;
+    width: min(100%, var(--reader-text-width));
+    margin-inline: auto;
     padding-top: calc(var(--read-band) * var(--read-line-height) / 2 - 1em * var(--read-line-height) + 1em);
 
     font-family: var(--reader-font);

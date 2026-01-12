@@ -5,10 +5,7 @@ import SrExpansionPanel from '../../ui/SrExpansionPanel.vue';
 <template>
     <section
         id="faq"
-        class="section reveal"
-        style="
-
-    --delay: 0.3s"
+        class="section"
     >
         <div class="section-title">Часто задаваемые вопросы</div>
         <div class="faq">
@@ -27,3 +24,21 @@ import SrExpansionPanel from '../../ui/SrExpansionPanel.vue';
         </div>
     </section>
 </template>
+
+<style scoped>
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.section-title {
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.faq {
+    display: grid;
+    gap: 10px;
+}
+</style>

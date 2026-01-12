@@ -44,3 +44,15 @@ const emit = defineEmits(['update:speed', 'start']);
         </SrButton>
     </div>
 </template>
+
+<style scoped>
+.controls {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.start {
+    margin-top: auto;
+}
+</style>

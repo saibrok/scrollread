@@ -432,10 +432,8 @@ onBeforeUnmount(() => {
 
 .reader-minimap-inner__text {
     box-sizing: border-box;
-    width: 100%;
-    margin-inline: calc(-1 * var(--read-padding));
+    width: min(100%, var(--reader-text-width));
     padding-top: calc(var(--read-band) * var(--read-line-height) / 2 - 1em * var(--read-line-height) + 1em);
-    padding-inline: var(--read-padding);
 
     font-family: var(--reader-font);
     font-size: var(--reader-font-size);
@@ -463,8 +461,8 @@ onBeforeUnmount(() => {
 
     width: 100%;
 
-    background: color-mix(in srgb, var(--reader-text) 12%, transparent);
-    border: 1px solid color-mix(in srgb, var(--reader-text) 20%, transparent);
+    background: color-mix(in srgb, var(--reader-text) 33%, transparent);
+    border: 1px solid color-mix(in srgb, var(--reader-text) 50%, transparent);
     border-radius: 1px;
 
     transition:

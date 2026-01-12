@@ -12,12 +12,12 @@ export const FAVORITE_GROUPS = [
     {
         id: 'text',
         title: 'Текст',
-        keys: ['fontSize', 'lineHeight', 'paragraphGap', 'indent', 'font', 'align'],
+        keys: ['fontSize', 'lineHeight', 'textWidth', 'paragraphGap', 'indent', 'font', 'align'],
     },
     {
         id: 'window',
         title: 'Окно',
-        keys: ['padding', 'overlaySize', 'overlayOpacity'],
+        keys: ['overlaySize', 'overlayOpacity'],
     },
     {
         id: 'screen',
@@ -40,10 +40,14 @@ export function normalizeFavorites(favorites) {
         return acc;
     }, {});
 
+    const legacyMap = { padding: 'textWidth' };
+
     if (Array.isArray(favorites)) {
         favorites.forEach((key) => {
             if (typeof key === 'string' && key in normalized) {
                 normalized[key] = true;
+            } else if (typeof key === 'string' && key in legacyMap) {
+                normalized[legacyMap[key]] = true;
             }
         });
 
@@ -54,6 +58,8 @@ export function normalizeFavorites(favorites) {
         Object.entries(favorites).forEach(([key, value]) => {
             if (key in normalized) {
                 normalized[key] = Boolean(value);
+            } else if (key in legacyMap) {
+                normalized[legacyMap[key]] = Boolean(value);
             }
         });
     }

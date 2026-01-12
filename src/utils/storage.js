@@ -6,6 +6,12 @@ const FAVORITE_DEFAULTS = FAVORITE_KEYS.reduce((acc, key) => {
     return acc;
 }, {});
 
+['speed', 'sessionTime', 'estimateTime', 'fontSize'].forEach((key) => {
+    if (key in FAVORITE_DEFAULTS) {
+        FAVORITE_DEFAULTS[key] = true;
+    }
+});
+
 export const READER_STORAGE_KEY = 'reader_settings';
 export const THEME_STORAGE_KEY = 'theme_settings';
 export const SAVED_TEXTS_KEY = 'saved_texts';
@@ -15,7 +21,7 @@ export const READER_DEFAULTS = {
     fontSize: 32,
     font: "'Lora', 'Times New Roman', serif",
     align: 'left',
-    padding: 100,
+    textWidth: 960,
     brightness: 100,
     contrast: 100,
     sepia: 0,
@@ -48,10 +54,17 @@ export function loadReaderSettings() {
     }
     try {
         const parsed = JSON.parse(saved);
+        const { padding, ...rest } = parsed;
 
         const normalizedFavorites = normalizeFavorites(parsed.favorites);
+        const textWidth = parsed.textWidth ?? padding;
 
-        return { ...READER_DEFAULTS, ...parsed, favorites: normalizedFavorites };
+        return {
+            ...READER_DEFAULTS,
+            ...rest,
+            ...(textWidth !== undefined ? { textWidth } : null),
+            favorites: normalizedFavorites,
+        };
     } catch (error) {
         console.warn('Reader settings parse error', error);
 

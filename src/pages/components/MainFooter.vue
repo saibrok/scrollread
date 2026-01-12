@@ -8,30 +8,6 @@ function openSupport() {
 
 <template>
     <footer class="page-footer">
-        <div class="subtitle">ScrollRead создаётся как рабочий инструмент — без рекламы и подписок.</div>
-        <div class="subtitle">Он бесплатный и остаётся таким благодаря вашей поддержке.</div>
-        <div class="subtitle">
-            Если ScrollRead помогает вам в работе, донат — лучший способ сказать
-            <a
-                href="https://dalink.to/saibrok"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-                «спасибо»
-            </a>
-            и ускорить развитие проекта.
-        </div>
-        <div class="subtitle">
-            Идеи, запросы на функции и обратную связь можно писать в
-            <a
-                href="https://t.me/saibrok"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-                Telegram
-            </a>
-            .
-        </div>
         <SrButton
             class="support-button"
             @click="openSupport"
@@ -40,3 +16,21 @@ function openSupport() {
         </SrButton>
     </footer>
 </template>
+
+<style scoped>
+.page-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    margin-top: auto;
+    padding-top: 6px;
+}
+
+.support-button {
+    position: fixed;
+    z-index: 30;
+    right: 24px;
+    bottom: 24px;
+}
+</style>
