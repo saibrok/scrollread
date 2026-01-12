@@ -184,6 +184,7 @@ function closeTheme() {
     themeOpen.value = false;
 }
 
+
 function clearPendingStart() {
     if (pendingStartId.value) {
         clearTimeout(pendingStartId.value);
@@ -443,7 +444,6 @@ watch(
             @update-setting="updateReaderSetting"
             @reset="handleReset"
             @open-settings="openSettings"
-            @open-theme="openTheme"
             @speed-multiplier="handleSpeedMultiplier"
             @close="handleClose"
         />
@@ -500,49 +500,6 @@ watch(
             @confirm="confirmReset"
         />
         <SrModal
-            :open="themeOpen"
-            card-class="sr-modal-card--compact"
-            @close="closeTheme"
-        >
-            <div class="sr-modal-header">
-                <div>Тема</div>
-                <SrButton
-                    class="reader-btn"
-                    aria-label="Закрыть"
-                    @click="closeTheme"
-                >
-                    <span
-                        class="material-icons"
-                        aria-hidden="true"
-                    >
-                        close
-                    </span>
-                </SrButton>
-            </div>
-            <div class="sr-modal-body">
-                <div class="reader-theme-settings">
-                    <div class="reader-theme-settings__group">
-                        <div class="reader-theme-settings__label">Тон</div>
-                        <SrSelect
-                            :model-value="themeSettings.themeTone"
-                            :items="THEME_TONE_OPTIONS"
-                            teleport
-                            @update:model-value="updateThemeTone"
-                        />
-                    </div>
-                    <div class="reader-theme-settings__group">
-                        <div class="reader-theme-settings__label">Цветовая схема</div>
-                        <SrSelect
-                            :model-value="themeSettings.themePalette"
-                            :items="paletteOptions"
-                            teleport
-                            @update:model-value="updateThemePalette"
-                        />
-                    </div>
-                </div>
-            </div>
-        </SrModal>
-        <SrModal
             :open="settingsOpen"
             modal-class="sr-modal--settings"
             card-class="sr-modal-card--wide"
@@ -552,6 +509,18 @@ watch(
             <div class="sr-modal-header">
                 <div>Настройки</div>
                 <div class="sr-modal-header-actions">
+                    <SrButton
+                        class="reader-btn"
+                        aria-label="Настройки темы"
+                        @click="openTheme"
+                    >
+                        <span
+                            class="material-icons"
+                            aria-hidden="true"
+                        >
+                            style
+                        </span>
+                    </SrButton>
                     <SrButton
                         class="reader-btn"
                         aria-label="Горячие клавиши"
@@ -606,6 +575,49 @@ watch(
                     >
                         Сброс настроек
                     </SrButton>
+                </div>
+            </div>
+        </SrModal>
+        <SrModal
+            :open="themeOpen"
+            card-class="sr-modal-card--compact"
+            @close="closeTheme"
+        >
+            <div class="sr-modal-header">
+                <div>Тема</div>
+                <SrButton
+                    class="reader-btn"
+                    aria-label="Закрыть"
+                    @click="closeTheme"
+                >
+                    <span
+                        class="material-icons"
+                        aria-hidden="true"
+                    >
+                        close
+                    </span>
+                </SrButton>
+            </div>
+            <div class="sr-modal-body">
+                <div class="reader-theme-settings">
+                    <div class="reader-theme-settings__group">
+                        <div class="reader-theme-settings__label">Тон</div>
+                        <SrSelect
+                            :model-value="themeSettings.themeTone"
+                            :items="THEME_TONE_OPTIONS"
+                            teleport
+                            @update:model-value="updateThemeTone"
+                        />
+                    </div>
+                    <div class="reader-theme-settings__group">
+                        <div class="reader-theme-settings__label">Цветовая схема</div>
+                        <SrSelect
+                            :model-value="themeSettings.themePalette"
+                            :items="paletteOptions"
+                            teleport
+                            @update:model-value="updateThemePalette"
+                        />
+                    </div>
                 </div>
             </div>
         </SrModal>

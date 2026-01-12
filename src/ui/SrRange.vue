@@ -1,4 +1,5 @@
 ﻿<script setup>
+import { ref } from 'vue';
 const props = defineProps({
     modelValue: {
         type: Number,
@@ -20,6 +21,59 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue', 'change']);
 
+const rangeRef = ref(null);
+const pointerState = {
+    active: false,
+    touch: false,
+    startX: 0,
+    startY: 0,
+    isHorizontal: false,
+    isVertical: false,
+};
+
+function clamp(value, min, max) {
+    return Math.min(max, Math.max(min, value));
+}
+
+function toNumber(value, fallback) {
+    const parsed = Number(value);
+
+    return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function snapToStep(value, step, min) {
+    if (!Number.isFinite(step) || step <= 0) {
+        return value;
+    }
+
+    const stepped = Math.round((value - min) / step) * step + min;
+
+    return Number(stepped.toFixed(6));
+}
+
+function calcValueFromPointer(target, clientX) {
+    const rect = target.getBoundingClientRect();
+    const min = toNumber(props.min, 0);
+    const max = toNumber(props.max, 100);
+    const step = toNumber(props.step, NaN);
+    const ratio = rect.width > 0 ? (clientX - rect.left) / rect.width : 0;
+    const rawValue = min + clamp(ratio, 0, 1) * (max - min);
+
+    return snapToStep(rawValue, step, min);
+}
+
+function applyValue(nextValue, commit = false) {
+    if (rangeRef.value) {
+        rangeRef.value.value = nextValue;
+    }
+
+    emit('update:modelValue', nextValue);
+
+    if (commit) {
+        emit('change', nextValue);
+    }
+}
+
 function onInput(event) {
     emit('update:modelValue', Number(event.target.value));
 }
@@ -27,23 +81,110 @@ function onInput(event) {
 function onChange(event) {
     emit('change', Number(event.target.value));
 }
+
+function onPointerDown(event) {
+    pointerState.active = true;
+    pointerState.touch = event.pointerType === 'touch';
+    pointerState.startX = event.clientX;
+    pointerState.startY = event.clientY;
+    pointerState.isHorizontal = false;
+    pointerState.isVertical = false;
+
+    if (!pointerState.touch) {
+        event.preventDefault();
+        applyValue(calcValueFromPointer(event.currentTarget, event.clientX));
+    }
+
+    if (event.currentTarget?.setPointerCapture) {
+        event.currentTarget.setPointerCapture(event.pointerId);
+    }
+}
+
+function onPointerMove(event) {
+    if (!pointerState.active || !pointerState.touch) {
+        return;
+    }
+
+    const deltaX = event.clientX - pointerState.startX;
+    const deltaY = event.clientY - pointerState.startY;
+    const absX = Math.abs(deltaX);
+    const absY = Math.abs(deltaY);
+    const threshold = 6;
+
+    if (!pointerState.isHorizontal && !pointerState.isVertical) {
+        if (absY > threshold && absY > absX) {
+            pointerState.isVertical = true;
+
+            return;
+        }
+        if (absX > threshold && absX > absY) {
+            pointerState.isHorizontal = true;
+        } else {
+            return;
+        }
+    }
+
+    if (!pointerState.isHorizontal) {
+        return;
+    }
+
+    event.preventDefault();
+
+    const nextValue = calcValueFromPointer(event.currentTarget, event.clientX);
+
+    applyValue(nextValue);
+}
+
+function onPointerUp(event) {
+    if (pointerState.active && !pointerState.isVertical) {
+        const nextValue = calcValueFromPointer(event.currentTarget, event.clientX);
+
+        applyValue(nextValue, true);
+    }
+
+    pointerState.active = false;
+    pointerState.touch = false;
+    pointerState.isHorizontal = false;
+    pointerState.isVertical = false;
+}
+
+function onPointerCancel() {
+    pointerState.active = false;
+    pointerState.touch = false;
+    pointerState.isHorizontal = false;
+    pointerState.isVertical = false;
+}
 </script>
 
 <template>
-    <input
-        type="range"
-        class="sr-range"
-        :min="props.min"
-        :max="props.max"
-        :step="props.step"
-        :value="props.modelValue"
-        v-bind="$attrs"
-        @input="onInput"
-        @change="onChange"
-    />
+    <div class="sr-range-wrap">
+        <input
+            ref="rangeRef"
+            type="range"
+            class="sr-range"
+            :min="props.min"
+            :max="props.max"
+            :step="props.step"
+            :value="props.modelValue"
+            v-bind="$attrs"
+            @input="onInput"
+            @change="onChange"
+        />
+        <div
+            class="sr-range-hit"
+            @pointerdown="onPointerDown"
+            @pointermove="onPointerMove"
+            @pointerup="onPointerUp"
+            @pointercancel="onPointerCancel"
+        ></div>
+    </div>
 </template>
 
 <style scoped>
+.sr-range-wrap {
+    position: relative;
+}
+
 .sr-range {
     cursor: pointer;
 
@@ -51,6 +192,15 @@ function onChange(event) {
     height: 28px;
 
     appearance: none;
+    background: transparent;
+    pointer-events: none;
+}
+
+.sr-range-hit {
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+    touch-action: pan-y;
     background: transparent;
 }
 

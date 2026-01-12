@@ -450,6 +450,10 @@ onBeforeUnmount(() => {
     gap: 8px;
     align-items: center;
     justify-content: center;
+
+    @media (max-width: 720px) {
+        flex-direction: column;
+    }
 }
 
 .reader-favorites__group {
@@ -485,6 +489,7 @@ onBeforeUnmount(() => {
     flex-wrap: wrap;
     gap: 8px;
     align-items: center;
+    justify-content: center;
 }
 
 .reader-favorite {

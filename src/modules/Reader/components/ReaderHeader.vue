@@ -33,7 +33,7 @@ const props = defineProps({
     },
 });
 
-const emit = defineEmits(['toggle-play', 'reset', 'help', 'close', 'open-settings', 'open-theme', 'update-setting', 'speed-multiplier']);
+const emit = defineEmits(['toggle-play', 'reset', 'help', 'close', 'open-settings', 'update-setting', 'speed-multiplier']);
 </script>
 
 <template>
@@ -69,18 +69,6 @@ const emit = defineEmits(['toggle-play', 'reset', 'help', 'close', 'open-setting
             @speed-multiplier="emit('speed-multiplier', $event)"
         />
         <div class="reader-controls">
-            <SrButton
-                class="reader-btn"
-                aria-label="Настройки темы"
-                @click="emit('open-theme')"
-            >
-                <span
-                    class="material-icons"
-                    aria-hidden="true"
-                >
-                    style
-                </span>
-            </SrButton>
             <SrButton
                 class="reader-btn"
                 aria-label="Настройки"
