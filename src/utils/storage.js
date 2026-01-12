@@ -2,6 +2,7 @@ import { FAVORITE_KEYS, normalizeFavorites } from '../modules/Reader/utils/favor
 
 const FAVORITE_DEFAULTS = FAVORITE_KEYS.reduce((acc, key) => {
     acc[key] = false;
+
     return acc;
 }, {});
 
@@ -12,7 +13,7 @@ export const SAVED_TEXTS_KEY = 'saved_texts';
 export const READER_DEFAULTS = {
     speed: 800,
     fontSize: 32,
-    font: "'EB Garamond', 'Times New Roman', serif",
+    font: "'Lora', 'Times New Roman', serif",
     align: 'left',
     padding: 100,
     brightness: 100,

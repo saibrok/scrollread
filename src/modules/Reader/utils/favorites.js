@@ -36,6 +36,7 @@ export const FAVORITE_KEYS = FAVORITE_GROUPS.flatMap((group) => group.keys);
 export function normalizeFavorites(favorites) {
     const normalized = FAVORITE_KEYS.reduce((acc, key) => {
         acc[key] = false;
+
         return acc;
     }, {});
 

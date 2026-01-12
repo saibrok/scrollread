@@ -1,8 +1,8 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 
-import { ALIGN_OPTIONS, FONT_OPTIONS, MINIMAP_SCALE_OPTIONS } from '../utils/readerOptions';
 import { FAVORITE_GROUPS, normalizeFavorites } from '../utils/favorites';
+import { ALIGN_OPTIONS, FONT_OPTIONS, MINIMAP_SCALE_OPTIONS } from '../utils/readerOptions';
 
 import SrButton from '../../../ui/SrButton.vue';
 import SrInput from '../../../ui/SrInput.vue';
@@ -256,12 +256,12 @@ const favoriteConfig = computed(() => ({
     },
 }));
 
-const favoriteGroups = computed(() => FAVORITE_GROUPS.map((group) => ({
-    ...group,
-    items: group.keys
-        .map((key) => favoriteConfig.value[key])
-        .filter((item) => item && favoriteMap.value[item.key]),
-})).filter((group) => group.items.length));
+const favoriteGroups = computed(() =>
+    FAVORITE_GROUPS.map((group) => ({
+        ...group,
+        items: group.keys.map((key) => favoriteConfig.value[key]).filter((item) => item && favoriteMap.value[item.key]),
+    })).filter((group) => group.items.length),
+);
 
 function toggleFavoritePopover(key) {
     openFavoriteKey.value = openFavoriteKey.value === key ? null : key;
@@ -485,8 +485,8 @@ onBeforeUnmount(() => {
     padding: 6px;
 
     font-size: 12px;
-    letter-spacing: normal;
     color: var(--reader-text);
+    letter-spacing: normal;
 
     background: transparent;
     border: 1px solid var(--reader-border);

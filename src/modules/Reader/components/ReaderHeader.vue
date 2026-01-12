@@ -1,7 +1,6 @@
 ﻿<script setup>
-import ReaderFavorites from './ReaderFavorites.vue';
-
 import SrButton from '../../../ui/SrButton.vue';
+import ReaderFavorites from './ReaderFavorites.vue';
 
 const props = defineProps({
     isPlaying: {

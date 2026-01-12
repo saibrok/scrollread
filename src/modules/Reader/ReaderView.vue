@@ -610,7 +610,7 @@ watch(
 <style scoped>
 .reader {
     --reader-font-size: 32px;
-    --reader-font: 'Rubik', 'Segoe UI', arial, sans-serif;
+    --reader-font: 'Lora', 'Times New Roman', serif;
     --read-line-height: 1.6;
     --read-paragraph-gap: 0.6em;
     --reader-brightness: 100%;

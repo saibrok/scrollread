@@ -1,10 +1,4 @@
-export function buildReaderSettingsSchema({
-    settings,
-    multiplierLabel,
-    timerText,
-    sessionTimerText,
-    options,
-}) {
+export function buildReaderSettingsSchema({ settings, multiplierLabel, timerText, sessionTimerText, options }) {
     return [
         {
             id: 'tempo',
