@@ -100,22 +100,31 @@ const multiplierLabel = computed(() => {
     return 'x1';
 });
 
-const favoriteKeys = computed(() => (Array.isArray(props.settings.favorites) ? props.settings.favorites : []));
+const favoriteMap = computed(() => normalizeFavorites(props.settings.favorites));
+
+function normalizeFavorites(favorites) {
+    if (Array.isArray(favorites)) {
+        return favorites.reduce((acc, key) => {
+            if (typeof key === 'string') {
+                acc[key] = true;
+            }
+            return acc;
+        }, {});
+    }
+
+    if (favorites && typeof favorites === 'object') {
+        return favorites;
+    }
+
+    return {};
+}
 
 function isFavorite(key) {
-    return favoriteKeys.value.includes(key);
+    return Boolean(favoriteMap.value[key]);
 }
 
 function toggleFavorite(key) {
-    if (isFavorite(key)) {
-        const next = favoriteKeys.value.filter((item) => item !== key);
-
-        emitUpdate('favorites', next);
-        emitUpdateEnd('favorites', next);
-
-        return;
-    }
-    const next = [...favoriteKeys.value, key];
+    const next = { ...favoriteMap.value, [key]: !favoriteMap.value[key] };
 
     emitUpdate('favorites', next);
     emitUpdateEnd('favorites', next);

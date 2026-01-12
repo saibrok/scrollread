@@ -433,6 +433,7 @@ onBeforeUnmount(() => {
 .reader-minimap-inner__text {
     box-sizing: border-box;
     width: 100%;
+    margin-inline: calc(-1 * var(--read-padding));
     padding-top: calc(var(--read-band) * var(--read-line-height) / 2 - 1em * var(--read-line-height) + 1em);
     padding-inline: var(--read-padding);
 

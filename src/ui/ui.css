@@ -10,12 +10,12 @@ body {
     --ui-shadow: var(--shadow);
     --ui-font-size: 14px;
     --ui-font-weight: 600;
-    --ui-radius: 12px;
-    --ui-radius-lg: 16px;
+    --ui-radius-sm: 4px;
+    --ui-radius: 8px;
+    --ui-radius-lg: 12px;
     --ui-padding: 10px 16px;
     --ui-padding-compact: 8px 14px;
-    --ui-transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease,
-        background 0.15s ease, color 0.15s ease;
+    --ui-transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
     --ui-focus-outline: 2px solid var(--accent);
     --ui-focus-offset: 2px;
 }

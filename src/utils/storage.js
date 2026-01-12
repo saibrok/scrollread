@@ -2,6 +2,31 @@ export const READER_STORAGE_KEY = 'reader_settings';
 export const THEME_STORAGE_KEY = 'theme_settings';
 export const SAVED_TEXTS_KEY = 'saved_texts';
 
+const FAVORITE_KEYS = [
+    'speed',
+    'startDelay',
+    'speedMultiplier',
+    'sessionTime',
+    'estimateTime',
+    'fontSize',
+    'lineHeight',
+    'paragraphGap',
+    'indent',
+    'font',
+    'align',
+    'padding',
+    'overlaySize',
+    'overlayOpacity',
+    'brightness',
+    'contrast',
+    'sepia',
+    'showMinimap',
+    'minimapWidth',
+    'minimapScale',
+];
+
+const FAVORITE_DEFAULTS = Object.fromEntries(FAVORITE_KEYS.map((key) => [key, false]));
+
 export const READER_DEFAULTS = {
     speed: 800,
     fontSize: 32,
@@ -20,7 +45,7 @@ export const READER_DEFAULTS = {
     showMinimap: true,
     minimapWidth: 120,
     minimapScale: 0.1,
-    favorites: [],
+    favorites: FAVORITE_DEFAULTS,
 };
 
 export const THEME_DEFAULTS = {
@@ -41,7 +66,9 @@ export function loadReaderSettings() {
     try {
         const parsed = JSON.parse(saved);
 
-        return { ...READER_DEFAULTS, ...parsed };
+        const normalizedFavorites = normalizeFavorites(parsed.favorites);
+
+        return { ...READER_DEFAULTS, ...parsed, favorites: normalizedFavorites };
     } catch (error) {
         console.warn('Reader settings parse error', error);
 
@@ -55,6 +82,28 @@ export function loadReaderSettings() {
  */
 export function saveReaderSettings(settings) {
     localStorage.setItem(READER_STORAGE_KEY, JSON.stringify(settings));
+}
+
+function normalizeFavorites(favorites) {
+    const normalized = { ...FAVORITE_DEFAULTS };
+
+    if (Array.isArray(favorites)) {
+        favorites.forEach((key) => {
+            if (typeof key === 'string') {
+                normalized[key] = true;
+            }
+        });
+
+        return normalized;
+    }
+
+    if (favorites && typeof favorites === 'object') {
+        Object.entries(favorites).forEach(([key, value]) => {
+            normalized[key] = Boolean(value);
+        });
+    }
+
+    return normalized;
 }
 
 /**

@@ -56,7 +56,7 @@ const speedMultiplierLabel = computed(() => {
     return 'x1';
 });
 
-const favoriteKeys = computed(() => (Array.isArray(props.settings.favorites) ? props.settings.favorites : []));
+const favoriteMap = computed(() => normalizeFavorites(props.settings.favorites));
 
 function getOptionLabel(options, value) {
     const match = options.find((item) => item.value === value);
@@ -267,7 +267,58 @@ const favoriteConfig = computed(() => ({
     },
 }));
 
-const favoriteItems = computed(() => favoriteKeys.value.map((key) => favoriteConfig.value[key]).filter(Boolean));
+const favoriteGroups = computed(() =>
+    [
+        {
+            id: 'tempo',
+            title: 'Темп',
+            keys: ['speed', 'startDelay', 'speedMultiplier', 'sessionTime', 'estimateTime'],
+        },
+        {
+            id: 'text',
+            title: 'Текст',
+            keys: ['fontSize', 'lineHeight', 'paragraphGap', 'indent', 'font', 'align'],
+        },
+        {
+            id: 'window',
+            title: 'Окно',
+            keys: ['padding', 'overlaySize', 'overlayOpacity'],
+        },
+        {
+            id: 'screen',
+            title: 'Экран',
+            keys: ['brightness', 'contrast', 'sepia'],
+        },
+        {
+            id: 'minimap',
+            title: 'Миникарта',
+            keys: ['showMinimap', 'minimapWidth', 'minimapScale'],
+        },
+    ]
+        .map((group) => ({
+            ...group,
+            items: group.keys.map((key) => favoriteConfig.value[key]).filter((item) => item && favoriteMap.value[item.key]),
+        }))
+        .filter((group) => group.items.length),
+);
+
+function normalizeFavorites(favorites) {
+    if (Array.isArray(favorites)) {
+        return favorites.reduce((acc, key) => {
+            if (typeof key === 'string') {
+                acc[key] = true;
+            }
+
+            return acc;
+        }, {});
+    }
+
+    if (favorites && typeof favorites === 'object') {
+        return favorites;
+    }
+
+    return {};
+}
 
 function toggleFavoritePopover(key) {
     openFavoriteKey.value = openFavoriteKey.value === key ? null : key;
@@ -343,103 +394,112 @@ onBeforeUnmount(() => {
             class="reader-favorites"
         >
             <div
-                v-for="item in favoriteItems"
-                :key="item.key"
-                class="reader-favorite"
+                v-for="group in favoriteGroups"
+                :key="group.id"
+                class="reader-favorites__group"
             >
-                <button
-                    class="reader-favorite__button"
-                    type="button"
-                    @click.stop="toggleFavoritePopover(item.key)"
-                >
-                    <span
-                        class="material-icons"
-                        aria-hidden="true"
+                <div class="reader-favorites__title">{{ group.title }}</div>
+                <div class="reader-favorites__list">
+                    <div
+                        v-for="item in group.items"
+                        :key="item.key"
+                        class="reader-favorite"
                     >
-                        {{ item.icon }}
-                    </span>
-                    <span class="reader-favorite__value">{{ item.value }}</span>
-                </button>
-                <div
-                    v-if="openFavoriteKey === item.key"
-                    class="reader-favorite__popover"
-                    @click.stop
-                >
-                    <div class="reader-favorite__label">{{ item.label }}</div>
-                    <div class="reader-favorite__control">
-                        <template v-if="item.type === 'range'">
-                            <SrRange
-                                :model-value="item.model"
-                                :min="item.min"
-                                :max="item.max"
-                                :step="item.step"
-                                :disabled="item.disabled"
-                                @update:model-value="emitSetting(item.key, $event)"
-                            />
-                        </template>
-                        <template v-else-if="item.type === 'number'">
-                            <SrInput
-                                type="number"
-                                :min="item.min"
-                                :max="item.max"
-                                :step="item.step"
-                                :model-value="item.model"
-                                @update:model-value="emitSetting(item.key, $event)"
+                        <SrButton
+                            class="reader-favorite__button"
+                            type="button"
+                            @click.stop="toggleFavoritePopover(item.key)"
+                        >
+                            <span
+                                class="material-icons"
+                                aria-hidden="true"
                             >
-                                <template #append-inner>с</template>
-                            </SrInput>
-                        </template>
-                        <template v-else-if="item.type === 'select'">
-                            <SrSelect
-                                :model-value="item.model"
-                                :items="item.options"
-                                @update:model-value="emitSetting(item.key, $event)"
-                            />
-                        </template>
-                        <template v-else-if="item.type === 'toggle'">
-                            <SrToggleButton
-                                class="reader-btn"
-                                :active="item.model"
-                                @click="emitSetting(item.key, !item.model)"
-                            >
-                                {{ item.model ? 'Вкл' : 'Выкл' }}
-                            </SrToggleButton>
-                        </template>
-                        <template v-else-if="item.type === 'multiplier'">
-                            <div class="reader-favorite__multipliers">
-                                <SrToggleButton
-                                    class="reader-btn reader-favorite__multiplier-btn"
-                                    type="button"
-                                    aria-label="Замедлить x0.5"
-                                    :active="props.speedMultiplier === 0.5"
-                                    @click="toggleSpeedMultiplier(0.5)"
-                                >
-                                    <span
-                                        class="material-icons"
-                                        aria-hidden="true"
+                                {{ item.icon }}
+                            </span>
+                            <span class="reader-favorite__value">{{ item.value }}</span>
+                        </SrButton>
+                        <div
+                            v-if="openFavoriteKey === item.key"
+                            class="reader-favorite__popover"
+                            @click.stop
+                        >
+                            <div class="reader-favorite__label">{{ item.label }}</div>
+                            <div class="reader-favorite__control">
+                                <template v-if="item.type === 'range'">
+                                    <SrRange
+                                        :model-value="item.model"
+                                        :min="item.min"
+                                        :max="item.max"
+                                        :step="item.step"
+                                        :disabled="item.disabled"
+                                        @update:model-value="emitSetting(item.key, $event)"
+                                    />
+                                </template>
+                                <template v-else-if="item.type === 'number'">
+                                    <SrInput
+                                        type="number"
+                                        :min="item.min"
+                                        :max="item.max"
+                                        :step="item.step"
+                                        :model-value="item.model"
+                                        @update:model-value="emitSetting(item.key, $event)"
                                     >
-                                        fast_rewind
-                                    </span>
-                                </SrToggleButton>
-                                <SrToggleButton
-                                    class="reader-btn reader-favorite__multiplier-btn"
-                                    type="button"
-                                    aria-label="Ускорить x2"
-                                    :active="props.speedMultiplier === 2"
-                                    @click="toggleSpeedMultiplier(2)"
-                                >
-                                    <span
-                                        class="material-icons"
-                                        aria-hidden="true"
+                                        <template #append-inner>с</template>
+                                    </SrInput>
+                                </template>
+                                <template v-else-if="item.type === 'select'">
+                                    <SrSelect
+                                        :model-value="item.model"
+                                        :items="item.options"
+                                        @update:model-value="emitSetting(item.key, $event)"
+                                    />
+                                </template>
+                                <template v-else-if="item.type === 'toggle'">
+                                    <SrToggleButton
+                                        class="reader-btn"
+                                        :active="item.model"
+                                        @click="emitSetting(item.key, !item.model)"
                                     >
-                                        fast_forward
-                                    </span>
-                                </SrToggleButton>
+                                        {{ item.model ? 'Вкл' : 'Выкл' }}
+                                    </SrToggleButton>
+                                </template>
+                                <template v-else-if="item.type === 'multiplier'">
+                                    <div class="reader-favorite__multipliers">
+                                        <SrToggleButton
+                                            class="reader-btn reader-favorite__multiplier-btn"
+                                            type="button"
+                                            aria-label="Замедлить x0.5"
+                                            :active="props.speedMultiplier === 0.5"
+                                            @click="toggleSpeedMultiplier(0.5)"
+                                        >
+                                            <span
+                                                class="material-icons"
+                                                aria-hidden="true"
+                                            >
+                                                fast_rewind
+                                            </span>
+                                        </SrToggleButton>
+                                        <SrToggleButton
+                                            class="reader-btn reader-favorite__multiplier-btn"
+                                            type="button"
+                                            aria-label="Ускорить x2"
+                                            :active="props.speedMultiplier === 2"
+                                            @click="toggleSpeedMultiplier(2)"
+                                        >
+                                            <span
+                                                class="material-icons"
+                                                aria-hidden="true"
+                                            >
+                                                fast_forward
+                                            </span>
+                                        </SrToggleButton>
+                                    </div>
+                                </template>
+                                <template v-else-if="item.type === 'readonly'">
+                                    <div class="reader-favorite__readonly">{{ item.value }}</div>
+                                </template>
                             </div>
-                        </template>
-                        <template v-else-if="item.type === 'readonly'">
-                            <div class="reader-favorite__readonly">{{ item.value }}</div>
-                        </template>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -491,6 +551,7 @@ onBeforeUnmount(() => {
     z-index: 30;
 
     display: flex;
+    gap: 12px;
     align-items: center;
     justify-content: space-between;
 
@@ -522,25 +583,61 @@ onBeforeUnmount(() => {
     justify-content: center;
 }
 
+.reader-favorites__group {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    padding: 8px;
+
+    border: 1px solid var(--reader-border);
+    border-radius: var(--ui-radius);
+}
+
+.reader-favorites__title {
+    position: absolute;
+    top: -8px;
+    left: 8px;
+
+    padding: 2px;
+
+    font-size: 10px;
+    color: var(--reader-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+
+    background-color: var(--reader-surface);
+}
+
+.reader-favorites__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
 .reader-favorite {
     position: relative;
 }
 
-.reader-favorite__button {
+.reader-favorite__button.sr-button {
     cursor: pointer;
 
     display: inline-flex;
     gap: 6px;
     align-items: center;
 
-    padding: 6px 10px;
+    padding: 6px;
 
     font-size: 12px;
     color: var(--reader-text);
+    letter-spacing: normal;
 
     background: transparent;
     border: 1px solid var(--reader-border);
-    border-radius: 999px;
+    border-radius: var(--ui-radius-sm);
 }
 
 .reader-favorite__button .material-icons {
@@ -566,7 +663,7 @@ onBeforeUnmount(() => {
 
     background: var(--reader-surface);
     border: 1px solid var(--reader-border);
-    border-radius: 12px;
+    border-radius: var(--ui-radius);
     box-shadow: 0 12px 32px rgb(0 0 0 / 18%);
 }
 
@@ -605,19 +702,5 @@ onBeforeUnmount(() => {
 .reader-btn .material-icons {
     font-size: 20px;
     line-height: 1;
-}
-
-@media (max-width: 900px) {
-    .reader-header {
-        flex-wrap: wrap;
-        gap: 12px;
-    }
-
-    .reader-favorites {
-        gap: 10px;
-        justify-content: center;
-        order: 3;
-        width: 100%;
-    }
 }
 </style>
