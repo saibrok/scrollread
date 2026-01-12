@@ -8,6 +8,7 @@ import SrInput from '../../../ui/SrInput.vue';
 import SrRange from '../../../ui/SrRange.vue';
 import SrSelect from '../../../ui/SrSelect.vue';
 import SrToggleButton from '../../../ui/SrToggleButton.vue';
+import { normalizeFavorites } from '../utils/favorites';
 
 const props = defineProps({
     settings: {
@@ -102,23 +103,6 @@ const multiplierLabel = computed(() => {
 
 const favoriteMap = computed(() => normalizeFavorites(props.settings.favorites));
 
-function normalizeFavorites(favorites) {
-    if (Array.isArray(favorites)) {
-        return favorites.reduce((acc, key) => {
-            if (typeof key === 'string') {
-                acc[key] = true;
-            }
-            return acc;
-        }, {});
-    }
-
-    if (favorites && typeof favorites === 'object') {
-        return favorites;
-    }
-
-    return {};
-}
-
 function isFavorite(key) {
     return Boolean(favoriteMap.value[key]);
 }
@@ -132,17 +116,17 @@ function toggleFavorite(key) {
 </script>
 
 <template>
-    <div class="reader-panel">
-        <div class="reader-panel__bar">
-            <div class="reader-panel__title">Настройки текста</div>
+    <div class="reader-settings">
+        <div class="reader-settings__bar">
+            <div class="reader-settings__title">Настройки текста</div>
 
             <div
                 v-if="props.showSpeedInBar"
-                class="reader-panel__speed"
+                class="reader-settings__speed"
             >
-                <label class="reader-panel__speed-label">Скорость</label>
+                <label class="reader-settings__speed-label">Скорость</label>
                 <SrToggleButton
-                    class="reader-btn reader-panel__icon"
+                    class="reader-btn reader-settings__icon"
                     type="button"
                     aria-label="Замедлить x0.5"
                     :active="props.speedMultiplier === 0.5"
@@ -163,9 +147,9 @@ function toggleFavorite(key) {
                     @update:model-value="emitUpdate('speed', $event)"
                     @change="emitUpdateEnd('speed', $event)"
                 />
-                <div class="reader-panel__speed-value">{{ props.settings.speed }}</div>
+                <div class="reader-settings__speed-value">{{ props.settings.speed }}</div>
                 <SrToggleButton
-                    class="reader-btn reader-panel__icon"
+                    class="reader-btn reader-settings__icon"
                     type="button"
                     aria-label="Ускорить x2"
                     :active="props.speedMultiplier === 2"
@@ -183,7 +167,7 @@ function toggleFavorite(key) {
             <div class="separator"></div>
 
             <SrButton
-                class="reader-btn reader-panel__icon"
+                class="reader-btn reader-settings__icon"
                 type="button"
                 aria-label="Горячие клавиши"
                 @click="emit('help')"
@@ -196,7 +180,7 @@ function toggleFavorite(key) {
                 </span>
             </SrButton>
             <SrButton
-                class="reader-btn reader-panel__icon"
+                class="reader-btn reader-settings__icon"
                 type="button"
                 :variant="props.isFullscreen ? 'accent' : 'default'"
                 aria-label="Полный экран"
@@ -210,7 +194,7 @@ function toggleFavorite(key) {
                 </span>
             </SrButton>
         </div>
-        <div class="reader-panel__body">
+        <div class="reader-settings__body">
             <section class="reader-group">
                 <div class="reader-group__title">Темп</div>
                 <div class="reader-group__grid">
@@ -223,7 +207,7 @@ function toggleFavorite(key) {
                                     >Скорость</label
                                 >
                                 <SrToggleButton
-                                    class="reader-btn reader-panel__favorite"
+                                    class="reader-btn reader-settings__favorite"
                                     type="button"
                                     :active="isFavorite('speed')"
                                     active-variant="ghost"
@@ -264,7 +248,7 @@ function toggleFavorite(key) {
                                     >Задержка</label
                                 >
                                 <SrToggleButton
-                                    class="reader-btn reader-panel__favorite"
+                                    class="reader-btn reader-settings__favorite"
                                     type="button"
                                     :active="isFavorite('startDelay')"
                                     active-variant="ghost"
@@ -307,7 +291,7 @@ function toggleFavorite(key) {
                                     >Множитель</label
                                 >
                                 <SrToggleButton
-                                    class="reader-btn reader-panel__favorite"
+                                    class="reader-btn reader-settings__favorite"
                                     type="button"
                                     :active="isFavorite('speedMultiplier')"
                                     active-variant="ghost"
@@ -329,10 +313,10 @@ function toggleFavorite(key) {
                         </div>
                         <div
                             id="speedMultiplier"
-                            class="reader-panel__multipliers"
+                            class="reader-settings__multipliers"
                         >
                             <SrToggleButton
-                                class="reader-btn reader-panel__icon"
+                                class="reader-btn reader-settings__icon"
                                 type="button"
                                 aria-label="Замедлить x0.5"
                                 :active="props.speedMultiplier === 0.5"
@@ -346,7 +330,7 @@ function toggleFavorite(key) {
                                 </span>
                             </SrToggleButton>
                             <SrToggleButton
-                                class="reader-btn reader-panel__icon"
+                                class="reader-btn reader-settings__icon"
                                 type="button"
                                 aria-label="Ускорить x2"
                                 :active="props.speedMultiplier === 2"
@@ -367,7 +351,7 @@ function toggleFavorite(key) {
                             <div class="reader-label-row">
                                 <label class="reader-label">Время сессии</label>
                                 <SrToggleButton
-                                    class="reader-btn reader-panel__favorite"
+                                    class="reader-btn reader-settings__favorite"
                                     type="button"
                                     :active="isFavorite('sessionTime')"
                                     active-variant="ghost"
@@ -393,7 +377,7 @@ function toggleFavorite(key) {
                             <div class="reader-label-row">
                                 <label class="reader-label">Оценка времени</label>
                                 <SrToggleButton
-                                    class="reader-btn reader-panel__favorite"
+                                    class="reader-btn reader-settings__favorite"
                                     type="button"
                                     :active="isFavorite('estimateTime')"
                                     active-variant="ghost"
@@ -428,7 +412,7 @@ function toggleFavorite(key) {
                                     >Размер</label
                                 >
                                 <SrToggleButton
-                                    class="reader-btn reader-panel__favorite"
+                                    class="reader-btn reader-settings__favorite"
                                     type="button"
                                     :active="isFavorite('fontSize')"
                                     active-variant="ghost"
@@ -469,7 +453,7 @@ function toggleFavorite(key) {
                                     >Интерлиньяж</label
                                 >
                                 <SrToggleButton
-                                    class="reader-btn reader-panel__favorite"
+                                    class="reader-btn reader-settings__favorite"
                                     type="button"
                                     :active="isFavorite('lineHeight')"
                                     active-variant="ghost"
@@ -510,7 +494,7 @@ function toggleFavorite(key) {
                                     >Отступ абзаца</label
                                 >
                                 <SrToggleButton
-                                    class="reader-btn reader-panel__favorite"
+                                    class="reader-btn reader-settings__favorite"
                                     type="button"
                                     :active="isFavorite('paragraphGap')"
                                     active-variant="ghost"
@@ -551,7 +535,7 @@ function toggleFavorite(key) {
                                     >Красная строка</label
                                 >
                                 <SrToggleButton
-                                    class="reader-btn reader-panel__favorite"
+                                    class="reader-btn reader-settings__favorite"
                                     type="button"
                                     :active="isFavorite('indent')"
                                     active-variant="ghost"
@@ -593,7 +577,7 @@ function toggleFavorite(key) {
                                     >Шрифт</label
                                 >
                                 <SrToggleButton
-                                    class="reader-btn reader-panel__favorite"
+                                    class="reader-btn reader-settings__favorite"
                                     type="button"
                                     :active="isFavorite('font')"
                                     active-variant="ghost"
@@ -626,7 +610,7 @@ function toggleFavorite(key) {
                                     >Положение</label
                                 >
                                 <SrToggleButton
-                                    class="reader-btn reader-panel__favorite"
+                                    class="reader-btn reader-settings__favorite"
                                     type="button"
                                     :active="isFavorite('align')"
                                     active-variant="ghost"
@@ -665,7 +649,7 @@ function toggleFavorite(key) {
                                     >Отступы</label
                                 >
                                 <SrToggleButton
-                                    class="reader-btn reader-panel__favorite"
+                                    class="reader-btn reader-settings__favorite"
                                     type="button"
                                     :active="isFavorite('padding')"
                                     active-variant="ghost"
@@ -706,7 +690,7 @@ function toggleFavorite(key) {
                                     >Размер окна</label
                                 >
                                 <SrToggleButton
-                                    class="reader-btn reader-panel__favorite"
+                                    class="reader-btn reader-settings__favorite"
                                     type="button"
                                     :active="isFavorite('overlaySize')"
                                     active-variant="ghost"
@@ -747,7 +731,7 @@ function toggleFavorite(key) {
                                     >Прозрачность</label
                                 >
                                 <SrToggleButton
-                                    class="reader-btn reader-panel__favorite"
+                                    class="reader-btn reader-settings__favorite"
                                     type="button"
                                     :active="isFavorite('overlayOpacity')"
                                     active-variant="ghost"
@@ -795,7 +779,7 @@ function toggleFavorite(key) {
                                     >Яркость</label
                                 >
                                 <SrToggleButton
-                                    class="reader-btn reader-panel__favorite"
+                                    class="reader-btn reader-settings__favorite"
                                     type="button"
                                     :active="isFavorite('brightness')"
                                     active-variant="ghost"
@@ -837,7 +821,7 @@ function toggleFavorite(key) {
                                     >Контраст</label
                                 >
                                 <SrToggleButton
-                                    class="reader-btn reader-panel__favorite"
+                                    class="reader-btn reader-settings__favorite"
                                     type="button"
                                     :active="isFavorite('contrast')"
                                     active-variant="ghost"
@@ -879,7 +863,7 @@ function toggleFavorite(key) {
                                     >Сепия</label
                                 >
                                 <SrToggleButton
-                                    class="reader-btn reader-panel__favorite"
+                                    class="reader-btn reader-settings__favorite"
                                     type="button"
                                     :active="isFavorite('sepia')"
                                     active-variant="ghost"
@@ -927,7 +911,7 @@ function toggleFavorite(key) {
                                     >Показывать</label
                                 >
                                 <SrToggleButton
-                                    class="reader-btn reader-panel__favorite"
+                                    class="reader-btn reader-settings__favorite"
                                     type="button"
                                     :active="isFavorite('showMinimap')"
                                     active-variant="ghost"
@@ -946,7 +930,7 @@ function toggleFavorite(key) {
                         </div>
                         <SrToggleButton
                             id="showMinimap"
-                            class="reader-btn reader-panel__icon"
+                            class="reader-btn reader-settings__icon"
                             type="button"
                             aria-label="Показывать миникарту"
                             :active="props.settings.showMinimap !== false"
@@ -969,7 +953,7 @@ function toggleFavorite(key) {
                                     >Ширина</label
                                 >
                                 <SrToggleButton
-                                    class="reader-btn reader-panel__favorite"
+                                    class="reader-btn reader-settings__favorite"
                                     type="button"
                                     :active="isFavorite('minimapWidth')"
                                     active-variant="ghost"
@@ -1010,7 +994,7 @@ function toggleFavorite(key) {
                                     >Масштаб</label
                                 >
                                 <SrToggleButton
-                                    class="reader-btn reader-panel__favorite"
+                                    class="reader-btn reader-settings__favorite"
                                     type="button"
                                     :active="isFavorite('minimapScale')"
                                     active-variant="ghost"
@@ -1041,7 +1025,7 @@ function toggleFavorite(key) {
 </template>
 
 <style scoped>
-.reader-panel {
+.reader-settings {
     position: relative;
     z-index: 10;
 
@@ -1054,27 +1038,27 @@ function toggleFavorite(key) {
     border-bottom: 1px solid var(--reader-border);
 }
 
-.reader-panel__bar {
+.reader-settings__bar {
     display: flex;
     gap: 12px;
     align-items: center;
     justify-content: space-between;
 }
 
-.reader-panel__title {
+.reader-settings__title {
     font-size: 13px;
     color: var(--reader-text-muted);
     text-transform: uppercase;
     letter-spacing: 0.12em;
 }
 
-.reader-panel__speed {
+.reader-settings__speed {
     display: flex;
     gap: 10px;
     align-items: center;
 }
 
-.reader-panel__speed-label {
+.reader-settings__speed-label {
     font-size: 11px;
     color: var(--reader-text-muted);
     text-transform: uppercase;
@@ -1082,33 +1066,33 @@ function toggleFavorite(key) {
     white-space: nowrap;
 }
 
-.reader-panel__speed .sr-range {
+.reader-settings__speed .sr-range {
     min-width: 140px;
     max-width: 240px;
 }
 
-.reader-panel__speed-value {
+.reader-settings__speed-value {
     font-size: 12px;
     color: var(--reader-text);
     white-space: nowrap;
 }
 
-.reader-panel__multipliers {
+.reader-settings__multipliers {
     display: flex;
     gap: 10px;
     align-items: center;
 }
 
-/* .reader-panel__icon {
+/* .reader-settings__icon {
     padding: 6px 8px;
     font-size: 12px;
 } */
 
-.reader-panel__icon .material-icons {
+.reader-settings__icon .material-icons {
     font-size: 20px;
 }
 
-.reader-panel__body {
+.reader-settings__body {
     display: flex;
     flex-direction: column;
     gap: 14px;
@@ -1183,11 +1167,11 @@ function toggleFavorite(key) {
     white-space: nowrap;
 }
 
-.reader-panel__favorite {
+.reader-settings__favorite {
     padding: 2px;
 }
 
-.reader-panel__favorite .material-icons {
+.reader-settings__favorite .material-icons {
     font-size: 16px;
 }
 </style>

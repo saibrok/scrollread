@@ -1,31 +1,13 @@
+import { FAVORITE_KEYS, normalizeFavorites } from '../modules/Reader/utils/favorites';
+
+const FAVORITE_DEFAULTS = FAVORITE_KEYS.reduce((acc, key) => {
+    acc[key] = false;
+    return acc;
+}, {});
+
 export const READER_STORAGE_KEY = 'reader_settings';
 export const THEME_STORAGE_KEY = 'theme_settings';
 export const SAVED_TEXTS_KEY = 'saved_texts';
-
-const FAVORITE_KEYS = [
-    'speed',
-    'startDelay',
-    'speedMultiplier',
-    'sessionTime',
-    'estimateTime',
-    'fontSize',
-    'lineHeight',
-    'paragraphGap',
-    'indent',
-    'font',
-    'align',
-    'padding',
-    'overlaySize',
-    'overlayOpacity',
-    'brightness',
-    'contrast',
-    'sepia',
-    'showMinimap',
-    'minimapWidth',
-    'minimapScale',
-];
-
-const FAVORITE_DEFAULTS = Object.fromEntries(FAVORITE_KEYS.map((key) => [key, false]));
 
 export const READER_DEFAULTS = {
     speed: 800,
