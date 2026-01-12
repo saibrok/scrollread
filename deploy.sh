@@ -47,9 +47,9 @@ cd "$FRONTEND_ROOT"
 echo -e "    📂 Корень фронтенда: $FRONTEND_ROOT"
 # Устанавливаем зависимости и собираем приложение
 echo -e "    📦 Установка зависимостей..."
-npm ci --silent
+npm ci --legacy-peer-deps
 echo -e "    🛠️ Сборка Vite-приложения..."
-npm run build --silent
+npm run build
 echo -e "    ${GREEN}✅ Сборка завершена${NC}"
 
 echo -e "${BLUE}🚀 ==> Шаг 2/4: Архивация папки dist${NC}"
