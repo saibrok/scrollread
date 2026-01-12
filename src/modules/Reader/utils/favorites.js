@@ -12,7 +12,7 @@ export const FAVORITE_GROUPS = [
     {
         id: 'text',
         title: 'Текст',
-        keys: ['fontSize', 'lineHeight', 'textWidth', 'paragraphGap', 'indent', 'font', 'align'],
+        keys: ['fontSize', 'lineHeight', 'textWidth', 'paragraphGap', 'indent', 'font', 'align', 'mirrorHorizontal', 'mirrorVertical'],
     },
     {
         id: 'window',

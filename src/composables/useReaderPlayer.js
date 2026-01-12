@@ -9,9 +9,10 @@ import { countChars } from '../utils/text';
  *  getSpeed: () => number,
  *  stageRef: import('vue').Ref<HTMLElement | null>,
  *  textRef: import('vue').Ref<HTMLElement | null>,
+ *  getMirrorY?: () => boolean,
  * }} options
  */
-export function useReaderPlayer({ getText, getSpeed, stageRef, textRef }) {
+export function useReaderPlayer({ getText, getSpeed, stageRef, textRef, getMirrorY }) {
     const isPlaying = ref(false);
     const animationId = ref(null);
     const startTimestamp = ref(0);
@@ -34,6 +35,10 @@ export function useReaderPlayer({ getText, getSpeed, stageRef, textRef }) {
     const wheelStopThreshold = 0.01;
     const touchFriction = 0.98;
     const touchStopVelocity = 0.005;
+
+    function getMirrorDirection() {
+        return typeof getMirrorY === 'function' && getMirrorY() ? -1 : 1;
+    }
 
     /**
      * Measure scroll distance and duration.
@@ -67,9 +72,12 @@ export function useReaderPlayer({ getText, getSpeed, stageRef, textRef }) {
         }
         const clamped = Math.min(Math.max(elapsedSeconds, 0), duration);
         const progress = duration > 0 ? clamped / duration : 0;
-        const offset = -distance * progress;
+        const isMirrored = typeof getMirrorY === 'function' && getMirrorY();
+        const direction = isMirrored ? 1 : -1;
+        const startOffset = isMirrored ? -distance : 0;
+        const offset = startOffset + distance * progress * direction;
 
-        textRef.value.style.transform = `translateY(${offset}px)`;
+        textRef.value.style.transform = `translateY(${offset}px) scaleX(var(--reader-mirror-x)) scaleY(var(--reader-mirror-y))`;
         currentElapsed.value = clamped;
         currentSeconds.value = Math.floor(clamped);
     }
@@ -353,12 +361,13 @@ export function useReaderPlayer({ getText, getSpeed, stageRef, textRef }) {
             return;
         }
 
-        const deltaY = touchStartY.value - touch.clientY;
+        const direction = getMirrorDirection();
+        const deltaY = (touchStartY.value - touch.clientY) * direction;
         const delta = (deltaY / totalDistance.value) * totalDuration.value;
         const next = Math.min(totalDuration.value, Math.max(0, touchStartElapsed.value + delta));
 
         const now = performance.now();
-        const frameDelta = (touchLastY.value - touch.clientY) / totalDistance.value;
+        const frameDelta = ((touchLastY.value - touch.clientY) * direction) / totalDistance.value;
         const elapsedDelta = frameDelta * totalDuration.value;
         const frameTime = Math.max(1, now - touchLastTime.value);
 

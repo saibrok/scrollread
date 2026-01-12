@@ -34,6 +34,8 @@ export const READER_DEFAULTS = {
     showMinimap: true,
     minimapWidth: 120,
     minimapScale: 0.1,
+    mirrorHorizontal: false,
+    mirrorVertical: false,
     favorites: FAVORITE_DEFAULTS,
 };
 

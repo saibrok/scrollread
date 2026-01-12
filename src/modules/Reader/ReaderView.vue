@@ -64,6 +64,8 @@ const readerStyle = computed(() => {
         '--reader-align': readerSettings.align,
         '--reader-indent': readerSettings.align === 'center' ? '0em' : `${indentValue}em`,
         '--reader-minimap-width': showMinimap.value ? `${minimapWidthValue}px` : '0px',
+        '--reader-mirror-x': readerSettings.mirrorHorizontal ? -1 : 1,
+        '--reader-mirror-y': readerSettings.mirrorVertical ? -1 : 1,
     };
 });
 
@@ -93,6 +95,7 @@ const {
     getSpeed: () => readerSettings.speed * speedMultiplier.value,
     stageRef: readerStage,
     textRef: readerText,
+    getMirrorY: () => Boolean(readerSettings.mirrorVertical),
 });
 
 const timerText = computed(() => {
@@ -334,6 +337,7 @@ watch(
         readerSettings.textWidth,
         readerSettings.overlaySize,
         readerSettings.showMinimap,
+        readerSettings.mirrorVertical,
     ],
     () => {
         if (isOpen.value) {
@@ -636,6 +640,8 @@ watch(
     --reader-overlay-opacity: 0.75;
     --read-band: 3.2em;
     --reader-text-width: 720px;
+    --reader-mirror-x: 1;
+    --reader-mirror-y: 1;
 
     position: fixed;
     z-index: 50;
@@ -692,7 +698,7 @@ watch(
 .reader-text {
     will-change: transform;
 
-    transform: translateY(0);
+    transform: translateY(0) scaleX(var(--reader-mirror-x)) scaleY(var(--reader-mirror-y));
 
     width: min(100%, var(--reader-text-width));
     margin-inline: auto;

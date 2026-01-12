@@ -178,6 +178,22 @@ const favoriteConfig = computed(() => {
             model: props.settings.align,
             options: ALIGN_OPTIONS,
         },
+        mirrorHorizontal: {
+            key: 'mirrorHorizontal',
+            label: 'Ортажение по горизонтали',
+            icon: 'swap_horiz',
+            value: props.settings.mirrorHorizontal ? 'Вкл' : 'Выкл',
+            type: 'toggle',
+            model: Boolean(props.settings.mirrorHorizontal),
+        },
+        mirrorVertical: {
+            key: 'mirrorVertical',
+            label: 'Ортажение по вертикали',
+            icon: 'swap_vert',
+            value: props.settings.mirrorVertical ? 'Вкл' : 'Выкл',
+            type: 'toggle',
+            model: Boolean(props.settings.mirrorVertical),
+        },
         overlaySize: {
             key: 'overlaySize',
             label: 'Размер окна',
